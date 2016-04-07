@@ -1,13 +1,22 @@
 from django.contrib import admin
 from core.models import *
 
-class SourceAdmin(admin.ModelAdmin):
-    list_display = ('id', 'url', 'created', 'source_type')
+
+class PublisherAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name')
+
+
+class PublisherURLAdmin(admin.ModelAdmin):
+    list_display = ('id', 'publisher', 'url')
+
+
+class EnteredSourceAdmin(admin.ModelAdmin):
+    list_display = ('id', 'publisher', 'url', 'created', 'updated', 'source_type')
 
 
 class ContentAdmin(admin.ModelAdmin):
-    list_display = ('id', 'source', 'created', 'extract', 'summary')
+    list_display = ('id', 'entered_source', 'created', 'url', 'extract', 'summary')
 
 
-admin.site.register(Source, SourceAdmin)
+admin.site.register(EnteredSource, EnteredSourceAdmin)
 admin.site.register(Content, ContentAdmin)

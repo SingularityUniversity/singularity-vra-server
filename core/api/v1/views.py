@@ -3,9 +3,9 @@ from core.models import *
 from core.api.v1.serializers import *
 
 
-class SourceViewSet(viewsets.ModelViewSet):
-    queryset = Source.objects.all()
-    serializer_class = SourceSerializer
+class PublisherViewSet(viewsets.ModelViewSet):
+    queryset = Publisher.objects.all()
+    serializer_class = PublisherSerializer
 
 
 class ContentViewSet(viewsets.ModelViewSet):

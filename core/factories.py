@@ -18,9 +18,8 @@ class AdminUserFactory(UserFactory):
     is_active = True
 
 
-class SequenceSourceFactory(DjangoModelFactory):
+class SequencePublisherFactory(DjangoModelFactory):
     class Meta:
-        model = Source
+        model = Publisher
 
-    url = Sequence(lambda n: 'http://test-url-{}.example.com'.format(n))
-    source_type = Source.TYPE_PAGE
+    name = Sequence(lambda n: 'Publisher {}'.format(n))

@@ -2,9 +2,9 @@ from rest_framework import serializers
 from core.models import *
 
 
-class SourceSerializer(serializers.ModelSerializer):
+class PublisherSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Source
+        model = Publisher
         fields = '__all__'
 
 

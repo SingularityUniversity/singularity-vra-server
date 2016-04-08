@@ -14,7 +14,7 @@ class Publisher(models.Model):
     )
 
 
-class PubisherURL(models.Model):
+class PublisherURL(models.Model):
     '''
     URLs for the home pages of publishers.  E.g., http://www.scientificamerican.com.
     Publishers may have any number of PublisherURLs

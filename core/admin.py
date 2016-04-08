@@ -18,5 +18,7 @@ class ContentAdmin(admin.ModelAdmin):
     list_display = ('id', 'entered_source', 'created', 'url', 'extract', 'summary')
 
 
+admin.site.register(Publisher, PublisherAdmin)
+admin.site.register(PublisherURL, PublisherURLAdmin)
 admin.site.register(EnteredSource, EnteredSourceAdmin)
 admin.site.register(Content, ContentAdmin)

@@ -23,6 +23,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
+EMBEDLY_KEY = os.environ.get('EMBEDLY_KEY')
+
 if os.environ.get('ENVIRONMENT') != 'production':
     # SECURITY WARNING: don't run with debug turned on in production!
     DEBUG = True

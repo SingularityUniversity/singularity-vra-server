@@ -80,6 +80,7 @@ Session.vim
 # temporary
 .netrwhist
 *~
+.ropeproject
 
 # OS X
 .DS_Store

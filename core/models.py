@@ -46,7 +46,7 @@ class EnteredSource(models.Model):
     created = DateTimeUTCField(
         auto_now_add=True
     )
-    updated = models.DateTimeField(
+    updated = DateTimeUTCField(
         null=True
     )
     url = models.URLField(

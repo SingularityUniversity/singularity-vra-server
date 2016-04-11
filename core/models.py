@@ -41,12 +41,13 @@ class EnteredSource(models.Model):
     )
     publisher = models.ForeignKey(
         Publisher,
+        null=True,
         on_delete=models.CASCADE
     )
     created = DateTimeUTCField(
         auto_now_add=True
     )
-    updated = DateTimeUTCField(
+    last_polled = DateTimeUTCField(
         null=True
     )
     url = models.URLField(
@@ -55,6 +56,7 @@ class EnteredSource(models.Model):
     source_type = models.PositiveIntegerField(
         choices=CHOICES_TYPE
     )
+
 
 
 class Content(models.Model):

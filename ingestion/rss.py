@@ -44,7 +44,7 @@ def ingest_rss(url):
             # if entered_source already in the system, fetch it again
             feed_content = feedparser.parse(entered_source.url)
 
-        entered_source.updated = datetime.now(timezone.utc)
+        entered_source.last_polled = datetime.now(timezone.utc)
         entered_source.save()
         skipped = []
         ingested = []

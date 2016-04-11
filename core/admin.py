@@ -11,7 +11,7 @@ class PublisherURLAdmin(admin.ModelAdmin):
 
 
 class EnteredSourceAdmin(admin.ModelAdmin):
-    list_display = ('id', 'publisher', 'url', 'created', 'updated', 'source_type')
+    list_display = ('id', 'publisher', 'url', 'created', 'last_polled', 'source_type')
 
 
 class ContentAdmin(admin.ModelAdmin):

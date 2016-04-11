@@ -25,6 +25,13 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 
 EMBEDLY_KEY = os.environ.get('EMBEDLY_KEY')
 
+# Celery Settings
+BROKER_URL = os.environ.get('BROKER_URL')
+CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND')
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+
 if os.environ.get('ENVIRONMENT') != 'production':
     # SECURITY WARNING: don't run with debug turned on in production!
     DEBUG = True

@@ -56,6 +56,10 @@ class EnteredSource(models.Model):
     source_type = models.PositiveIntegerField(
         choices=CHOICES_TYPE
     )
+    last_error = models.CharField(
+        max_length=256,
+        null=True
+    )
 
 
 

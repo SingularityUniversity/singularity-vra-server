@@ -1,5 +1,6 @@
+from core.models import EnteredSource
 from django.core.management.base import BaseCommand, CommandError
-from ingestion.rss import ingest_rss
+from ingestion.rss import ingest_rss_source
 
 
 class Command(BaseCommand):
@@ -12,9 +13,17 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         url = options['url']
+        entered_source = EnteredSource.objects.filter(url=url,
+                                                      source_type=EnteredSource.TYPE_RSS).first()
 
-        results = ingest_rss(url)
-        if 'error' in results:
-            raise CommandError(results['error'])
+        if entered_source is not None:
+            print("Already ingested this URL with EnteredSource id: {}".format(entered_source.id))
         else:
-            print(results)
+            entered_source = EnteredSource.objects.create(source_type=EnteredSource.TYPE_RSS,
+                                                          url=url, last_error=None)
+            results = ingest_rss_source(entered_source)
+
+            if 'error' in results:
+                raise CommandError(results['error'])
+            else:
+                print(results)

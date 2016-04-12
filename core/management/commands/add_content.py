@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
+from core.models import EnteredSource
 
-from ingestion.content import ingest
+from ingestion.content import ingest_source
 
 
 class Command(BaseCommand):
@@ -12,9 +13,19 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         url = options['url']
 
-        result = ingest(url)
+        entered_source = EnteredSource.objects.filter(url=url,
+                                                      source_type=EnteredSource.TYPE_PAGE).first()
 
-        if 'success' in result:
-            print("Successfully retrieved document, id: {}".format(result['success'][0]))
+        if entered_source is not None:
+            print("Already ingested this URL with EnteredSource id: {}".format(entered_source.id))
         else:
-            print("Document already retrieved, id: {}".format(result['exists'][0]))
+            entered_source = EnteredSource.objects.create(source_type=EnteredSource.TYPE_PAGE,
+                                                          url=url, last_error=None)
+            result = ingest_source(entered_source)
+            if 'error' in result:
+                raise CommandError(result['error'])
+
+            if 'success' in result:
+                print("Successfully retrieved document, id: {}".format(result['success'][0]))
+            else:
+                print("Document already retrieved, id: {}".format(result['exists'][0]))

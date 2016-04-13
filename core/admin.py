@@ -11,11 +11,11 @@ class PublisherURLAdmin(admin.ModelAdmin):
 
 
 class EnteredSourceAdmin(admin.ModelAdmin):
-    list_display = ('id', 'publisher', 'url', 'created', 'last_polled', 'source_type')
+    list_display = ('id', 'url', 'created', 'last_polled', 'source_type')
 
 
 class ContentAdmin(admin.ModelAdmin):
-    list_display = ('id', 'entered_source', 'created', 'url', 'extract', 'summary')
+    list_display = ('id', 'publisher', 'guid', 'entered_source', 'created', 'url', 'extract', 'summary')
 
 
 admin.site.register(Publisher, PublisherAdmin)

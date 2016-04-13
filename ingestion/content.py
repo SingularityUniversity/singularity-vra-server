@@ -29,10 +29,19 @@ def ingest_source(entered_source):
     if (resp.status_code == 200):
         response = resp.json()
     else:
+        entered_source.save(update_fields={
+            'last_error': "HTTP response {} {}".format(resp.status_code, resp.reason),
+            'last_polled': datetime.now(timezone.utc)
+        })
         return {"error": "Got response {} {}".format(resp.status_code, resp.reason)}
 
     provider_url = response['provider_url']
     content_url = response['url']
+
+    # Check to see if the canonical URL from embedly already has been retrieved
+    existing_content = Content.objects.filter(url=content_url).first()
+    if existing_content is not None:
+        return {'exists': [IngestionItem(existing_content.id, url)]}
 
     # See if the Publisher exists, look up by publisher url
     publisher_url = PublisherURL.objects.filter(url=provider_url).first()
@@ -45,10 +54,11 @@ def ingest_source(entered_source):
 
     content = Content.objects.create(entered_source=entered_source,
                                      url=content_url,
-                                     extract=response)
+                                     extract=response,
+                                     publisher=publisher)
     entered_source.save(update_fields={
         'last_error': None,
-        'last_polled': datetime.now(timezone.utc),
-        'publisher': publisher})
+        'last_polled': datetime.now(timezone.utc)
+    })
 
     return({'success': [IngestionItem(content.id, content_url)]})

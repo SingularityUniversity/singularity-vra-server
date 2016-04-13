@@ -41,11 +41,6 @@ class EnteredSource(models.Model):
         (TYPE_PAGE, TYPE_PAGE),
         (TYPE_ARCHIVED_RSS, TYPE_ARCHIVED_RSS)
     )
-    publisher = models.ForeignKey(
-        Publisher,
-        null=True,
-        on_delete=models.CASCADE
-    )
     created = DateTimeUTCField(
         auto_now_add=True
     )
@@ -84,4 +79,9 @@ class Content(models.Model):
         null=True,
         default=None
 
+    )
+    publisher = models.ForeignKey(
+        Publisher,
+        null=True,
+        on_delete=models.CASCADE
     )

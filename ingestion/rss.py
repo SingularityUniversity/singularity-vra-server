@@ -32,17 +32,6 @@ def ingest_rss_source(entered_source):
 
     # Grab the URL and make sure we don't have an error
     feed_content = feedparser.parse(url)
-    if 'link' in feed_content.feed:
-        raw_publisher_url = feed_content.feed.link
-    else:  # Cause an error?
-        return {'error': "Unable to find feed link!"}
-
-    publisher_url = PublisherURL.objects.filter(url=raw_publisher_url).first()
-    if publisher_url is None:
-        # XXX: No good way to get publisher name for now
-        publisher = Publisher.objects.create(name=raw_publisher_url)
-        publisher_url = PublisherURL.objects.create(publisher=publisher,
-                                                    url=raw_publisher_url)
 
     skipped = []
     ingested = []
@@ -51,10 +40,16 @@ def ingest_rss_source(entered_source):
             logger.info("Ut-oh, we have a problem! {}".format(entry))
         else:
             logger.warn("Looking to see if we already have url {}".format(entry.link))
-            existing_content = Content.objects.filter(url=entry.link).first()
-            if existing_content is not None:
-                skipped.append(IngestionItem(existing_content.id, entry.link))
+            existing_content_by_url = Content.objects.filter(url=entry.link).first()
+            if existing_content_by_url is not None:
+                skipped.append(IngestionItem(existing_content_by_url.id, entry.link))
                 continue
+            if 'guid' in entry:
+                existing_content_by_guid = Content.objects.filter(guid=entry.guid).first()
+                if existing_content_by_guid is not None:
+                    skipped.append(IngestionItem(existing_content_by_guid.id, entry.link))
+                    continue
+
             payload = {
                 'key': settings.EMBEDLY_KEY,
                 'url': entry.link
@@ -64,16 +59,40 @@ def ingest_rss_source(entered_source):
             if (resp.status_code == 200):
                 response = resp.json()
             else:
+                entered_source.save(update_fields={
+                    'last_error': "HTTP response {} {}".format(resp.status_code, resp.reason),
+                    'last_polled': datetime.now(timezone.utc)
+                })
                 return {'error': "Got response {} {} for {}".format(
                     resp.status_code, resp.reason, entry.link)}
+
+            provider_url = response['provider_url']
+            content_url = response['url']
+
+            # Check to see if the canonical URL from embedly already has been retrieved
+            existing_content = Content.objects.filter(url=content_url).first()
+            if existing_content is not None:
+                skipped.append(IngestionItem(existing_content.id, entry.link))
+                continue
+
+            # See if the Publisher exists, look up by publisher url
+            publisher_url = PublisherURL.objects.filter(url=provider_url).first()
+            if publisher_url is None:
+                # I guess we assume if there's no matching publisher_url, there's no publisher?
+                publisher = Publisher.objects.create(name=response['provider_display'])
+                publisher_url = PublisherURL.objects.create(publisher=publisher, url=provider_url)
+            else:
+                publisher = publisher_url.publisher
+
             content = Content.objects.create(entered_source=entered_source,
                                              url=response['url'],
-                                             extract=response)
+                                             extract=response,
+                                             publisher=publisher,
+                                             guid=entry.guid if 'guid' in entry else None)
             ingested.append(IngestionItem(content.id, response['url']))
             logger.info("Successfully create content obj {} from URL {}".format(
                 content.id, response['url']))
 
-    entered_source.publisher = publisher_url.publisher
     entered_source.last_polled = datetime.now(timezone.utc)
     entered_source.last_error = None
     entered_source.save()

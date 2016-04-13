@@ -35,9 +35,11 @@ class EnteredSource(models.Model):
     '''
     TYPE_RSS = 1
     TYPE_PAGE = 2
+    TYPE_ARCHIVED_RSS = 3
     CHOICES_TYPE = (
         (TYPE_RSS, TYPE_RSS),
         (TYPE_PAGE, TYPE_PAGE),
+        (TYPE_ARCHIVED_RSS, TYPE_ARCHIVED_RSS)
     )
     publisher = models.ForeignKey(
         Publisher,
@@ -62,7 +64,6 @@ class EnteredSource(models.Model):
     )
 
 
-
 class Content(models.Model):
     entered_source = models.ForeignKey(
         'EnteredSource',
@@ -73,6 +74,10 @@ class Content(models.Model):
     )
     url = models.URLField(
         max_length=2048
+    )
+    guid = models.CharField(
+        max_length=256,
+        null=True
     )
     extract = JSONField()
     summary = models.TextField(

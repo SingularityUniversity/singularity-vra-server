@@ -23,3 +23,19 @@ class SequencePublisherFactory(DjangoModelFactory):
         model = Publisher
 
     name = Sequence(lambda n: 'Publisher {}'.format(n))
+
+
+class EnteredSourceRSSFactory(DjangoModelFactory):
+    class Meta:
+        model = EnteredSource
+
+    url = 'http://rss.example.com'
+    source_type = EnteredSource.TYPE_RSS
+
+
+class SequenceEnteredSourceFactory(DjangoModelFactory):
+    class Meta:
+        model = EnteredSource
+
+    url = Sequence(lambda n: 'http://example.com/article/{}'.format(n))
+    source_type = EnteredSource.TYPE_PAGE

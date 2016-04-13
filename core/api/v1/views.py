@@ -1,6 +1,10 @@
+import logging
 from rest_framework import viewsets
 from core.models import *
 from core.api.v1.serializers import *
+
+
+logger = logging.getLogger(__name__)
 
 
 class PublisherViewSet(viewsets.ModelViewSet):

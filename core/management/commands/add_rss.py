@@ -13,7 +13,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         url = options['url']
-        entered_source = EnteredSource.objects.filter(url=url).first()
+        entered_source = EnteredSource.objects.filter(url=url).exclude(
+        source_type=EnteredSource.TYPE_PAGE).first()
         current_entered_source = EnteredSource.objects.filter(
             source_type=EnteredSource.TYPE_RSS).first()
         if entered_source is not None:

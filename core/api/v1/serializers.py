@@ -1,19 +1,13 @@
 import logging
-from django.forms.models import model_to_dict
+from core.models import Publisher, EnteredSource, Content, PublisherURL
 from rest_framework import serializers
-from core.models import *
 
 logger = logging.getLogger(__name__)
+
 
 class PublisherSerializer(serializers.ModelSerializer):
     class Meta:
         model = Publisher
-        fields = '__all__'
-
-
-class ContentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Content
         fields = '__all__'
 
 
@@ -38,10 +32,10 @@ class EnteredSourceSerializer(serializers.ModelSerializer):
         '''
         if value == EnteredSource.TYPE_RSS:
             if self.context['request'].method in ['PATCH', 'PUT']:
-                rss_feeds =  EnteredSource.objects.filter(
+                rss_feeds = EnteredSource.objects.filter(
                     source_type=EnteredSource.TYPE_RSS).exclude(pk=self.instance.id)
             else:
-                rss_feeds =  EnteredSource.objects.filter(
+                rss_feeds = EnteredSource.objects.filter(
                     source_type=EnteredSource.TYPE_RSS)
             if rss_feeds.count() > 0:
                 raise serializers.ValidationError('Only one RSS record allowed')

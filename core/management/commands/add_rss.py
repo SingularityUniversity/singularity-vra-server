@@ -13,17 +13,19 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         url = options['url']
-        entered_source = EnteredSource.objects.filter(url=url,
-                                                      source_type=EnteredSource.TYPE_RSS).first()
+        entered_source = EnteredSource.objects.filter(source_type=EnteredSource.TYPE_RSS).first()
 
         if entered_source is not None:
-            print("Already ingested this URL with EnteredSource id: {}".format(entered_source.id))
-        else:
-            entered_source = EnteredSource.objects.create(source_type=EnteredSource.TYPE_RSS,
-                                                          url=url, last_error=None)
-            results = ingest_rss_source(entered_source)
+            self.stdout.write(self.style.SUCCESS("Archiving URL with EnteredSource id: {}".format(entered_source.id)))
+            entered_source.source_type = EnteredSource.TYPE_ARCHIVED_RSS
+            entered_source.save()
 
-            if 'error' in results:
-                raise CommandError(results['error'])
-            else:
-                print(results)
+        # now create the new entered source
+        entered_source = EnteredSource.objects.create(source_type=EnteredSource.TYPE_RSS,
+                                                        url=url, last_error=None)
+        results = ingest_rss_source(entered_source)
+
+        if 'error' in results:
+            raise CommandError(results['error'])
+        else:
+            self.stdout.write(self.style.SUCCESS(results))

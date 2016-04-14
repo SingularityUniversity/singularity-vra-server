@@ -3,7 +3,7 @@ DONE:
 *) Add guid field to Content
 *) Remove publisher from EnteredSource - EnteredSource may pull from multiple publishers - publishers should only come from content
 *) Modify unique checking for Content by cehcking guid and entity.link urls before grabbing (also check *after* hitting embedly, so we don't create a new object)
+*) Modify serielizers to enforce only one EnteredSource with type=RSS -- probably also update the core.management.commands.add_rss tool to check if existing TYPE_RSS EnteredSource in place, and if so, turn that one off and create a new one with the new RSS URL? 
 
 TODO
-*) Modify serielizers to enforce only one EnteredSource with type=RSS -- probably also update the core.management.commands.add_rss tool to check if existing TYPE_RSS EnteredSource in place, and if so, turn that one off and create a new one with the new RSS URL? 
 *) Make RSS ingestor work by firing off individual document parsing jobs -- this is actually a bit complicated since the current rss ingestor returns a list of articles skipped (already retrieved) and those successfully retrieved. If the RSS fires off jobs, those jobs may end up skipping too (they may not konw to skip until after they've gotten a canonical URL from embedly), so we won't have one list anymore. I'm not convinced we need to fire off separate jobs, so I'd skip this for now.

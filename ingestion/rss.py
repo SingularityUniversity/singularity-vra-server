@@ -89,6 +89,7 @@ def ingest_rss_source(entered_source):
                                              extract=response,
                                              publisher=publisher,
                                              guid=entry.guid if 'guid' in entry else None)
+            content.add_to_search_index()
             ingested.append(IngestionItem(content.id, response['url']))
             logger.info("Successfully create content obj {} from URL {}".format(
                 content.id, response['url']))

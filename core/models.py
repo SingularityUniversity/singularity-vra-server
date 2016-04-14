@@ -1,6 +1,9 @@
+import json
 from django.db import models
+from django.core import serializers
 from django.contrib.postgres.fields import JSONField
 from datetimeutc.fields import DateTimeUTCField
+from core.elasticsearch import index_document
 
 
 class Publisher(models.Model):
@@ -85,3 +88,7 @@ class Content(models.Model):
         null=True,
         on_delete=models.CASCADE
     )
+
+    def add_to_search_index(self):
+        # XXX: should this go here? Will other indexing/extraction methods be called this way?
+        index_document(json.loads(serializers.serialize('json', [self]))[0], self.id)

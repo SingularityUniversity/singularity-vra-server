@@ -32,6 +32,9 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 
+ELASTICSEARCH_URL = os.environ.get('ELASTICSEARCH_URL')
+ELASTICSEARCH_INDEX = os.environ.get('ELASTICSEARCH_INDEX')
+
 if os.environ.get('ENVIRONMENT') != 'production':
     # SECURITY WARNING: don't run with debug turned on in production!
     DEBUG = True

@@ -56,6 +56,7 @@ def ingest_source(entered_source):
                                      url=content_url,
                                      extract=response,
                                      publisher=publisher)
+    content.add_to_search_index()
     entered_source.save(update_fields={
         'last_error': None,
         'last_polled': datetime.now(timezone.utc)

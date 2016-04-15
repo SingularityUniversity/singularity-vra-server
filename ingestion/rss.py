@@ -99,3 +99,15 @@ def ingest_rss_source(entered_source):
     entered_source.last_error = None
     entered_source.save()
     return ({'success': ingested, 'exists': skipped})
+
+
+def refresh_rss():
+    '''
+    Refreshes the current RSS feed retrieved from the EnteredSource with type TYPE_RSS
+    There should only be one of these.
+    '''
+    entered_source = EnteredSource.objects.filter(source_type=EnteredSource.TYPE_RSS).first()
+    if entered_source is None:
+        # XXX: Maybe return status or at least an exception with better metadata?
+        raise ValueError("No entered_source with type TYPE_RSS")
+    return ingest_rss_source(entered_source)

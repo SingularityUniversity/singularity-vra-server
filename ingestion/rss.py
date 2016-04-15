@@ -39,7 +39,6 @@ def ingest_rss_source(entered_source):
         if 'link' not in entry:
             logger.info("Ut-oh, we have a problem! {}".format(entry))
         else:
-            logger.warn("Looking to see if we already have url {}".format(entry.link))
             existing_content_by_url = Content.objects.filter(url=entry.link).first()
             if existing_content_by_url is not None:
                 skipped.append(IngestionItem(existing_content_by_url.id, entry.link))

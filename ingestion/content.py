@@ -57,6 +57,7 @@ def ingest_source(entered_source):
                                      extract=response,
                                      publisher=publisher)
     content.add_to_search_index()
+    content.add_to_s3()
     entered_source.save(update_fields={
         'last_error': None,
         'last_polled': datetime.now(timezone.utc)

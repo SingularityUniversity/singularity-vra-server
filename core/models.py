@@ -5,6 +5,7 @@ from django.contrib.postgres.fields import JSONField
 from datetimeutc.fields import DateTimeUTCField
 from core.elasticsearch import index_document
 from core.s3 import put_content_to_s3
+from solo.models import SingletonModel
 
 
 class Publisher(models.Model):
@@ -96,3 +97,16 @@ class Content(models.Model):
 
     def add_to_s3(self):
         put_content_to_s3(self)
+
+
+class LDAConfiguration(SingletonModel):
+    class Meta:
+        verbose_name = "LDA Configuration"
+
+    num_topics = models.PositiveIntegerField(
+        default=50
+    )
+
+    lda_passes = models.SmallIntegerField(
+        default=10
+    )

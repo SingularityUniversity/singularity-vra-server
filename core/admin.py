@@ -1,5 +1,6 @@
 from django.contrib import admin
 from core.models import *
+from solo.admin import SingletonModelAdmin
 
 
 class PublisherAdmin(admin.ModelAdmin):
@@ -17,7 +18,7 @@ class EnteredSourceAdmin(admin.ModelAdmin):
 class ContentAdmin(admin.ModelAdmin):
     list_display = ('id', 'publisher', 'guid', 'entered_source', 'created', 'url', 'extract', 'summary')
 
-
+admin.site.register(LDAConfiguration, SingletonModelAdmin)
 admin.site.register(Publisher, PublisherAdmin)
 admin.site.register(PublisherURL, PublisherURLAdmin)
 admin.site.register(EnteredSource, EnteredSourceAdmin)

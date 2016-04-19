@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'storages',
     'rest_framework',
     'rest_framework_docs',
+    'solo',
     'datetimeutc',
     'core',
     'workers'

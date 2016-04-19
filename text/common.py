@@ -1,0 +1,116 @@
+'''
+USAGE:
+# Get or create the ndict, lda_model and lda_sims
+# create, by reading all the content objects in the db
+# alternatively, and in production, these are serialized and read from disk on startup
+nbow, ndict, lda_model, lda_sims = text.common.make_lda()
+bow = ndict.doc2bow(text.common.tokenize_text_block(plain_text_block_compare))
+vec_lda = lda_model[bow]
+
+# Get a vector scoring every document in the content objects corpus against comparison doc
+lda_sims[vec_lda]
+'''
+import re
+from bs4 import BeautifulSoup
+
+import nltk
+from nltk.stem import PorterStemmer
+from gensim import corpora, models, similarities
+from text.stopwords import stopwords
+import logging
+from contexttimer import timer
+
+from core.models import Content, LDAConfiguration
+
+nltk.data.path.append('data/nltk')
+
+
+def tokenize_text_block(block):
+    '''
+    Takes a whitepsace-separate list of words and returns a list of
+    stemmed, normalized words
+    '''
+    text = nltk.word_tokenize(block)
+    tokenized_text = []
+    # turn compound words into individual words
+    for word in text:
+        # print('{} {}'.format(word, re.split('W+', word)))
+        tokenized_text.extend(re.split('\W+', word))
+    # print(len(tokenized_text))
+    # lowercase and get rid of stopwords
+    tokenized_text = [word.lower() for word in tokenized_text if
+                      word != '' and
+                      word.lower() not in stopwords and
+                      re.match('^\d{1,2}$', word) is None]
+
+    # stem or lemmatize
+    # lemmatizer = WordNetLemmatizer()
+    # tokenized_text = [lemmatizer.lemmatize(word) for word in tokenized_text]
+    stemmer = PorterStemmer()
+    tokenized_text = [stemmer.stem(word) for word in tokenized_text]
+    assert tokenized_text != [None], "Tokenized text is {}".format(tokenized_text)
+    return tokenized_text
+
+
+def extract_words_from_content(content):
+    raw_html = content.extract['content']
+
+    if (raw_html is not None):
+        soup = BeautifulSoup(raw_html, 'html.parser')
+        for unwanted_element in soup.findAll(['script', 'style', 'img', 'embed']):
+            unwanted_element.decompose()
+        text = soup.get_text()
+        result = tokenize_text_block(text)
+        assert result is not None, "Got None from {}".format(result)
+        return result
+    else:
+        return []  # XXX: Some docs have no content
+
+
+@timer(logger=logging.getLogger())
+def make_nbow_and_dict(content_iterator):
+    '''
+    Given an ordered list of content, create a bow list (index == index from iterator)
+    and a corpora.Dictionary
+    '''
+    doc_words = [extract_words_from_content(content) for content in content_iterator]
+    ndict = corpora.Dictionary([word_list for word_list in doc_words])
+    nbow = [ndict.doc2bow(doc) for doc in doc_words]
+
+    return (nbow, ndict)
+
+
+@timer(logger=logging.getLogger())
+def make_lda_model(nbow, ndict):
+    '''
+    Build an LDA model from the normalized BoW and the associated corpora.Dictionary
+    '''
+
+    # XXX: For now, we'll read in the LDA config vars here, but we may want those config
+    # vars elsewhere, so we may need to read it in somewhere outside this function instead
+    config = LDAConfiguration.get_solo()
+    lda_model = models.ldamodel.LdaModel(nbow, id2word=ndict,
+                                         num_topics=config.num_topics,
+                                         passes=config.lda_passes)
+    return lda_model
+
+
+@timer(logger=logging.getLogger())
+def make_lda_similarities(nbow, lda_model):
+    '''
+    Build a Similarity Matrix
+    '''
+    return similarities.MatrixSimilarity(lda_model[nbow])
+
+
+def make_all_lda():
+    '''
+    Just for testing - probably don't want to keep everything in memory?
+    '''
+    all_docs = Content.objects.all()
+    nbow, ndict = make_nbow_and_dict(all_docs)
+    lda_model = make_lda_model(nbow, ndict)
+    lda_similarities = make_lda_similarities(nbow, lda_model)
+
+    return (nbow, ndict, lda_model, lda_similarities)
+

@@ -6,7 +6,7 @@ beautifulsoup4==4.4.1
 billiard==3.3.0.23
 boto==2.39.0
 boto3==1.3.0
-botocore==1.4.11
+botocore==1.4.12
 bz2file==0.98
 celery==3.1.23
 click==6.6
@@ -22,7 +22,7 @@ docutils==0.12
 drf-nested-routers==0.11.1
 drfdocs==0.0.9
 elasticsearch==2.3.0
-factory-boy==2.6.1
+factory-boy==2.7.0
 fake-factory==0.5.7
 feedparser==5.2.1
 flower==0.9.1
@@ -46,8 +46,8 @@ redis==2.10.5
 requests==2.9.1
 scipy==0.17.0
 six==1.10.0
-tornado==4.3
 smart-open==1.3.2
+tornado==4.3
 tqdm==4.4.1
 urllib3==1.15.1
 whitenoise==3.0

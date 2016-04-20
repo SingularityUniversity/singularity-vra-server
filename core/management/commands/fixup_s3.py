@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from core.s3 import get_ids_at_s3
+from core.s3 import get_content_ids_at_s3
 from core.models import Content
 from tqdm import tqdm
 
@@ -10,7 +10,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         content_ids = set(Content.objects.values_list('id', flat=True))
 
-        s3_ids = set(get_ids_at_s3())
+        s3_ids = set(get_content_ids_at_s3())
 
         to_push = content_ids - s3_ids
 

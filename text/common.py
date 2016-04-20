@@ -21,6 +21,9 @@ import logging
 from contexttimer import timer
 
 from core.models import Content, LDAConfiguration
+from tempfile import mkdtemp
+import pickle
+from os import path
 
 nltk.data.path.append('data/nltk')
 
@@ -71,13 +74,15 @@ def extract_words_from_content(content):
 def make_nbow_and_dict(content_iterator):
     '''
     Given an ordered list of content, create a bow list (index == index from iterator)
-    and a corpora.Dictionary
+    and a corpora.Dictionary, and also return a mapping from nbow index to content.id (id_map)
     '''
     doc_words = [extract_words_from_content(content) for content in content_iterator]
+    # XXX: not efficient to go through content_iterator again?
+    id_map = [content.id for content in content_iterator]
     ndict = corpora.Dictionary([word_list for word_list in doc_words])
     nbow = [ndict.doc2bow(doc) for doc in doc_words]
 
-    return (nbow, ndict)
+    return (nbow, ndict, id_map)
 
 
 @timer(logger=logging.getLogger())
@@ -108,9 +113,42 @@ def make_all_lda():
     Just for testing - probably don't want to keep everything in memory?
     '''
     all_docs = Content.objects.all()
-    nbow, ndict = make_nbow_and_dict(all_docs)
+    nbow, ndict, id_map = make_nbow_and_dict(all_docs)
     lda_model = make_lda_model(nbow, ndict)
     lda_similarities = make_lda_similarities(nbow, lda_model)
 
-    return (nbow, ndict, lda_model, lda_similarities)
+    return (nbow, ndict, lda_model, lda_similarities, id_map)
 
+
+def make_and_store():
+    '''
+    This probably doesn't scale, as we read everything into memory and then
+    write it out.
+
+    XXX: Make this scale
+    '''
+    nbow, ndict, lda_model, lda_similarities, id_map = make_all_lda()
+
+    temp_dir = mkdtemp()
+    with open(path.join(temp_dir, "id_map.gensim"), "wb") as id_map_file:
+        pickle.dump(id_map, id_map_file)
+
+    ndict.save(path.join(temp_dir, "dictionary.gensim"), pickle_protocol=4)
+
+    lda_model.save(path.join(temp_dir, "lda_model.gensim"))
+    lda_similarities.save(path.join(temp_dir, "lda_similarities.gensim"))
+
+    return temp_dir, nbow, ndict, lda_model, lda_similarities, id_map
+
+
+def retrieve(dir):
+    '''
+    Returns ndict, lda_model, lda_similarities and the id_map given a directory
+    '''
+    with open(path.join(dir, "id_map.gensim"), "rb") as id_map_file:
+        id_map = pickle.load(id_map_file)
+
+    ndict = corpora.Dictionary.load(path.join(dir, "dictionary.gensim"))
+    lda_model = models.ldamodel.LdaModel.load(path.join(dir, "lda_model.gensim"))
+    lda_similarities = models.MatrixSimilarity.load(path.join(dir, "lda_similarities.gensim"))
+    return ndict, lda_model, lda_similarities, id_map

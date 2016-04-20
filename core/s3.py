@@ -1,8 +1,8 @@
 from django.conf import settings
 import json
-from os import path, listdir
-
+from os import path, listdir, makedirs
 import boto3
+
 
 s3_access_key_id = settings.S3_ACCESS_KEY_ID
 s3_access_key_secret = settings.S3_ACCESS_KEY_SECRET
@@ -66,6 +66,7 @@ def sync_lda_from_s3(local_dir):
     Grab all the files in the lda remote dir and copy them to the local dir
     '''
     object_versions = bucket.objects.filter(Prefix=LDA_FOLDER)
+    makedirs(local_dir, exist_ok=True)
     for obj_version in object_versions:
         local_filename = path.join(local_dir, obj_version.key.split('/')[-1])
         obj_version.Object().download_file(local_filename)

@@ -108,3 +108,6 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# Dynamically Loaded data
+loaded_data/

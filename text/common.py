@@ -17,7 +17,6 @@ import nltk
 from nltk.stem import PorterStemmer
 from gensim import corpora, models, similarities
 from text.stopwords import stopwords
-import logging
 from contexttimer import timer
 
 from core.models import Content, LDAConfiguration
@@ -26,6 +25,8 @@ import pickle
 from os import path
 
 nltk.data.path.append('data/nltk')
+
+LDA_DATA_DIR = 'loaded_data/lda'
 
 
 def tokenize_text_block(block):
@@ -70,7 +71,7 @@ def extract_words_from_content(content):
         return []  # XXX: Some docs have no content
 
 
-@timer(logger=logging.getLogger())
+@timer()
 def make_nbow_and_dict(content_iterator):
     '''
     Given an ordered list of content, create a bow list (index == index from iterator)
@@ -85,7 +86,7 @@ def make_nbow_and_dict(content_iterator):
     return (nbow, ndict, id_map)
 
 
-@timer(logger=logging.getLogger())
+@timer()
 def make_lda_model(nbow, ndict):
     '''
     Build an LDA model from the normalized BoW and the associated corpora.Dictionary
@@ -100,7 +101,7 @@ def make_lda_model(nbow, ndict):
     return lda_model
 
 
-@timer(logger=logging.getLogger())
+@timer()
 def make_lda_similarities(nbow, lda_model):
     '''
     Build a Similarity Matrix
@@ -141,14 +142,17 @@ def make_and_store():
     return temp_dir, nbow, ndict, lda_model, lda_similarities, id_map
 
 
-def retrieve(dir):
+def retrieve():
     '''
     Returns ndict, lda_model, lda_similarities and the id_map given a directory
     '''
-    with open(path.join(dir, "id_map.gensim"), "rb") as id_map_file:
+    with open(path.join(LDA_DATA_DIR, "id_map.gensim"), "rb") as id_map_file:
         id_map = pickle.load(id_map_file)
 
-    ndict = corpora.Dictionary.load(path.join(dir, "dictionary.gensim"))
-    lda_model = models.ldamodel.LdaModel.load(path.join(dir, "lda_model.gensim"))
-    lda_similarities = models.MatrixSimilarity.load(path.join(dir, "lda_similarities.gensim"))
+    ndict = corpora.Dictionary.load(path.join(
+        LDA_DATA_DIR, "dictionary.gensim"))
+    lda_model = models.ldamodel.LdaModel.load(
+        path.join(LDA_DATA_DIR, "lda_model.gensim"))
+    lda_similarities = models.MatrixSimilarity.load(
+        path.join(LDA_DATA_DIR, "lda_similarities.gensim"))
     return ndict, lda_model, lda_similarities, id_map

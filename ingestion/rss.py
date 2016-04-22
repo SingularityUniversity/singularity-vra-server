@@ -35,6 +35,7 @@ def ingest_rss_source(entered_source):
 
     skipped = []
     ingested = []
+    errors = []
     for entry in feed_content.entries:
         if 'link' not in entry:
             logger.info("Ut-oh, we have a problem! {}".format(entry))
@@ -62,9 +63,11 @@ def ingest_rss_source(entered_source):
                     'last_error': "HTTP response {} {}".format(resp.status_code, resp.reason),
                     'last_polled': datetime.now(timezone.utc)
                 })
-                return {'error': "Got response {} {} for {}".format(
-                    resp.status_code, resp.reason, entry.link)}
-
+                errors.append(
+                    {'error': "response {} {}".format(resp.status_code, resp.reason),
+                     'url': entry.link}
+                )
+                continue
             provider_url = response['provider_url']
             content_url = response['url']
 
@@ -97,7 +100,7 @@ def ingest_rss_source(entered_source):
     entered_source.last_polled = datetime.now(timezone.utc)
     entered_source.last_error = None
     entered_source.save()
-    return ({'success': ingested, 'exists': skipped})
+    return ({'success': ingested, 'exists': skipped, 'errors': errors})
 
 
 def refresh_rss():

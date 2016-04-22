@@ -18,6 +18,7 @@ from nltk.stem import PorterStemmer
 from gensim import corpora, models, similarities
 from text.stopwords import stopwords
 from contexttimer import timer
+from threading import Lock
 
 from core.models import Content, LDAConfiguration
 from tempfile import mkdtemp
@@ -27,6 +28,17 @@ from os import path
 nltk.data.path.append('data/nltk')
 
 LDA_DATA_DIR = 'loaded_data/lda'
+
+_NDICT, _LDA_MODEL, _LDA_SIMILARITIES, _ID_MAP = None, None, None, None
+_lda_lock = Lock()
+
+
+def get_lda_data():
+    global _NDICT, _LDA_MODEL, _LDA_SIMILARITIES, _ID_MAP
+    with _lda_lock:
+        if _NDICT is None:
+            _NDICT, _LDA_MODEL, _LDA_SIMILARITIES, _ID_MAP = retrieve()
+    return _NDICT, _LDA_MODEL, _LDA_SIMILARITIES, _ID_MAP
 
 
 def tokenize_text_block(block):
@@ -153,6 +165,6 @@ def retrieve():
         LDA_DATA_DIR, "dictionary.gensim"))
     lda_model = models.ldamodel.LdaModel.load(
         path.join(LDA_DATA_DIR, "lda_model.gensim"))
-    lda_similarities = models.MatrixSimilarity.load(
+    lda_similarities = similarities.MatrixSimilarity.load(
         path.join(LDA_DATA_DIR, "lda_similarities.gensim"))
     return ndict, lda_model, lda_similarities, id_map

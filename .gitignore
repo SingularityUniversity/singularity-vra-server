@@ -1,7 +1,5 @@
 venv/
 .env
-promo_server/staticfiles/
-promosheetpy-d7b1f9a8760e.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -56,6 +54,7 @@ coverage.xml
 # Django stuff:
 *.log
 local_settings.py
+static/
 
 # Sphinx documentation
 docs/_build/
@@ -111,3 +110,6 @@ Temporary Items
 
 # Dynamically Loaded data
 loaded_data/
+
+# UI files
+node_modules/

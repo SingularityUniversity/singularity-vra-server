@@ -45,6 +45,15 @@ if os.environ.get('ENVIRONMENT') != 'production':
 else:
     DEBUG = False
 
+WEBPACK_LOADER = {
+    'DEFAULT': {
+        'CACHE': not DEBUG,
+        'BUNDLE_DIR_NAME': 'bundles/',
+        'STATS_FILE': os.path.join(BASE_DIR, 'assets/webpack-stats.json'),
+        'POLL_INTERVAL': 0.1,
+        'IGNORE': ['.+\.hot-update.js', '.+\.map']
+    }
+}
 
 ALLOWED_HOSTS = []
 
@@ -63,8 +72,10 @@ INSTALLED_APPS = [
     'rest_framework_docs',
     'solo',
     'datetimeutc',
+    'webpack_loader',
     'core',
-    'workers'
+    'workers',
+    'web',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -179,9 +190,9 @@ STATIC_ROOT = 'static'
 #STATIC_URL =  'https://{}/{}/'.format(AWS_S3_CUSTOM_DOMAIN, STATIC_ROOT)
 
 # Extra places for collectstatic to find static files.
-#STATICFILES_DIRS = (
-#    os.path.join(PROJECT_ROOT, 'static'),
-#)
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'assets'),
+)
 
 # Simplified static file serving.
 # https://warehouse.python.org/project/whitenoise/

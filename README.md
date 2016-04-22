@@ -13,7 +13,7 @@ See sample.env for configuration examples
 1. create/enter virtual environment
 2. `$ pip install -r requirements.txt`
 3. `$ npm install`
-4. `$ (cd node_modules/material-ui; npm install; npm run build)`
+4. `$ (cd node_modules/material-ui; npm install)`
 
 ## Running server locally
 To access the Web UI (with hot loading of both python and javascript):

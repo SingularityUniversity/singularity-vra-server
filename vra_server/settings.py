@@ -178,6 +178,12 @@ REST_FRAMEWORK = {
     ),
 }
 
+# XXX: Don't allow for production, but 12 hours is nice for dev
+JWT_AUTH = {
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=60*60*12)
+}
+
+
 # Allow all host headers
 ALLOWED_HOSTS = ['*']
 

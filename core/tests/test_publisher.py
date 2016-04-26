@@ -7,13 +7,13 @@ from core.models import Publisher
 
 class PublisherTests(APITestCase):
     def setUp(self):
-        # when we need to authenticate to access the API
-        #self.user = AdminUserFactory.create()
+        self.user = AdminUserFactory.create()
         pass
 
     def test_create_publisher(self):
         url = reverse('publisher-list')
         data = {'name': 'Test Publisher'}
+        self.client.force_authenticate(user=self.user)
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Publisher.objects.all().count(), 1)
@@ -25,6 +25,7 @@ class PublisherTests(APITestCase):
             SequencePublisherFactory.create()
         self.assertEqual(Publisher.objects.all().count(), 5)
         url = reverse('publisher-list')
+        self.client.force_authenticate(user=self.user)
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.json()), 5)
@@ -36,6 +37,7 @@ class PublisherTests(APITestCase):
             publishers.append(SequencePublisherFactory.create())
         self.assertEqual(Publisher.objects.all().count(), 5)
         url = reverse('publisher-detail', kwargs={'pk': publishers[0].id})
+        self.client.force_authenticate(user=self.user)
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json()['id'], publishers[0].id)

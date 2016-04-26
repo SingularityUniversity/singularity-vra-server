@@ -26,4 +26,5 @@ urlpatterns = [
     url(r'^', include(router.urls)),
     url(r'^', include(publisher_router.urls)),
     url(r'^', include(entered_source_router.urls)),
+    url(r'^similar$', views.LDAView.as_view(), name='similar'),
 ]

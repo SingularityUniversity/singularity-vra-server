@@ -1,5 +1,5 @@
 import logging
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, views
 from core.models import *
 from core.api.v1.serializers import *
 from rest_framework.decorators import detail_route
@@ -16,6 +16,62 @@ class PublisherViewSet(viewsets.ModelViewSet):
     serializer_class = PublisherSerializer
 
 
+class LDAView(views.APIView):
+    permission_classes = []
+    def post(self, request, *args, **kwargs):
+        data = request.data
+        text = data['text']
+        result = get_lda_results(tokenize_text_block(text))
+        return Response(result, status=status.HTTP_200_OK)
+
+    def get(self, request, *args, **kwargs):
+        return Response({"result":[]})
+
+
+def get_lda_results(text_tokens):
+    ndict, lda_model, lda_sims, id_map = get_lda_data()
+    bow = ndict.doc2bow(text_tokens)
+    vec_lda = lda_model[bow]
+
+    def describe_topic(topic_id):
+        result = [(topic, weight) for (topic, weight) in lda_model.show_topic(topic_id)]
+        result.sort(key=lambda x: -x[1])
+        return result
+
+    doc_topics = [(describe_topic(topic), weight) for (topic, weight) in vec_lda]
+    doc_topics.sort(key=lambda x: -x[1])
+
+    matches = lda_sims[vec_lda]
+    ind = matches.argpartition(-10)[-10:]
+    sorted_ind = ind[np.argsort(matches[ind])]
+    sorted_matches = matches[sorted_ind[::-1]]  # ::-1 returns a reversed view/stride
+    top_matches = list(zip(sorted_ind[::-1], sorted_matches))
+    results = []
+
+    for match in top_matches:
+
+        match_id = match[0]
+        orig_id = id_map[match_id]
+        match_content = Content.objects.filter(pk=orig_id).first()
+        match_words = extract_words_from_content(match_content)
+        match_bow = ndict.doc2bow(match_words)
+        match_terms = lda_model[match_bow]
+        match_lda_topics = [(describe_topic(key), weight) for (key, weight) in match_terms]
+        match_lda_topics.sort(key=lambda x: -x[1])
+        new_result = {
+            'id': orig_id,
+            'title': match_content.extract['title'],
+            'url': match_content.url,
+            'topics': match_lda_topics
+        }
+        results.append(new_result)
+    result = {
+        'results': results,
+        'query_topics': doc_topics
+    }
+    return result
+
+
 class ContentViewSet(viewsets.ModelViewSet):
     queryset = Content.objects.all()
     serializer_class = ContentSerializer
@@ -23,9 +79,9 @@ class ContentViewSet(viewsets.ModelViewSet):
     @detail_route(methods=['get'])
     def similar(self, request, pk=None):
         content = get_object_or_404(Content, pk=int(pk))
-
         # XXX: Probably the REST handler shouldn't have this much in it, refactor me please
         ndict, lda_model, lda_sims, id_map = get_lda_data()
+
         # XXX: This is lousy, we really need a bidirectional (bijective)
         # structure for mapping lda ids to and *from* content object ids
         doc_lda_id = None
@@ -40,45 +96,8 @@ class ContentViewSet(viewsets.ModelViewSet):
         # If we stored the bow in s3 as part of the rest of the data, we wouldn't
         # have to extact the bow from the content we have, but not much extra work
         # and its generalizable to any new content, in addition to existing content
-        bow = ndict.doc2bow(extract_words_from_content(content))
-        vec_lda = lda_model[bow]
-
-        def describe_topic(topic_id):
-            result = [(topic, weight) for (topic, weight) in lda_model.show_topic(topic_id)]
-            result.sort(key=lambda x: -x[1])
-            return result
-
-        doc_topics = [(describe_topic(topic), weight) for (topic, weight) in vec_lda]
-        doc_topics.sort(key=lambda x: -x[1])
-
-        matches = lda_sims[vec_lda]
-        ind = matches.argpartition(-10)[-10:]
-        sorted_ind = ind[np.argsort(matches[ind])]
-        sorted_matches = matches[sorted_ind[::-1]]  # ::-1 returns a reversed view/stride
-        top_matches = list(zip(sorted_ind[::-1], sorted_matches))
-        results = []
-
-        for match in top_matches:
-
-            match_id = match[0]
-            orig_id = id_map[match_id]
-            match_content = Content.objects.filter(pk=orig_id).first()
-            match_words = extract_words_from_content(match_content)
-            match_bow = ndict.doc2bow(match_words)
-            match_terms = lda_model[match_bow]
-            match_lda_topics = [(describe_topic(key), weight) for (key, weight) in match_terms]
-            match_lda_topics.sort(key=lambda x: -x[1])
-            new_result = {
-                'id': orig_id,
-                'title': match_content.extract['title'],
-                'url': match_content.url,
-                'topics': match_lda_topics
-            }
-            results.append(new_result)
-        result = {
-            'results': results,
-            'query_topics': doc_topics
-        }
+        text_tokens = extract_words_from_content(content)
+        result = get_lda_results(text_tokens)
 
         return Response(result, status=status.HTTP_200_OK)
 

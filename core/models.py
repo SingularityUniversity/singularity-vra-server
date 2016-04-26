@@ -15,7 +15,6 @@ class Publisher(models.Model):
     '''
     name = models.CharField(
         max_length=256,
-        unique=True
     )
 
 

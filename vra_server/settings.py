@@ -14,6 +14,19 @@ import os
 import dj_database_url
 import datetime
 
+import logging
+
+if os.environ.get('LOG') == "INFO":
+    logging.basicConfig(
+        level = logging.INFO,
+        format = '%(asctime)s %(levelname)s %(message)s',
+    )
+elif os.environ.get('LOG') == "DEBUG":
+    logging.basicConfig(
+        level = logging.DEBUG,
+        format = '%(asctime)s %(levelname)s %(message)s',
+    )
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 

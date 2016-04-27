@@ -17,7 +17,7 @@ def get_client():
     return _es
 
 
-def index_document(document, doc_id, doc_type="content"):
+def index_document(document, doc_id, doc_type=settings.ELASTICSEARCH_TYPE):
     client = get_client()
 
     index = settings.ELASTICSEARCH_INDEX

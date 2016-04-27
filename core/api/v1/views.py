@@ -1,7 +1,9 @@
+from django.conf import settings
 import logging
 from rest_framework import viewsets, status, views
 from core.models import *
 from core.api.v1.serializers import *
+from core.elasticsearch import get_client
 from rest_framework.decorators import detail_route
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
@@ -16,6 +18,28 @@ class PublisherViewSet(viewsets.ModelViewSet):
     serializer_class = PublisherSerializer
 
 
+class SearchView(views.APIView):
+    def get(self, request, *args, **kwargs):
+        query_params = request.query_params
+        client = get_client()
+        index = settings.ELASTICSEARCH_INDEX
+        if index is None:
+            raise ValueError("settings.ELASTICSEARCH_INDEX is None")
+
+        # These should only have single values
+        param_dict = {key:query_params[key][0] for key in query_params}
+
+        for key in ('_source_include', '_source_exclude'):
+            if key in param_dict:
+                param_dict[key]=param_dict[key].split(',')
+
+        param_dict['index'] = index
+        param_dict['doc_type'] = settings.ELASTICSEARCH_TYPE
+        results = client.search(**param_dict)
+
+        return Response(results, status=status.HTTP_200_OK)
+
+
 class LDAView(views.APIView):
     permission_classes = []
     def post(self, request, *args, **kwargs):
@@ -23,9 +47,6 @@ class LDAView(views.APIView):
         text = data['text']
         result = get_lda_results(tokenize_text_block(text))
         return Response(result, status=status.HTTP_200_OK)
-
-    def get(self, request, *args, **kwargs):
-        return Response({"result":[]})
 
 
 def get_lda_results(text_tokens):

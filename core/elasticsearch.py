@@ -44,4 +44,9 @@ def bulk_index_documents(documents, doc_type=settings.ELASTICSEARCH_TYPE):
     result = helpers.bulk(client, actions)
     return result
 
-
+def delete_index():
+    index = settings.ELASTICSEARCH_INDEX
+    if index is None:
+        raise ValueError("settings.ELASTICSEARCH_INDEX is None")
+    client = get_client()
+    client.indices.delete(index=index, ignore=404)

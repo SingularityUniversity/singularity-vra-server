@@ -68,7 +68,7 @@ def tokenize_text_block(block):
     return tokenized_text
 
 
-def extract_words_from_content(content):
+def extract_words_from_content(content, with_sentences=False):
     raw_html = content.extract['content']
 
     if (raw_html is not None):
@@ -76,7 +76,12 @@ def extract_words_from_content(content):
         for unwanted_element in soup.findAll(['script', 'style', 'img', 'embed']):
             unwanted_element.decompose()
         text = soup.get_text()
-        result = tokenize_text_block(text)
+
+        if with_sentences:
+            sentences = nltk.sent_tokenize(text)
+            result = (sentences, [tokenize_text_block(sentence) for sentence in sentences])
+        else:
+            result = tokenize_text_block(text)
         assert result is not None, "Got None from {}".format(result)
         return result
     else:

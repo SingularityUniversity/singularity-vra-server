@@ -8,6 +8,7 @@ from rest_framework.decorators import detail_route
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from text.common import get_lda_data, tokenize_text_block, extract_words_from_content
+from text.summary import get_summary_sentences
 import numpy as np
 
 logger = logging.getLogger(__name__)
@@ -121,6 +122,18 @@ class ContentViewSet(viewsets.ModelViewSet):
         result = get_lda_results(text_tokens)
 
         return Response(result, status=status.HTTP_200_OK)
+
+    @detail_route(methods=['get'])
+    def summary(self, request, pk=None):
+        content = get_object_or_404(Content, pk=int(pk))
+        count = request.query_params.get('count')
+        if count is None:
+            count = 5
+        else:
+            count = int(count)
+        return Response(
+            {'summary': get_summary_sentences(content, count)},
+            status=status.HTTP_200_OK)
 
 
 class EnteredSourceViewSet(viewsets.ModelViewSet):

@@ -40,10 +40,12 @@ class EnteredSource(models.Model):
     TYPE_RSS = 1
     TYPE_PAGE = 2
     TYPE_ARCHIVED_RSS = 3
+    TYPE_IMPORTED_PAGE = 4
     CHOICES_TYPE = (
         (TYPE_RSS, TYPE_RSS),
         (TYPE_PAGE, TYPE_PAGE),
-        (TYPE_ARCHIVED_RSS, TYPE_ARCHIVED_RSS)
+        (TYPE_ARCHIVED_RSS, TYPE_ARCHIVED_RSS),
+        (TYPE_IMPORTED_PAGE, TYPE_IMPORTED_PAGE)
     )
     created = DateTimeUTCField(
         auto_now_add=True

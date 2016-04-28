@@ -34,7 +34,9 @@ def ingest_source(entered_source):
             'last_polled': datetime.now(timezone.utc)
         })
         return {"error": "Got response {} {}".format(resp.status_code, resp.reason)}
+    return _create_content(response, entered_source)
 
+def _create_content(response, entered_source, complete_processing=True):
     provider_url = response['provider_url']
     content_url = response['url']
 
@@ -56,11 +58,31 @@ def ingest_source(entered_source):
                                      url=content_url,
                                      extract=response,
                                      publisher=publisher)
-    content.add_to_search_index()
-    content.add_to_s3()
+    if complete_processing:
+        content.add_to_search_index()
+        content.add_to_s3()
     entered_source.save(update_fields={
         'last_error': None,
         'last_polled': datetime.now(timezone.utc)
     })
 
     return({'success': [IngestionItem(content.id, content_url)]})
+
+def import_source(import_data, complete_processing=False):
+    '''
+    Probably only use this for testing & dev
+    Load content from file content that are pushed to s3 by
+    Content.add_to_s3
+    '''
+
+    response = import_data['extract']
+    content_url = response['url']
+    existing_content = Content.objects.filter(url=content_url).first()
+    if existing_content is not None:
+        return {'exists': [IngestionItem(existing_content.id, content_url)]}
+
+    entered_source, _ = EnteredSource.objects.get_or_create(
+        url = content_url,
+        source_type = EnteredSource.TYPE_IMPORTED_PAGE)
+
+    return _create_content(response, entered_source, complete_processing=complete_processing)

@@ -11,30 +11,37 @@ import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group'
 import TextField from 'material-ui/lib/text-field';
 
 
-const VraAppBar = () => (
-  <AppBar
-    title = "Virtual Research Assistant"
-    showMenuIconButton = {false}
-    iconElementRight = {
-      <IconMenu
-        iconButtonElement={
-          <IconButton><MoreVertIcon /></IconButton>
-        }
-        targetOrigin={{horizontal: 'right', vertical: 'top'}}
-        anchorOrigin={{horizontal: 'right', vertical: 'top'}}
-      >
-        <MenuItem primaryText="Add RSS feed" />
-        <MenuItem primaryText="Add Web page" />
-      </IconMenu>
-    } >
-    <TextField
-      hintText = "Enter search terms"
-      style = {{
-        color: 'white',
-      }}
-    />
-  </AppBar>
-);
+//const VraAppBar = () => (
+export default React.createClass({
+  handleTouchTap(e) {
+  },
 
-export default VraAppBar
+  render() {
+    return (
+      <AppBar
+        title = "Virtual Research Assistant"
+        showMenuIconButton = {true}
+        onLeftIconButtonTouchTap = {this.handleTouchTap}
+        iconElementRight = {
+          <IconMenu
+            iconButtonElement={
+              <IconButton><MoreVertIcon /></IconButton>
+            }
+          targetOrigin={{horizontal: 'right', vertical: 'top'}}
+          anchorOrigin={{horizontal: 'right', vertical: 'top'}} >
+            <MenuItem primaryText="Add RSS feed" />
+            <MenuItem primaryText="Add Web page" />
+            </IconMenu>
+        } >
+        <TextField
+        hintText = "Enter search terms"
+        style = {{
+          color: 'white',
+        }} />
+      </AppBar>
+    );
+  }
+});
+
+//export default VraAppBar
 

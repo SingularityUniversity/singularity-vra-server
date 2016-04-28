@@ -25,6 +25,10 @@ var config = {
         include: ASSETS_DIR,
         exclude: /node_modules/,
         loaders: ['react-hot', 'babel']
+      },
+      {
+        test: /vendor\/.+\.(jsx|js)$/,
+        loader: 'imports?jQuery=jquery,$=jquery,this=>window'
       }
     ]
   },

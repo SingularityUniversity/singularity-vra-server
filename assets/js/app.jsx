@@ -9,7 +9,8 @@ import Toolbar from 'material-ui/lib/toolbar/toolbar';
 import ToolbarTitle from 'material-ui/lib/toolbar/toolbar-title';
 import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group'
 
-import VraAppBar from './components/vra-app-bar'
+import VraNavContainer from './components/vra-nav-container';
+import VraContentBox from './components/vra-content-box';
 
 const muiTheme = getMuiTheme({
   palette: {
@@ -28,9 +29,10 @@ class App extends React.Component {
     };
 
     return (
-      <MuiThemeProvider muiTheme={muiTheme}>
-        <VraAppBar />
-      </MuiThemeProvider>
+      <div>
+        <VraNavContainer />
+        <VraContentBox />
+      </div>
     );
   }
 

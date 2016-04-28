@@ -23,4 +23,4 @@ class Command(BaseCommand):
                 bulk_index_documents(chunk)
                 pbar.update(len(chunk))
 
-        self.stdout.write(self.style.SUCCESS("Uploaded stuff"))
+        self.stdout.write(self.style.SUCCESS("Recreated elasticsearch index"))

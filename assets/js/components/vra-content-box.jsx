@@ -1,5 +1,10 @@
 import React from 'react';
 import $ from 'jquery';
+import Toolbar from 'material-ui/lib/toolbar/toolbar';
+import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group';
+import ToolbarTitle from 'material-ui/lib/toolbar/toolbar-title';
+import IconButton from 'material-ui/lib/icon-button';
+import ActionCached from 'material-ui/lib/svg-icons/action/cached'
 import VraContentList from './vra-content-list';
 
 
@@ -30,7 +35,16 @@ var VraContentBox = React.createClass({
   render: function() {
     return (
       <div>
-        <h1>Articles</h1>
+        <Toolbar>
+          <ToolbarGroup float='left'>
+            <ToolbarTitle text='Articles' />
+          </ToolbarGroup>
+          <ToolbarGroup float='right'>
+            <IconButton tooltip='Reload articles'>
+              <ActionCached />
+            </IconButton>
+          </ToolbarGroup>
+        </Toolbar>
         <VraContentList data={this.state.data} />
       </div>
     );

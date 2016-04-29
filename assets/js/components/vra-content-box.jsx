@@ -56,14 +56,17 @@ var VraContentBox = React.createClass({
           </ToolbarGroup>
         </Toolbar>
         <VraContentList data={this.state.data} />
-        <nav id='content-pagination'>
+        <nav id='react-paginate'>
           <ReactPaginate clickCallback={this.handlePageClick}
                          previousLabel={<span class="prev">Previous</span>}
                          nextLabel={<span class="prev">Next</span>}
                          breakLabel={<span class="ellipsis">...</span>}
                          pageNum={this.state.pageNum}
                          marginPagesDisplayed={2}
-                         pageRangeDisplayed={5} />
+                         pageRangeDisplayed={5} 
+                         containerClassName={"pagination"}
+                         subContainerClassName={"pages pagination"}
+                         activeClassName={"active"} />
         </nav>
       </div>
     );

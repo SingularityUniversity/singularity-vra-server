@@ -5,6 +5,8 @@ import TableRow from 'material-ui/lib/table/table-row';
 import TableHeader from 'material-ui/lib/table/table-header';
 import TableRowColumn from 'material-ui/lib/table/table-row-column';
 import TableBody from 'material-ui/lib/table/table-body';
+import IconButton from 'material-ui/lib/icon-button';
+import ActionDescription from 'material-ui/lib/svg-icons/action/description'
 import Moment from 'moment';
 
 
@@ -22,11 +24,21 @@ var VraContentList = React.createClass({
 
       return (
         <TableRow>
-          <TableRowColumn><div style={{width:'100px', height:'100px'}}><img src={imageURL} style={{width:'100%', height:'auto'}} /></div></TableRowColumn>
-          <TableRowColumn><a href={content.extract['original_url']}>{content.extract['title']}</a></TableRowColumn>
+          <TableRowColumn>
+            <div style={{width:'100px', height:'100px'}}>
+              <img src={imageURL} style={{width:'100%', height:'auto'}} />
+            </div>
+          </TableRowColumn>
+          <TableRowColumn>
+            <a href={content.extract['original_url']}>{content.extract['title']}</a>
+          </TableRowColumn>
           <TableRowColumn>{published}</TableRowColumn>
+          <TableRowColumn>
+            <IconButton tooltip='Summary'>
+              <ActionDescription />
+            </IconButton>
+          </TableRowColumn>
         </TableRow>
-
       );
     });
     return (
@@ -37,6 +49,7 @@ var VraContentList = React.createClass({
               <TableHeaderColumn></TableHeaderColumn>
               <TableHeaderColumn>Article</TableHeaderColumn>
               <TableHeaderColumn>Published Date</TableHeaderColumn>
+              <TableHeaderColumn></TableHeaderColumn>
             </TableRow>
           </TableHeader>
           <TableBody>

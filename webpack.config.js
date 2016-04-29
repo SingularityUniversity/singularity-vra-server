@@ -1,6 +1,8 @@
 var webpack = require('webpack');
 var path = require('path');
 var BundleTracker = require('webpack-bundle-tracker')
+var autoprefixer = require('autoprefixer');
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 var ASSETS_DIR = path.resolve(__dirname, 'assets/');
 var BUNDLE_DIR = ASSETS_DIR + '/bundles/';
@@ -14,7 +16,7 @@ var config = {
   output: {
     path: BUNDLE_DIR,
     filename: '[name]-[hash].js',
-    publicPath: 'http://localhost:3000/assets/bundles',
+    publicPath: 'http://localhost:3000/assets/bundles/',
   },
   module: {
     context: __dirname,
@@ -24,7 +26,11 @@ var config = {
         test: /\.jsx?$/,
         include: ASSETS_DIR,
         exclude: /node_modules/,
-        loaders: ['react-hot', 'babel']
+        loaders: ['react-hot', 'babel?'+JSON.stringify({presets: ["es2016", "es2015", "stage-0", "react"]})]
+      },
+      {
+        test: /(\.scss|\.sass| \.css)$/,
+        loader: ExtractTextPlugin.extract('style', 'css?sourceMap&importLoaders=1!postcss-loader!sass?sourceMap'),
       },
       {
         test: /vendor\/.+\.(jsx|js)$/,
@@ -34,20 +40,25 @@ var config = {
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
+    new ExtractTextPlugin('[name].css', { allChunks: true }),
     new webpack.NoErrorsPlugin(),
     new BundleTracker(
       {
         path: ASSETS_DIR,
         filename: '/webpack-stats.json'
       }
-    )
+    ),
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify('development')
+    })
   ],
+  postcss: [autoprefixer],
   resolve: {
     modulesDirectories: ['node_modules'],
     alias: {
       'react': path.join(__dirname, 'node_modules', 'react')
     },
-    extensions: ['', '.js', '.jsx']
+    extensions: ['', '.js', '.jsx', '.sass', '.scss', '.css']
   }
 };
 

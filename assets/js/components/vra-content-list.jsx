@@ -23,7 +23,7 @@ var VraContentList = React.createClass({
       return (
         <TableRow>
           <TableRowColumn><div style={{width:'100px', height:'100px'}}><img src={imageURL} style={{width:'100%', height:'auto'}} /></div></TableRowColumn>
-          <TableRowColumn>{content.extract['title']}</TableRowColumn>
+          <TableRowColumn><a href={content.extract['original_url']}>{content.extract['title']}</a></TableRowColumn>
           <TableRowColumn>{published}</TableRowColumn>
         </TableRow>
 

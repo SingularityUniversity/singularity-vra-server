@@ -32,7 +32,7 @@ var VraContentList = React.createClass({
           <TableRowColumn>
             <a href={content.extract['original_url']}>{content.extract['title']}</a>
           </TableRowColumn>
-          <TableRowColumn>{published}</TableRowColumn>
+          <TableRowColumn style={{'width':'125'}}>{published}</TableRowColumn>
           <TableRowColumn>
             <IconButton tooltip='Summary'>
               <ActionDescription />
@@ -46,9 +46,9 @@ var VraContentList = React.createClass({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHeaderColumn></TableHeaderColumn>
+              <TableHeaderColumn style={{'width':'100px'}}></TableHeaderColumn>
               <TableHeaderColumn>Article</TableHeaderColumn>
-              <TableHeaderColumn>Published Date</TableHeaderColumn>
+              <TableHeaderColumn style={{'width':'125'}}>Published Date</TableHeaderColumn>
               <TableHeaderColumn></TableHeaderColumn>
             </TableRow>
           </TableHeader>

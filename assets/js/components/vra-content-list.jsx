@@ -25,14 +25,14 @@ var VraContentList = React.createClass({
       return (
         <TableRow>
           <TableRowColumn style={{'width':'100px'}}>
-            <div style={{display:'table-cell', 'vertical-align':'middle', 'text-align':'center', width:'100px', height:'100px'}}>
+            <div style={{display:'table-cell', verticalAlign:'middle', textAlign:'center', width:'100px', height:'100px'}}>
               <img src={imageURL} style={{width:'100%', height:'auto'}} />
             </div>
           </TableRowColumn>
           <TableRowColumn>
             <a href={content.extract['original_url']}>{content.extract['title']}</a>
           </TableRowColumn>
-          <TableRowColumn style={{'width':'125'}}>{published}</TableRowColumn>
+          <TableRowColumn style={{width:'125px'}}>{published}</TableRowColumn>
           <TableRowColumn>
             <IconButton tooltip='Summary'>
               <ActionDescription />
@@ -46,9 +46,9 @@ var VraContentList = React.createClass({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHeaderColumn style={{'width':'100px'}}></TableHeaderColumn>
+              <TableHeaderColumn style={{width:'100px'}}></TableHeaderColumn>
               <TableHeaderColumn>Article</TableHeaderColumn>
-              <TableHeaderColumn style={{'width':'125'}}>Published Date</TableHeaderColumn>
+              <TableHeaderColumn style={{width:'125px'}}>Published Date</TableHeaderColumn>
               <TableHeaderColumn></TableHeaderColumn>
             </TableRow>
           </TableHeader>

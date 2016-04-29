@@ -24,8 +24,8 @@ var VraContentList = React.createClass({
 
       return (
         <TableRow>
-          <TableRowColumn>
-            <div style={{width:'100px', height:'100px'}}>
+          <TableRowColumn style={{'width':'100px'}}>
+            <div style={{display:'table-cell', 'vertical-align':'middle', 'text-align':'center', width:'100px', height:'100px'}}>
               <img src={imageURL} style={{width:'100%', height:'auto'}} />
             </div>
           </TableRowColumn>

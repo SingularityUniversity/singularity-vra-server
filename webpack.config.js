@@ -2,7 +2,6 @@ var webpack = require('webpack');
 var path = require('path');
 var BundleTracker = require('webpack-bundle-tracker')
 var autoprefixer = require('autoprefixer');
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 var ASSETS_DIR = path.resolve(__dirname, 'assets/');
 var BUNDLE_DIR = ASSETS_DIR + '/bundles/';
@@ -30,7 +29,7 @@ var config = {
       },
       {
         test: /(\.scss|\.sass| \.css)$/,
-        loader: ExtractTextPlugin.extract('style', 'css?sourceMap&importLoaders=1!postcss-loader!sass?sourceMap'),
+            loader: "style-loader!css-loader?sourceMap&importLoaders=1!postcss-loader!sass?sourceMap"
       },
       {
         test: /vendor\/.+\.(jsx|js)$/,
@@ -40,7 +39,6 @@ var config = {
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
-    new ExtractTextPlugin('[name].css', { allChunks: true }),
     new webpack.NoErrorsPlugin(),
     new BundleTracker(
       {

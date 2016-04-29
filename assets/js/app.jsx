@@ -31,7 +31,7 @@ class App extends React.Component {
     return (
       <div>
         <VraNavContainer />
-        <VraContentBox />
+        <VraContentBox url={'/api/v1/content'} perPage={10}/>
       </div>
     );
   }

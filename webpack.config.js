@@ -7,6 +7,7 @@ var ASSETS_DIR = path.resolve(__dirname, 'assets/');
 var BUNDLE_DIR = ASSETS_DIR + '/bundles/';
 
 var config = {
+  devtool: 'source-map',
   entry: [
     'webpack-dev-server/client?http://localhost:3000',
     'webpack/hot/only-dev-server',

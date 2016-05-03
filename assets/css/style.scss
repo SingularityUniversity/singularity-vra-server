@@ -2,6 +2,13 @@ body {
     background-color: #FFFF00;
 }
 
+.centered-toolbar-group {
+    float: none !important;
+    width: 300px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
 #react-paginate {
     text-align: center;
 }

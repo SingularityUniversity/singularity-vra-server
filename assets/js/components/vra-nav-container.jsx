@@ -8,7 +8,6 @@ import AppBar from 'material-ui/lib/app-bar';
 import Toolbar from 'material-ui/lib/toolbar/toolbar';
 import ToolbarTitle from 'material-ui/lib/toolbar/toolbar-title';
 import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group'
-import TextField from 'material-ui/lib/text-field';
 import LeftNav from 'material-ui/lib/left-nav';
 import RaisedButton from 'material-ui/lib/raised-button';
 
@@ -37,9 +36,8 @@ export default React.createClass({
       <div>
         <AppBar
           title = "Virtual Research Assistant"
-          showMenuIconButton = {true}
-          onLeftIconButtonTouchTap = {this._handleTouchTap}
-          /*
+          showMenuIconButton = {false}
+          //style={{position: 'fixed'}}
           iconElementRight = {
             <IconMenu
               iconButtonElement={
@@ -47,22 +45,16 @@ export default React.createClass({
               }
             targetOrigin={{horizontal: 'right', vertical: 'top'}}
             anchorOrigin={{horizontal: 'right', vertical: 'top'}} >
-              <MenuItem primaryText="Add RSS feed" />
-              <MenuItem primaryText="Add Web page" />
+              <MenuItem primaryText="Menu item 1" />
+              <MenuItem primaryText="Menu item 2" />
               </IconMenu>
           } >
-          <TextField
-          hintText = "Enter search terms"
-          style = {{
-            color: 'white',
-          }} */ >
-          <TextField
-            hintText='Enter search terms' />
         </AppBar>
         <LeftNav
           ref='leftNav'
-          style={{'top': '80px'}}
-          open={false} >
+          style={{'top': '120px'}}
+          open={true}
+          docked={true} >
             <MenuItem onTouchTap={this._articlesTouchTap}>Articles</MenuItem>
             <MenuItem onTouchTap={this._sourcesTouchTap}>Sources</MenuItem>
             <MenuItem onTouchTap={this._publishersTouchTap}>Publishers</MenuItem>

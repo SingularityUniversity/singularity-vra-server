@@ -12,12 +12,16 @@ import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group'
 import VraNavContainer from './components/vra-nav-container';
 import VraContentBox from './components/vra-content-box';
 
+import Master from './components/master';
+
+/*
 const muiTheme = getMuiTheme({
   palette: {
     accent1Color: lightBlue300,
   },
 });
 
+*/
 class App extends React.Component {
   constructor(props, context) {
     super(props, context);
@@ -30,8 +34,11 @@ class App extends React.Component {
 
     return (
       <div>
+        <Master />
+        {/*
         <VraNavContainer />
         <VraContentBox url={'/api/v1/content'} perPage={10}/>
+        */}
       </div>
     );
   }

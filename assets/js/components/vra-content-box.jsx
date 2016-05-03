@@ -5,6 +5,7 @@ import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group';
 import ToolbarTitle from 'material-ui/lib/toolbar/toolbar-title';
 import IconButton from 'material-ui/lib/icon-button';
 import ActionCached from 'material-ui/lib/svg-icons/action/cached';
+import TextField from 'material-ui/lib/text-field';
 import ReactPaginate from 'react-paginate';
 import VraContentList from './vra-content-list';
 
@@ -54,8 +55,15 @@ var VraContentBox = React.createClass({
               <ActionCached />
             </IconButton>
           </ToolbarGroup>
+          <ToolbarGroup className="centered-toolbar-group" >
+            <TextField 
+              hintText='Enter search terms' 
+              fullWidth={true} />
+          </ToolbarGroup>
         </Toolbar>
+
         <VraContentList data={this.state.data} />
+        {/*
         <nav id='react-paginate'>
           <ReactPaginate clickCallback={this.handlePageClick}
                          previousLabel={<span class="prev">Previous</span>}
@@ -68,6 +76,7 @@ var VraContentBox = React.createClass({
                          subContainerClassName={"pages pagination"}
                          activeClassName={"active"} />
         </nav>
+        */}
       </div>
     );
   }

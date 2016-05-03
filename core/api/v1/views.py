@@ -45,8 +45,17 @@ class LDAView(views.APIView):
     permission_classes = []
     def post(self, request, *args, **kwargs):
         data = request.data
-        text = data['text']
-        result = get_lda_results(tokenize_text_block(text))
+        if 'text' in data:
+            text = data['text']
+            result = get_lda_results(tokenize_text_block(text))
+        elif 'ids' in data:
+            ids = data['ids']
+            words = []
+            for pk in ids:
+                content = get_object_or_404(Content, pk=int(pk))
+                words.extend(extract_words_from_content(content))
+            result = get_lda_results(words)
+
         return Response(result, status=status.HTTP_200_OK)
 
 

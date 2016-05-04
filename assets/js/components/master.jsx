@@ -3,6 +3,8 @@ import $ from 'jquery';
 import AppBar from 'material-ui/lib/app-bar';
 import IconButton from 'material-ui/lib/icon-button';
 import {Spacing} from 'material-ui/lib/styles';
+import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group';
+import TextField from 'material-ui/lib/text-field';
 import {
   StylePropable,
   StyleResizable,
@@ -71,21 +73,19 @@ const Master = React.createClass({
     this.loadDummyContent();
   },
 
-  // XXX: Just temporary until we hook up the search functionality (unless
-  // we want to initially populate the left nav with a list of articles)
+  // XXX: figure out what search we want for initial data
   loadObjectsFromServer: function() {
     $.ajax({
-      url: '/api/v1/content',
-      data: {limit: 10, offset: 0},
-      dataType: 'json',
-      cache: false,
-      success: function(data) {
-        this.setState({data: data['results']});
-      }.bind(this),
-      error: function(xhr, status, err) {
+      url: '/api/v1/search',
+      data: 'q=space',
+      success: (data) => {
+        console.log('initial search on: space');
+        this.setState({data: data.hits.hits});
+      },
+      error: (xhr, status, err) => {
         // XXX: display error popup or something here
         console.log(xhr, status);
-      }.bind(this)
+      }
     });
   },
 
@@ -156,6 +156,21 @@ const Master = React.createClass({
     });
   },
 
+  handleSearch(e) {
+    const searchTerms = e.currentTarget.value;
+    $.ajax({
+      url: '/api/v1/search',
+      data: `q=${searchTerms}`,
+      success: (data, textStatus, xhr) => {
+        console.log('search on: ', searchTerms);
+        this.setState({data: data.hits.hits});
+      },
+      error: (xhr, textStatus, errorThrown) => {
+        console.log(`search error: ${textStatus}`);
+      }
+    });
+  },
+
   render() {
     const {
       history,
@@ -188,8 +203,11 @@ const Master = React.createClass({
           title={title}
           zDepth={0}
           style={styles.appBar}
-          showMenuIconButton={showMenuIconButton}
-        />
+          showMenuIconButton={showMenuIconButton} >
+          <ToolbarGroup float='right'>
+            <TextField hintText='Search' onEnterKeyDown={this.handleSearch} />
+          </ToolbarGroup>
+        </AppBar>
         <AppLeftNav
           style={styles.leftNav}
           history={history}
@@ -197,8 +215,7 @@ const Master = React.createClass({
           docked={docked}
           onRequestChangeList={this.handleRequestChangeList}
           open={leftNavOpen}
-          data={this.state.data}
-        />
+          data={this.state.data} />
         <FullWidthSection style={styles.footer}>
           <ContentDetail content={this.state.content}/> 
           <p style={this.prepareStyles(styles.p)}>

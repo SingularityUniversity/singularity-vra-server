@@ -10,6 +10,7 @@ import {
   Typography,
 } from 'material-ui/lib/styles';
 import {StylePropable} from 'material-ui/lib/mixins';
+import Moment from 'moment';
 
 let SelectableList = SelectableContainerEnhance(List);
 
@@ -102,8 +103,19 @@ const AppLeftNav = React.createClass({
     const styles = this.getStyles();
 
     let contentItems = this.props.data.map(content => {
+      let published = '';
+      let publisher = '';
+      if (content.extract['published']) {
+        published = Moment(parseInt(content.extract['published'])).format('YYYY-MM-DD');
+      }
+      if (content.extract['provider_name']) {
+        publisher = content.extract['provider_name'];
+      }
       return (
-        <ListItem value={content.id} primaryText={content.extract['title']} />
+        <ListItem 
+          value={content.id} 
+          primaryText={content.extract['title']}
+          secondaryText={`${publisher} ${published}`} />
       );
     });
 

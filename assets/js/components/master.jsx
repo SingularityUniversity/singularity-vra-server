@@ -51,26 +51,10 @@ const Master = React.createClass({
     };
   },
 
-  loadDummyContent() {
-      $.ajax({
-      url: '/api/v1/content/402',
-      dataType: 'json',
-      cache: false,
-      success: function(data) {
-        this.setState({content: data});
-      }.bind(this),
-      error: function(xhr, status, err) {
-        // XXX: display error popup or something here
-        console.log(xhr, status);
-      }.bind(this)
-    });
-  },
-
   componentWillMount() {
     this.setState({
       muiTheme: this.state.muiTheme,
     });
-    this.loadDummyContent();
   },
 
   // XXX: figure out what search we want for initial data
@@ -81,6 +65,7 @@ const Master = React.createClass({
       success: (data) => {
         console.log('initial search on: space');
         this.setState({data: data.hits.hits});
+        this.setState({content: data.hits.hits[0]._source.fields});
       },
       error: (xhr, status, err) => {
         // XXX: display error popup or something here
@@ -166,6 +151,7 @@ const Master = React.createClass({
       success: (data, textStatus, xhr) => {
         console.log('search on: ', searchTerms);
         this.setState({data: data.hits.hits});
+        this.setState({content: data.hits.hits[0]._source.fields});
       },
       error: (xhr, textStatus, errorThrown) => {
         console.log(`search error: ${textStatus}`);

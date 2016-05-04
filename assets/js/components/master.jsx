@@ -15,6 +15,7 @@ import {
 
 import AppLeftNav from './app-left-nav';
 import FullWidthSection from './full-width-section';
+import ContentDetail from './content-detail';
 
 const Master = React.createClass({
 
@@ -38,6 +39,7 @@ const Master = React.createClass({
       muiTheme: getMuiTheme(),
       leftNavOpen: false,
       data: [],
+      content: null 
     };
   },
 
@@ -47,10 +49,26 @@ const Master = React.createClass({
     };
   },
 
+  loadDummyContent() {
+      $.ajax({
+      url: '/api/v1/content/402',
+      dataType: 'json',
+      cache: false,
+      success: function(data) {
+        this.setState({content: data});
+      }.bind(this),
+      error: function(xhr, status, err) {
+        // XXX: display error popup or something here
+        console.log(xhr, status);
+      }.bind(this)
+    });
+  },
+
   componentWillMount() {
     this.setState({
       muiTheme: this.state.muiTheme,
     });
+    this.loadDummyContent();
   },
 
   // XXX: Just temporary until we hook up the search functionality (unless
@@ -147,15 +165,22 @@ const Master = React.createClass({
 
     const styles = this.getStyles();
     const title = 'Virtual Research Assistant';
-    const docked = true;
-    const showMenuIconButton = false;
-    const leftNavOpen = true;
+    let docked = true;
+    let showMenuIconButton = false;
+    let leftNavOpen = true;
 
-    styles.leftNav = {
-      zIndex: styles.appBar.zIndex - 1,
-    };
-    styles.root.paddingLeft = 256;
-    styles.footer.paddingLeft = 256;
+
+    if (this.isDeviceSize(StyleResizable.statics.Sizes.LARGE) && title !== '') {
+      docked = true;
+      leftNavOpen = true;
+      showMenuIconButton = false;
+
+      styles.leftNav = {
+        zIndex: styles.appBar.zIndex - 1,
+      };
+      styles.root.paddingLeft = 256 + 24;
+      styles.footer.paddingLeft = 256 + 24;
+    }
 
     return (
       <div>
@@ -175,6 +200,7 @@ const Master = React.createClass({
           data={this.state.data}
         />
         <FullWidthSection style={styles.footer}>
+          <ContentDetail content={this.state.content}/> 
           <p style={this.prepareStyles(styles.p)}>
           </p>
         </FullWidthSection>

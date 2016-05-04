@@ -101,6 +101,12 @@ const AppLeftNav = React.createClass({
 
     const styles = this.getStyles();
 
+    let contentItems = this.props.data.map(content => {
+      return (
+        <ListItem value={content.id} primaryText={content.extract['title']} />
+      );
+    });
+
     return (
       <LeftNav
         style={style}
@@ -109,11 +115,9 @@ const AppLeftNav = React.createClass({
         onRequestChange={onRequestChangeLeftNav}
       >
         <div className='add-top-padding'>
-        <SelectableList>
-          <ListItem value={1} primaryText='Item 1' />
-          <ListItem value={2} primaryText='Item 2' />
-          <ListItem value={3} primaryText='Item 3' />
-        </SelectableList>
+          <SelectableList>
+            {contentItems}
+          </SelectableList>
         </div>
       </LeftNav>
     );

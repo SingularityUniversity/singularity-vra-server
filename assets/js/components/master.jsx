@@ -37,6 +37,7 @@ const Master = React.createClass({
     return {
       muiTheme: getMuiTheme(),
       leftNavOpen: false,
+      data: [],
     };
   },
 

@@ -42,7 +42,9 @@ const ContentDetail = React.createClass({
                     <CardTitle actAsExpander={true}
                         showExpandableButton={true}
                         title={content.extract.title} 
-                        subtitle={"From: "+content.extract.provider_name}/> 
+                        subtitle={"From: "+content.extract.provider_name}
+                        titleStyle={{textAlign: 'center'}}
+                        subtitleStyle={{textAlign: 'center'}}/> 
                     <CardText>
                         <List>
                             <ListItem>Published on:  

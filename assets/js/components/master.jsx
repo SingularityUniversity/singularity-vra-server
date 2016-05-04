@@ -136,6 +136,8 @@ const Master = React.createClass({
       iconButton: {
         color: darkWhite,
       },
+      fullWidthSection: {
+      }
     };
 
     styles.content = this.mergeStyles(styles.content, styles.contentWhenMedium);
@@ -194,7 +196,7 @@ const Master = React.createClass({
         zIndex: styles.appBar.zIndex - 1,
       };
       styles.root.paddingLeft = 256 + 24;
-      styles.footer.paddingLeft = 256 + 24;
+      styles.fullWidthSection.paddingLeft = 256 + 24;
     }
 
     return (
@@ -215,8 +217,9 @@ const Master = React.createClass({
           docked={docked}
           onRequestChangeList={this.handleRequestChangeList}
           open={leftNavOpen}
-          data={this.state.data} />
-        <FullWidthSection style={styles.footer}>
+          data={this.state.data}
+        />
+        <FullWidthSection style={styles.fullWidthSection}>
           <ContentDetail content={this.state.content}/> 
           <p style={this.prepareStyles(styles.p)}>
           </p>

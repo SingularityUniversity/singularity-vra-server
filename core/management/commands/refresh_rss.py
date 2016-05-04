@@ -11,4 +11,4 @@ class Command(BaseCommand):
             results = refresh_rss()
             self.stdout.write(self.style.SUCCESS(results))
         except Exception as e:
-            raise CommandError from e
+            raise CommandError(e)

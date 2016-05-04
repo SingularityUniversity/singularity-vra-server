@@ -50,7 +50,7 @@ const ContentDetail = React.createClass({
                             <ListItem>Published on:  
                                 {content.extract.published?(new Date(content.extract.published)).toString() : "Unknown"}
                                 </ListItem>
-                            <ListItem>URL: <a href={content.extract.url}>{content.extract.url}</a></ListItem>
+                            <ListItem>URL: <a target="vra_preview" href={content.extract.url}>{content.extract.url}</a></ListItem>
                         </List>
                         <pre>{JSON.stringify(content)}</pre>
                     </CardText>

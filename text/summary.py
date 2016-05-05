@@ -3,7 +3,12 @@ from nltk.probability import FreqDist
 
 def get_summary_sentences(content, num_sentences=5):
     words = extract_words_from_content(content)
-    (raw_sentences, parsed_sentences) = extract_words_from_content(content, with_sentences=True)
+    word_results = extract_words_from_content(content, with_sentences=True)
+
+    if word_results == []:
+        return []
+    else:
+        (raw_sentences, parsed_sentences) = word_results
 
     freqdist = FreqDist(words)
 

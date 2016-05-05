@@ -17,6 +17,7 @@ import {
   Typography,
 } from 'material-ui/lib/styles';
 import {StylePropable} from 'material-ui/lib/mixins';
+import Moment from 'moment';
 
 const ContentDetail = React.createClass({
 
@@ -36,7 +37,13 @@ const ContentDetail = React.createClass({
             content
         } = this.props;
         console.log("Content is ", content);
+        
         if (content ) {
+            let publishedDate = "Unknown";
+            if (content.extract['published']) {
+                publishedDate = Moment(parseInt(content.extract['published'])).
+                    format('YYYY-MM-DD');
+            }
             return (
                 <Card>
                     <CardTitle actAsExpander={true}
@@ -47,9 +54,7 @@ const ContentDetail = React.createClass({
                         subtitleStyle={{textAlign: 'center'}}/> 
                     <CardText>
                         <List>
-                            <ListItem>Published on:  
-                                {content.extract.published?(new Date(content.extract.published)).toString() : "Unknown"}
-                                </ListItem>
+                            <ListItem>Published on:  {`${publishedDate}`} </ListItem>
                             <ListItem>URL: <a target="vra_preview" href={content.extract.url}>{content.extract.url}</a></ListItem>
                         </List>
                         <pre>{JSON.stringify(content)}</pre>

@@ -14,6 +14,10 @@ import Moment from 'moment';
 
 let SelectableList = SelectableContainerEnhance(List);
 
+
+// XXX: This wrapState is confusing an obfuscates whats going on.
+// Propose we mergeis back into AppLeftNav
+
 function wrapState(ComposedComponent) {
   const StateWrapper = React.createClass({
     getInitialState() {
@@ -23,6 +27,9 @@ function wrapState(ComposedComponent) {
       this.setState({
         selectedIndex: index,
       });
+      if (this.props.onChange) {
+          this.props.onChange(e, index);
+      }
     },
     render() {
       return (
@@ -48,11 +55,10 @@ const AppLeftNav = React.createClass({
     location: React.PropTypes.object.isRequired,
     onRequestChangeLeftNav: React.PropTypes.func.isRequired,
     onRequestChangeList: React.PropTypes.func.isRequired,
+    onSelectedContent: React.PropTypes.func.isRequired, // Pass back the _source.fields (corresponds to django Model)
     open: React.PropTypes.bool.isRequired,
+    data: React.PropTypes.array, // A list of objects that come back from elasticsearch (currently)
     style: React.PropTypes.object,
-  },
-
-  propTypes: {
   },
 
   contextTypes: {
@@ -63,6 +69,7 @@ const AppLeftNav = React.createClass({
   mixins: [
     StylePropable,
   ],
+
 
   handleRequestChangeLink(event, value) {
     window.location = value;
@@ -90,20 +97,28 @@ const AppLeftNav = React.createClass({
     };
   },
 
+
+  handleContentSelection(e,content) {
+      console.log("Got content", content);
+    this.props.onSelectedContent(content._source.fields);
+  },
+
   render() {
     const {
       location,
       docked,
       onRequestChangeLeftNav,
       onRequestChangeList,
+      onSelectedContent,
       open,
       style,
+      data
     } = this.props;
 
     const styles = this.getStyles();
 
     console.log('left-nav')
-    let contentItems = this.props.data.map(content => {
+    let contentItems = data.map(content => {
       let published = '';
       let publisher = '';
       if (content._source.fields.extract['published']) {
@@ -114,7 +129,7 @@ const AppLeftNav = React.createClass({
       }
       return (
         <ListItem 
-          value={content.id} 
+          value={content} 
           primaryText={content._source.fields.extract['title']}
           secondaryText={`${publisher} ${published}`} />
       );
@@ -127,11 +142,16 @@ const AppLeftNav = React.createClass({
         open={open}
         onRequestChange={onRequestChangeLeftNav}
       >
-        <div className='add-top-padding'>
-          <SelectableList>
+          <div style={{position:'fixed', top:"64px", height: "64px"}}>
+            My Fixed Header 
+          </div>
+
+          <SelectableList  onChange={this.handleContentSelection} style={{height: "100%", overflow:"scroll"}}>
             {contentItems}
           </SelectableList>
-        </div>
+          <div style={{position:'fixed', height: "64px", bottom:"0px"}}>
+            My Fixed Footer
+          </div>
       </LeftNav>
     );
   },

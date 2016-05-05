@@ -159,6 +159,14 @@ const Master = React.createClass({
     });
   },
 
+  /* This method corresponds to the onSelectedContent method of 
+   * AppLeftNavBar. Thus the content object is the one that 
+   * corresponds to the django content model
+   */
+  handleSelectedContent(content) {
+      this.setState({content: content});
+  },
+
   render() {
     const {
       history,
@@ -180,6 +188,8 @@ const Master = React.createClass({
 
       styles.leftNav = {
         zIndex: styles.appBar.zIndex - 1,
+        paddingBottom: "64px",
+        paddingTop: "128px"  // This is the 64 for the app bar + 64 for fixed div at the top of left nav
       };
       styles.root.paddingLeft = 256 + 24;
       styles.fullWidthSection.paddingLeft = 256 + 24;
@@ -202,6 +212,7 @@ const Master = React.createClass({
           location={location}
           docked={docked}
           onRequestChangeList={this.handleRequestChangeList}
+          onSelectedContent={this.handleSelectedContent}
           open={leftNavOpen}
           data={this.state.data}
         />

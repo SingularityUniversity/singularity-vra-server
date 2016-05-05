@@ -41,7 +41,8 @@ const Master = React.createClass({
       muiTheme: getMuiTheme(),
       leftNavOpen: false,
       data: [],
-      content: null 
+      content: null,
+      summaries: []  // In theory this should be one piece of state with content
     };
   },
 
@@ -65,7 +66,8 @@ const Master = React.createClass({
       success: (data) => {
         console.log('initial search on: space');
         this.setState({data: data.hits.hits});
-        this.setState({content: data.hits.hits[0]._source.fields});
+        this.setState({content: data.hits.hits[0]._source});
+        this.getDocumentSummaries(data.hits.hits[0]._source);
       },
       error: (xhr, status, err) => {
         // XXX: display error popup or something here
@@ -151,7 +153,8 @@ const Master = React.createClass({
       success: (data, textStatus, xhr) => {
         console.log('search on: ', searchTerms);
         this.setState({data: data.hits.hits});
-        this.setState({content: data.hits.hits[0]._source.fields});
+        this.setState({content: data.hits.hits[0]._source});  // XXX These two always need to go together, better 
+        this.getDocumentSummaries(data.hits.hits[0]._source); // abstraction needed
       },
       error: (xhr, textStatus, errorThrown) => {
         console.log(`search error: ${textStatus}`);
@@ -164,8 +167,23 @@ const Master = React.createClass({
    * corresponds to the django content model
    */
   handleSelectedContent(content) {
-      this.setState({content: content});
+      this.setState({content: content, summaries: []});
+      this.getDocumentSummaries(content);
   },
+  getDocumentSummaries(content) {
+       $.ajax({
+                url: `/api/v1/content/${content.pk}/summary`,
+                success: (data) => {
+                    console.log(this, data);
+                    this.setState({summaries: data.summary});
+                },
+                error: (xhr, status, err) => {
+                    console.log(xhr, status);
+                }
+            });
+
+  },
+
 
   render() {
     const {
@@ -217,7 +235,7 @@ const Master = React.createClass({
           data={this.state.data}
         />
         <FullWidthSection style={styles.fullWidthSection}>
-          <ContentDetail content={this.state.content}/> 
+          <ContentDetail content={this.state.content} summaries={this.state.summaries}/> 
           <p style={this.prepareStyles(styles.p)}>
           </p>
         </FullWidthSection>

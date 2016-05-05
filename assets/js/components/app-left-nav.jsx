@@ -100,7 +100,7 @@ const AppLeftNav = React.createClass({
 
   handleContentSelection(e,content) {
       console.log("Got content", content);
-    this.props.onSelectedContent(content._source.fields);
+    this.props.onSelectedContent(content._source);
   },
 
   render() {

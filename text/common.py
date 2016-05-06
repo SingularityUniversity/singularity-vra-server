@@ -72,7 +72,7 @@ def extract_words_from_content(content, with_sentences=False):
     raw_html = content.extract['content']
 
     if (raw_html is not None):
-        soup = BeautifulSoup(raw_html, 'html.parser')
+        soup = BeautifulSoup(raw_html, 'html5lib')
         for unwanted_element in soup.findAll(['script', 'style', 'img', 'embed']):
             unwanted_element.decompose()
         text = soup.get_text()

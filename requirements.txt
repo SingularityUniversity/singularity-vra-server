@@ -30,6 +30,7 @@ feedparser==5.2.1
 flower==0.9.1
 gensim==0.12.4
 gunicorn==19.4.5
+html5lib==0.9999999
 httpretty==0.8.10
 jmespath==0.9.0
 kombu==3.0.35

@@ -1,42 +1,25 @@
 import React from 'react';
-import Divider from 'material-ui/lib/divider';
-import Card from 'material-ui/lib/card/card';
-import CardActions from 'material-ui/lib/card/card-actions';
-import CardHeader from 'material-ui/lib/card/card-header';
-import FlatButton from 'material-ui/lib/flat-button';
-import RaisedButton from 'material-ui/lib/raised-button';
-import CardText from 'material-ui/lib/card/card-text';
-import CardTitle from 'material-ui/lib/card/card-title';
-import List from 'material-ui/lib/lists/list';
-import ListItem from 'material-ui/lib/lists/list-item';
+import Divider from 'material-ui/Divider';
+import {Card, CardActions, CardHeader, CardText, CardTitle}  from 'material-ui/Card';
+import FlatButton from 'material-ui/FlatButton';
+import RaisedButton from 'material-ui/RaisedButton';
+import {List, ListItem} from 'material-ui/List';
+import muiThemeable from 'material-ui/styles/muiThemeable';
 
-import {
-  Colors,
-  Spacing,
-  Typography,
-} from 'material-ui/lib/styles';
-import {StylePropable} from 'material-ui/lib/mixins';
 import Moment from 'moment';
 
 const ContentDetail = React.createClass({
 
     propTypes: {
-        content: React.PropTypes.object.isRequired,
-        summaries: React.PropTypes.arrayOf(React.PropTypes.string).isRequired
+        content: React.PropTypes.object,
+        summaries: React.PropTypes.arrayOf(React.PropTypes.string),
+		muiTheme: React.PropTypes.object.isRequired,
     }, 
-    contentTyeps: {
-        muiTheme: React.PropTypes.object
-    },
-
-    mixins: [
-        StylePropable,
-    ],
 
     render() {
         const {
             content
         } = this.props;
-        console.log("Content is ", content);
          
         if (content ) {
             let fields = content.fields;
@@ -47,7 +30,7 @@ const ContentDetail = React.createClass({
                     format('YYYY-MM-DD');
             }
             return (
-                <Card>
+                <Card style={this.props.muiTheme.fullWidthSection.content} containerStyle={this.props.muiTheme.fullWidthSection.root}t>
                     <CardTitle actAsExpander={true}
                         showExpandableButton={true}
                         title={extract.title} 
@@ -100,5 +83,5 @@ const ContentDetail = React.createClass({
     }
 });
 
-export default ContentDetail;
+export default  muiThemeable()(ContentDetail);
 

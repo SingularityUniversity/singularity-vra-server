@@ -1,18 +1,12 @@
 import React from 'react';
-import LeftNav from 'material-ui/lib/left-nav';
-import List from 'material-ui/lib/lists/list';
-import ListItem from 'material-ui/lib/lists/list-item';
-import Divider from 'material-ui/lib/divider';
-import {SelectableContainerEnhance} from 'material-ui/lib/hoc/selectable-enhance';
-import {
-  Colors,
-  Spacing,
-  Typography,
-} from 'material-ui/lib/styles';
-import {StylePropable} from 'material-ui/lib/mixins';
-import Moment from 'moment';
+import {List, ListItem, MakeSelectable} from 'material-ui/List';
+import Drawer from 'material-ui/Drawer';
+import Divider from 'material-ui/Divider';
 
-let SelectableList = SelectableContainerEnhance(List);
+import Moment from 'moment';
+import muiThemeable from 'material-ui/styles/muiThemeable';
+
+let SelectableList = MakeSelectable(List);
 
 
 // XXX: This wrapState is confusing an obfuscates whats going on.
@@ -46,7 +40,6 @@ function wrapState(ComposedComponent) {
 
 SelectableList = wrapState(SelectableList);
 
-
 const AppLeftNav = React.createClass({
 
   propTypes: {
@@ -59,17 +52,8 @@ const AppLeftNav = React.createClass({
     open: React.PropTypes.bool.isRequired,
     data: React.PropTypes.array, // A list of objects that come back from elasticsearch (currently)
     style: React.PropTypes.object,
+    muiTheme: React.PropTypes.object.isRequired,
   },
-
-  contextTypes: {
-    muiTheme: React.PropTypes.object,
-    //router: React.PropTypes.func,
-  },
-
-  mixins: [
-    StylePropable,
-  ],
-
 
   handleRequestChangeLink(event, value) {
     window.location = value;
@@ -82,24 +66,7 @@ const AppLeftNav = React.createClass({
     });
   },
 
-  getStyles() {
-    return {
-      logo: {
-        cursor: 'pointer',
-        fontSize: 24,
-        color: Typography.textFullWhite,
-        lineHeight: Spacing.desktopKeylineIncrement + 'px',
-        fontWeight: Typography.fontWeightLight,
-        backgroundColor: Colors.cyan500,
-        paddingLeft: Spacing.desktopGutter,
-        marginBottom: 8,
-      },
-    };
-  },
-
-
   handleContentSelection(e,content) {
-      console.log("Got content", content);
     this.props.onSelectedContent(content._source);
   },
 
@@ -111,13 +78,10 @@ const AppLeftNav = React.createClass({
       onRequestChangeList,
       onSelectedContent,
       open,
-      style,
       data
     } = this.props;
 
-    const styles = this.getStyles();
-
-    console.log('left-nav')
+	const style = this.props.muiTheme.leftNav;
     let contentItems = data.map(content => {
       let published = '';
       let publisher = '';
@@ -136,8 +100,8 @@ const AppLeftNav = React.createClass({
     });
 
     return (
-      <LeftNav
-        style={style}
+      <Drawer
+        containerStyle={style}
         docked={docked}
         open={open}
         onRequestChange={onRequestChangeLeftNav}
@@ -152,9 +116,9 @@ const AppLeftNav = React.createClass({
           <div style={{position:'fixed', height: "64px", bottom:"0px"}}>
             My Fixed Footer
           </div>
-      </LeftNav>
+	</Drawer>
     );
   },
 });
 
-export default AppLeftNav;
+export default muiThemeable()(AppLeftNav);

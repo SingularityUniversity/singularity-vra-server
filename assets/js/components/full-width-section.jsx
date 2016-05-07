@@ -1,10 +1,14 @@
 import React from 'react';
 import {ClearFix, Mixins, Styles} from 'material-ui';
+import muiThemeable from 'material-ui/styles/muiThemeable';
+
 let {StylePropable, StyleResizable} = Mixins;
 let DesktopGutter = Styles.Spacing.desktopGutter;
 
 const FullWidthSection = React.createClass({
-
+  contextTypes: {
+	muiTheme: React.PropTypes.object.isRequired
+  },	
   propTypes: {
     children: React.PropTypes.node,
     contentStyle: React.PropTypes.object,
@@ -27,23 +31,7 @@ const FullWidthSection = React.createClass({
 
   getStyles() {
     return {
-      root: {
-        padding: DesktopGutter + 'px',
-        boxSizing: 'border-box',
-      },
-      content: {
-        maxWidth: '1200px',
-        margin: '0 auto',
-      },
-      rootWhenSmall: {
-        paddingTop: DesktopGutter * 2,
-        paddingBottom: DesktopGutter * 2,
-      },
-      rootWhenLarge: {
-        paddingTop: DesktopGutter * 3,
-        paddingBottom: DesktopGutter * 3,
-      },
-    };
+         };
   },
 
   render() {
@@ -84,4 +72,4 @@ const FullWidthSection = React.createClass({
   },
 });
 
-export default FullWidthSection;
+export default muiThemable()(FullWidthSection);

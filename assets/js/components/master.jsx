@@ -104,7 +104,8 @@ const Master = React.createClass({
       children,
     } = this.props;
 
-    let styles = Object.assign({}, this.props.muiTheme);
+    let styles = this.props.muiTheme;
+	
 
     const title = 'Virtual Research Assistant';
     let docked = true;
@@ -122,9 +123,9 @@ const Master = React.createClass({
       <div>
         <AppBar
           title={title}
+		  titleStyle={styles.appBar.content}
           zDepth={0}
-		  containerStyle={styles.appBar.root}
-          style={styles.appBar.content}
+          style={styles.appBar}
           showMenuIconButton={showMenuIconButton} >
           <ToolbarGroup float='right'>
             <TextField hintText='Search' onEnterKeyDown={this.handleSearch} />

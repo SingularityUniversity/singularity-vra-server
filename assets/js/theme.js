@@ -47,24 +47,30 @@ export default {
       marginBottom: 8,
     },
   appBar: {
-    position: 'fixed',
-    top: 0,
-    zIndex: ZIndex.appBar +1,
-    a: {
-      color: darkWhite,
-    },
-    p: {
-      margin: '0 auto',
-      padding: 0,
-      color: lightWhite,
-      maxWidth: 335,
-    },
-    iconButton: {
-      color: darkWhite,
-    },
+      position: 'fixed',
+      top: 0,
+      zIndex: ZIndex.appBar +1,
+      paddingTop: '0px',
+      paddingBottom: '0px',
+      paddingLeft: desktopGutter,
+      paddingRight: desktopGutter,
     content: {
-      margin: desktopGutter,
-    },
+      a: {
+        color: darkWhite,
+      },
+      p: {
+        margin: '0 auto',
+        padding: 0,
+        color: lightWhite,
+        maxWidth: 335,
+      },
+      iconButton: {
+        color: darkWhite,
+      },
+      content: {
+        margin: desktopGutter,
+      },
+}
   },
   leftNav: {
       zIndex: ZIndex.appBar -1,

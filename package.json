@@ -35,9 +35,9 @@
   },
   "dependencies": {},
   "scripts": {
-    "dev": "webpack -d",
-    "watch": "webpack -d --watch",
-    "build": "webpack -p",
+    "watch": "webpack -d --watch --config webpack.local.config.js",
+    "build": "webpack -d --config webpack.local.config.js",
+    "build-prod": "webpack -p --config webpack.prod.config.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "serve": "node server.js"
   }

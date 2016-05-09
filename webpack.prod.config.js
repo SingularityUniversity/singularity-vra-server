@@ -12,7 +12,7 @@ config.output.path = require('path').resolve('./assets/dist')
 config.plugins = config.plugins.concat([
   new BundleTracker({
       path: ASSETS_DIR,
-      filename: '/webpack-stats.json'
+      filename: '/webpack-stats-prod.json'
   }),
   new webpack.DefinePlugin({
     'process.env.NODE_ENV': JSON.stringify('production')

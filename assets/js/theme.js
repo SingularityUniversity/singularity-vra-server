@@ -1,15 +1,6 @@
-import {
-  orange500, orange700,
-  cyan500, cyan700,
-  pinkA200,
-  grey100, grey300, grey400, grey500, grey900,
-  white, darkBlack, fullBlack, darkWhite, lightWhite
-} from 'material-ui/styles/colors';
 import {fade} from 'material-ui/utils/colorManipulator';
-import spacing from 'material-ui/styles/spacing';
-import {fontWeightLight, textFullWhite} from 'material-ui/styles/typography';
-import {desktopGutter, desktopKeylineIncrement} from 'material-ui/styles/spacing';
-import ZIndex from 'material-ui/styles/zIndex';
+import {spacing, colors, typography, zIndex} from 'material-ui/styles';
+
 
 /**
  *  Light Theme is the default theme used in material-ui. It is guaranteed to
@@ -17,55 +8,58 @@ import ZIndex from 'material-ui/styles/zIndex';
  *  in a custom theme will default to these values.
  */
 
+const {desktopGutter, desktopKeylineIncrement} = spacing;
+const {fontWeightLight, textFullWhite} = typography; 
+
 export default {
   spacing: spacing,
   fontFamily: 'Roboto, sans-serif',
   palette: {
-    primary1Color: orange500,
-    primary2Color: orange700,
-    primary3Color: grey400,
-    accent1Color: pinkA200,
-    accent2Color: grey100,
-    accent3Color: grey500,
-    textColor: darkBlack,
-    alternateTextColor: white,
-    canvasColor: white,
-    borderColor: grey300,
-    disabledColor: fade(darkBlack, 0.3),
-    pickerHeaderColor: cyan500,
-    clockCircleColor: fade(darkBlack, 0.07),
-    shadowColor: fullBlack,
+    primary1Color: colors.blueGrey500,
+    primary2Color: colors.blueGrey700,
+    primary3Color: colors.blueGrey900,
+    accent1Color: colors.indigoA200,
+    accent2Color: colors.grey100,
+    accent3Color: colors.grey500,
+    textColor: colors.darkBlack,
+    alternateTextColor: colors.white,
+    canvasColor: colors.white,
+    borderColor: colors.grey300,
+    disabledColor: fade(colors.darkBlack, 0.3),
+    pickerHeaderColor: colors.blueGrey500,
+    clockCircleColor: fade(colors.darkBlack, 0.07),
+    shadowColor: colors.fullBlack,
   },
   logo: {
       cursor: 'pointer',
       fontSize: 24,
-      color: textFullWhite,
+      color: colors.textFullWhite,
       lineHeight: desktopKeylineIncrement + 'px',
       fontWeight: fontWeightLight,
-      backgroundColor: cyan500,
+      backgroundColor: colors.cyan500,
       paddingLeft: desktopGutter,
       marginBottom: 8,
     },
   appBar: {
       position: 'fixed',
       top: 0,
-      zIndex: ZIndex.appBar +1,
+      zIndex: zIndex.appBar +1,
       paddingTop: '0px',
       paddingBottom: '0px',
       paddingLeft: desktopGutter,
       paddingRight: desktopGutter,
     content: {
       a: {
-        color: darkWhite,
+        color: colors.darkWhite,
       },
       p: {
         margin: '0 auto',
         padding: 0,
-        color: lightWhite,
+        color: colors.lightWhite,
         maxWidth: 335,
       },
       iconButton: {
-        color: darkWhite,
+        color: colors.darkWhite,
       },
       content: {
         margin: desktopGutter,
@@ -73,7 +67,7 @@ export default {
 }
   },
   leftNav: {
-      zIndex: ZIndex.appBar -1,
+      zIndex: zIndex.appBar -1,
       paddingBottom: "64px",
       paddingTop: "128px"  // This is the 64 for the app bar + 64 for fixed div at the top of left nav
   },
@@ -82,50 +76,35 @@ export default {
       margin: `${desktopGutter * 2}px ${desktopGutter * 3}px`,
     },
     footer: {
-      backgroundColor: grey900,
+      backgroundColor: colors.grey900,
       textAlign: 'center',
     },
     a: {
-      color: darkWhite,
+      color: colors.darkWhite,
     },
     p: {
       margin: '0 auto',
       padding: 0,
-      color: lightWhite,
+      color: colors.lightWhite,
       maxWidth: 335,
     },
     iconButton: {
-      color: darkWhite,
+      color: colors.darkWhite,
     },
-    fullWidthSection: {
-    },
-    content: {
-    }
-
   },
   fullWidthSection: {
+    container: {
+      padding: desktopGutter + 'px',
+      boxSizing: 'border-box',
+      paddingTop: desktopGutter,
+      paddingBottom: desktopGutter,
+    },
     root: {
-      padding: desktopGutter + 'px',
-      boxSizing: 'border-box',
-      paddingTop: desktopGutter * 3,
-      paddingBottom: desktopGutter * 3,
-      margin: '128px auto',
-    },
-    content: {
       maxWidth: '1200px',
-      margin: '0 auto',
+      marginTop: 128,
+      marginRight: 64,
+      marginBottom: 128,
+      marginLeft: desktopGutter+256,
     },
-    rootWhenSmall: {
-      paddingTop: desktopGutter * 2,
-      paddingBottom: desktopGutter * 2,
-    },
-    rootWhenLarge: {
-      paddingTop: desktopGutter * 3,
-      paddingBottom: desktopGutter * 3,
-    },
-      padding: desktopGutter + 'px',
-      boxSizing: 'border-box',
-      maxWidth: '1200px',
   }
-
 };

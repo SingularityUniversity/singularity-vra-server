@@ -30,7 +30,7 @@ const ContentDetail = React.createClass({
                     format('YYYY-MM-DD');
             }
             return (
-                <Card style={this.props.muiTheme.fullWidthSection.content} containerStyle={this.props.muiTheme.fullWidthSection.root}t>
+                <Card style={this.props.muiTheme.fullWidthSection.root} containerStyle={this.props.muiTheme.fullWidthSection.container}t>
                     <CardTitle actAsExpander={true}
                         showExpandableButton={true}
                         title={extract.title} 

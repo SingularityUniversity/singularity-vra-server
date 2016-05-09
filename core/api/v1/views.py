@@ -28,7 +28,7 @@ class SearchView(views.APIView):
             raise ValueError("settings.ELASTICSEARCH_INDEX is None")
 
         # These should only have single values
-        param_dict = {key:query_params[key][0] for key in query_params}
+        param_dict = {key:query_params[key] for key in query_params}
 
         for key in ('_source_include', '_source_exclude'):
             if key in param_dict:

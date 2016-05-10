@@ -7,8 +7,14 @@ node_modules
 README.md
 TODO.txt
 sample.env
-webpack.config.js
+webpack.base.config.js
+webpack.local.config.js
+webpack.prod.config.js
 server.js
 package.json
 .babelrc
 .env
+assets/js
+assets/css
+assets/bundles
+assets/webpack-stats.json

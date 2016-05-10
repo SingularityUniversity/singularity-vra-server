@@ -73,7 +73,7 @@ WEBPACK_LOADER = {
 if not DEBUG:
     WEBPACK_LOADER['DEFAULT'].update({
         'BUNDLE_DIR_NAME': 'client-dist/',
-        'STATS_FILE': os.path.join(BASE_DIR, 'assets/webpack-stats-prod.json')
+        'STATS_FILE': os.path.join(BASE_DIR, 'assets/client-dist/webpack-stats-prod.json')
     })
 
 ALLOWED_HOSTS = []

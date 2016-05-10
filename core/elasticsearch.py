@@ -14,7 +14,7 @@ def get_client():
             url = settings.ELASTICSEARCH_URL
             if url is None:
                 raise ValueError("settings.ELASTICSEARCH_URL is None")
-            _es = Elasticsearch([settings.ELASTICSEARCH_URL])
+            _es = Elasticsearch([settings.ELASTICSEARCH_URL], verify_certs=True)
     return _es
 
 

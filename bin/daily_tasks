@@ -1,0 +1,2 @@
+python manage.py refresh_rss
+python manage.py create_and_upload_lda

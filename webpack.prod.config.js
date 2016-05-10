@@ -7,7 +7,7 @@ var config = require('./webpack.base.config.js')
 var ASSETS_DIR = path.resolve(__dirname, 'assets/');
 var BUNDLE_DIR = ASSETS_DIR + '/bundles/';
 
-config.output.path = require('path').resolve('./assets/dist')
+config.output.path = require('path').resolve('./assets/client-dist')
 
 config.plugins = config.plugins.concat([
   new BundleTracker({

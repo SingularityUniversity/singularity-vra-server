@@ -204,9 +204,9 @@ STATIC_ROOT = 'static'
 # Use S3 to server static files in production
 if os.environ.get('ENVIRONMENT') == 'production':
     # S3 SETUP
-    AWS_ACCESS_KEY_ID = S3_ACCESS_KEY_ID,
-    AWS_SECRET_ACCESS_KEY = S3_ACCESS_KEY_SECRET,
-    AWS_STORAGE_BUCKET_NAME = S3_BUCKET,
+    AWS_ACCESS_KEY_ID = S3_ACCESS_KEY_ID
+    AWS_SECRET_ACCESS_KEY = S3_ACCESS_KEY_SECRET
+    AWS_STORAGE_BUCKET_NAME = S3_BUCKET
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
     STATIC_URL =  'https://{}.s3.amazonaws.com/{}/'.format(S3_BUCKET, STATIC_ROOT)
     STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'

@@ -16,7 +16,11 @@ import datetime
 
 import logging
 
-DEBUG = os.environ.get('DEBUG')
+debug_var = os.environ.get('DEBUG', 'false')
+if debug_var.lower() in ('false', 'no', 'f', 'n', '0'):
+    DEBUG = False
+else:
+    DEBUG = True
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

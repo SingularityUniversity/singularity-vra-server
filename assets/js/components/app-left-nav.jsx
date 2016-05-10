@@ -95,7 +95,10 @@ const AppLeftNav = React.createClass({
         <ListItem 
           value={content} 
           primaryText={content._source.fields.extract['title']}
-          secondaryText={`${publisher} ${published}`} />
+          secondaryText={
+            <p><span><a href="#">{publisher}</a>   {published}</span></p>
+          }
+          />
       );
     });
 

@@ -1,3 +1,4 @@
+import json
 from django.core.urlresolvers import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -28,7 +29,7 @@ class PublisherTests(APITestCase):
         self.client.force_authenticate(user=self.user)
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.json()), 5)
+        self.assertEqual(len(response.json()['results']), 5)
 
     def test_get_specific_publisher(self):
         # create some publishers

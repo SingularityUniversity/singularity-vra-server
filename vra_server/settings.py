@@ -22,6 +22,8 @@ if debug_var.lower() in ('false', 'no', 'f', 'n', '0'):
 else:
     DEBUG = True
 
+ENVIRONMENT = os.environ.get('ENVIRONMENT')
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -59,7 +61,7 @@ WEBPACK_LOADER = {
     }
 }
 
-if not DEBUG:
+if ENVIRONMENT == 'production':
     WEBPACK_LOADER['DEFAULT'].update({
         'BUNDLE_DIR_NAME': 'client-dist/',
         'STATS_FILE': os.path.join(BASE_DIR, 'assets/client-dist/webpack-stats-prod.json')

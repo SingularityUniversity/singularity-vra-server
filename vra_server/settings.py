@@ -225,9 +225,8 @@ if os.environ.get('ENVIRONMENT') == 'production':
     AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
     STATIC_URL =  'https://{}/{}/'.format(AWS_S3_CUSTOM_DOMAIN, STATIC_ROOT)
     STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
-else:
-    STATIC_ROOT = 'static'
 
+STATIC_ROOT = 'static'
 # Extra places for collectstatic to find static files.
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'assets'),

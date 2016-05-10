@@ -16,16 +16,7 @@ import datetime
 
 import logging
 
-if os.environ.get('LOG') == "INFO":
-    logging.basicConfig(
-        level = logging.INFO,
-        format = '%(asctime)s %(levelname)s %(message)s',
-    )
-elif os.environ.get('LOG') == "DEBUG":
-    logging.basicConfig(
-        level = logging.DEBUG,
-        format = '%(asctime)s %(levelname)s %(message)s',
-    )
+DEBUG = os.environ.get('DEBUG')
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -53,12 +44,6 @@ ELASTICSEARCH_TYPE = "content"
 S3_ACCESS_KEY_ID = os.environ.get('S3_ACCESS_KEY_ID')
 S3_ACCESS_KEY_SECRET = os.environ.get('S3_ACCESS_KEY_SECRET')
 S3_BUCKET = os.environ.get('S3_BUCKET')
-
-if os.environ.get('ENVIRONMENT') != 'production':
-    # SECURITY WARNING: don't run with debug turned on in production!
-    DEBUG = True
-else:
-    DEBUG = False
 
 WEBPACK_LOADER = {
     'DEFAULT': {
@@ -219,6 +204,9 @@ STATIC_ROOT = 'static'
 # Use S3 to server static files in production
 if os.environ.get('ENVIRONMENT') == 'production':
     # S3 SETUP
+    AWS_ACCESS_KEY_ID = S3_ACCESS_KEY_ID,
+    AWS_SECRET_ACCESS_KEY = S3_ACCESS_KEY_SECRET,
+    AWS_STORAGE_BUCKET_NAME = S3_BUCKET,
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
     STATIC_URL =  'https://{}.s3.amazonaws.com/{}/'.format(S3_BUCKET, STATIC_ROOT)
     STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'

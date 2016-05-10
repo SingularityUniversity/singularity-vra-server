@@ -2,6 +2,8 @@ from django.conf import settings
 from elasticsearch import Elasticsearch, helpers
 from threading import Lock
 import json
+import sys
+import os.path
 
 _es = None
 _lock = Lock()
@@ -14,7 +16,12 @@ def get_client():
             url = settings.ELASTICSEARCH_URL
             if url is None:
                 raise ValueError("settings.ELASTICSEARCH_URL is None")
-            _es = Elasticsearch([settings.ELASTICSEARCH_URL], verify_certs=True)
+            # XXX Hack, we shouldn't have to do this - but on heroku python buildpack, we do
+            if sys.platform == 'linux' and os.path.isfile('/etc/ssl/certs/ca-certificates.crt'):
+                ca_certs = '/etc/ssl/certs/ca-certificates.crt'
+            else:
+                ca_certs = None
+            _es = Elasticsearch([settings.ELASTICSEARCH_URL], verify_certs=True, ca_certs=ca_certs)
     return _es
 
 

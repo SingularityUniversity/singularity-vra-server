@@ -215,6 +215,7 @@ JWT_AUTH = {
 # Allow all host headers
 ALLOWED_HOSTS = ['*']
 
+STATIC_ROOT = 'static'
 # Use S3 to server static files in production
 if os.environ.get('ENVIRONMENT') == 'production':
     # S3 SETUP
@@ -226,7 +227,6 @@ if os.environ.get('ENVIRONMENT') == 'production':
     STATIC_URL =  'https://{}/{}/'.format(AWS_S3_CUSTOM_DOMAIN, STATIC_ROOT)
     STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 
-STATIC_ROOT = 'static'
 # Extra places for collectstatic to find static files.
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'assets'),

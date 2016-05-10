@@ -220,11 +220,7 @@ STATIC_ROOT = 'static'
 if os.environ.get('ENVIRONMENT') == 'production':
     # S3 SETUP
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
-    AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
-    AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
-    AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
-    AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
-    STATIC_URL =  'https://{}/{}/'.format(AWS_S3_CUSTOM_DOMAIN, STATIC_ROOT)
+    STATIC_URL =  'https://{}.s3.amazonaws.com/{}/'.format(S3_BUCKET, STATIC_ROOT)
     STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 
 # Extra places for collectstatic to find static files.

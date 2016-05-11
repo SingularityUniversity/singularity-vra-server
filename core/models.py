@@ -92,12 +92,12 @@ class Content(models.Model):
         on_delete=models.CASCADE
     )
 
-    def as_json(self):
+    def as_json_serializable(self):
         return json.loads(serializers.serialize('json', [self]))[0]
 
     def add_to_search_index(self):
         # XXX: should this go here? Will other indexing/extraction methods be called this way?
-        index_document(self.as_json(), self.id)
+        index_document(self.as_json_serializable(), self.id)
 
     def add_to_s3(self):
         put_content_to_s3(self)

@@ -93,7 +93,8 @@ def get_lda_results(text_tokens):
             'id': orig_id,
             'title': match_content.extract['title'],
             'url': match_content.url,
-            'topics': match_lda_topics
+            'topics': match_lda_topics,
+            'source': match_content.as_json_serializable()
         }
         results.append(new_result)
     result = {

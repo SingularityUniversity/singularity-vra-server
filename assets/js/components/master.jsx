@@ -58,7 +58,6 @@ const Master = React.createClass({
   },
 
   handleSearch(e) {
-	console.log(e);
 	if (e.keyCode != 13) {
 		return;
 	}

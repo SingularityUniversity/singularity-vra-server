@@ -46,7 +46,7 @@ const AppLeftNav = React.createClass({
   propTypes: {
     docked: React.PropTypes.bool.isRequired,
     onRequestChangeLeftNav: React.PropTypes.func,
-    onSelectedContent: React.PropTypes.func.isRequired, // Pass back the _source.fields (corresponds to django Model)
+    onSelectedContent: React.PropTypes.func.isRequired, // Pass back the content.fields (corresponds to django Model)
     open: React.PropTypes.bool.isRequired,
     data: React.PropTypes.array, // A list of objects that come back from elasticsearch (currently)
     style: React.PropTypes.object,
@@ -59,7 +59,7 @@ const AppLeftNav = React.createClass({
 
 
   handleContentSelection(e,content) {
-    this.props.onSelectedContent(content._source);
+    this.props.onSelectedContent(content);
   },
 
   render() {
@@ -75,17 +75,17 @@ const AppLeftNav = React.createClass({
     let contentItems = data.map(content => {
       let published = '';
       let publisher = '';
-      if (content._source.fields.extract['published']) {
-        published = Moment(parseInt(content._source.fields.extract['published'])).format('YYYY-MM-DD');
+      if (content.fields.extract['published']) {
+        published = Moment(parseInt(content.fields.extract['published'])).format('YYYY-MM-DD');
       }
-      if (content._source.fields.extract['provider_name']) {
-        publisher = content._source.fields.extract['provider_name'];
+      if (content.fields.extract['provider_name']) {
+        publisher = content.fields.extract['provider_name'];
       }
       return (
         <ListItem 
 		  key={content}
           value={content} 
-          primaryText={content._source.fields.extract['title']}
+          primaryText={content.fields.extract['title']}
           secondaryText={
             <p><span><a href="#">{publisher}</a>   {published}</span></p>
           }

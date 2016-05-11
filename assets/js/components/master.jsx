@@ -23,6 +23,7 @@ const Master = React.createClass({
     return {
       leftNavOpen: false,
       data: [],
+	  query_topics: [], // LDA query topics - [ [ [(term, weight),...], topicweight]...]
       content: null,
       summaries: []  // In theory this should be one piece of state with content
     };
@@ -35,7 +36,7 @@ const Master = React.createClass({
       data: 'q=space',
       success: (data) => {
         console.log('initial search on: space');
-        this.setState({data: data.hits.hits});
+        this.setState({data: data.hits.hits.map(function(x) { return x._source})});
         this.setState({content: data.hits.hits[0]._source});
         this.getDocumentSummaries(data.hits.hits[0]._source);
       },
@@ -67,7 +68,7 @@ const Master = React.createClass({
       data: `q=${searchTerms}`,
       success: (data, textStatus, xhr) => {
         console.log('search on: ', searchTerms);
-        this.setState({data: data.hits.hits});
+        this.setState({data: data.hits.hits.map(function(x) { return x._source})});
         this.setState({content: data.hits.hits[0]._source});  // XXX These two always need to go together, better 
         this.getDocumentSummaries(data.hits.hits[0]._source); // abstraction needed
       },
@@ -84,6 +85,34 @@ const Master = React.createClass({
   handleSelectedContent(content) {
       this.setState({content: content, summaries: []});
       this.getDocumentSummaries(content);
+  },
+  handleContentAction(action, params) {
+	  if (action=="similar") {
+		this.doSimilaritySearch(params.content);
+	  }
+  },
+  doSimilaritySearch(content) {
+       $.ajax({
+                url: `/api/v1/content/${content.pk}/similar`,
+                success: (data) => {
+                    console.log(this, data);
+					let annotated_results = data.results.map(function(item) {
+						var content = item.source;
+						content.lda_similarity_topics = item.topics;
+						return content;
+					});	
+					this.setState({
+						query_topics: data.query_topics,
+        				data: annotated_results,
+			            content: annotated_results[0]
+					});
+					this.getDocumentSummaries(annotated_results[0]);
+                },
+                error: (xhr, status, err) => {
+                    console.log(xhr, status);
+                }
+            });
+
   },
   getDocumentSummaries(content) {
        $.ajax({
@@ -143,7 +172,7 @@ const Master = React.createClass({
           open={leftNavOpen}
           data={this.state.data}
         />
-          <ContentDetail style={styles.fullWidthSection} content={this.state.content} summaries={this.state.summaries}/> 
+          <ContentDetail style={styles.fullWidthSection} content={this.state.content} summaries={this.state.summaries} onAction={this.handleContentAction}/> 
       </div>
     );
   },

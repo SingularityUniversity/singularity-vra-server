@@ -14,9 +14,13 @@ const ContentDetail = React.createClass({
         content: React.PropTypes.object,
         summaries: React.PropTypes.arrayOf(React.PropTypes.string),
 		muiTheme: React.PropTypes.object.isRequired,
+		onAction: React.PropTypes.func.isRequired  // onAction(action_id, params)
     }, 
 	clickedFindSimilar() {
 		console.log(this.props.content.pk);
+		if (this.props.onAction) {
+			this.props.onAction('similar', {content:this.props.content})
+		}
 	},
     render() {
         const {
@@ -31,6 +35,11 @@ const ContentDetail = React.createClass({
                 publishedDate = Moment(parseInt(extract['published'])).
                     format('YYYY-MM-DD');
             }
+			var lda_stuff = null;
+			console.log("Looking at content objects: ", content);
+	  	 	if (content.lda_similarity_topics) {
+				lda_stuff = (<pre>{JSON.stringify(content.lda_similarity_topics)}</pre>);
+			} 
             return (
                 <Card style={this.props.muiTheme.fullWidthSection.root} containerStyle={this.props.muiTheme.fullWidthSection.container}t>
                     <CardTitle actAsExpander={true}
@@ -58,6 +67,7 @@ const ContentDetail = React.createClass({
                             </ListItem>
                         </List>
                         <pre>{JSON.stringify(fields)}</pre>
+						{lda_stuff}
                     </CardText>
                     <CardActions>
                         <RaisedButton primary={true} onMouseUp={this.clickedFindSimilar} label="Find similar articles"/>

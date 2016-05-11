@@ -4,7 +4,7 @@ from rest_framework import viewsets, status, views
 from core.models import *
 from core.api.v1.serializers import *
 from core.elasticsearch import get_client
-from rest_framework.decorators import detail_route
+from rest_framework.decorators import detail_route, list_route
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from text.common import get_lda_data, tokenize_text_block, extract_words_from_content
@@ -144,6 +144,10 @@ class ContentViewSet(viewsets.ModelViewSet):
         return Response(
             {'summary': get_summary_sentences(content, count)},
             status=status.HTTP_200_OK)
+
+    @list_route(methods=['get'])
+    def count(self, request):
+        return Response({'count': Content.objects.count()})
 
 
 class EnteredSourceViewSet(viewsets.ModelViewSet):

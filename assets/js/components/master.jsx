@@ -24,8 +24,10 @@ const Master = React.createClass({
       leftNavOpen: false,
       data: [],
 	  query_topics: [], // LDA query topics - [ [ [(term, weight),...], topicweight]...]
+      resultCountTotal: null,
       content: null,
-      summaries: []  // In theory this should be one piece of state with content
+      summaries: [],  // In theory this should be one piece of state with content
+      articleCount: 0
     };
   },
 
@@ -35,8 +37,8 @@ const Master = React.createClass({
       url: '/api/v1/search',
       data: 'q=space',
       success: (data) => {
-        console.log('initial search on: space');
         this.setState({data: data.hits.hits.map(function(x) { return x._source})});
+        this.setState({resultCountTotal: data.hits.total});
         this.setState({content: data.hits.hits[0]._source});
         this.getDocumentSummaries(data.hits.hits[0]._source);
       },
@@ -47,8 +49,21 @@ const Master = React.createClass({
     });
   },
 
+  getArticleCountFromServer: function() {
+    $.ajax({
+      url: '/api/v1/content/count',
+      success: (data) => {
+        this.setState({articleCount: data.count});
+      },
+      error: (xhr, status, err) => {
+        console.log(xhr, status);
+      }
+    });
+  },
+
   componentDidMount: function() {
     this.loadObjectsFromServer();
+    this.getArticleCountFromServer();
   },
 
   handleRequestChangeList(event, value) {
@@ -68,7 +83,8 @@ const Master = React.createClass({
       data: `q=${searchTerms}`,
       success: (data, textStatus, xhr) => {
         console.log('search on: ', searchTerms);
-        this.setState({data: data.hits.hits.map(function(x) { return x._source})});
+        this.setState({resultCountTotal: data.hits.total});
+        this.setState({data: data.hits.hits});
         this.setState({content: data.hits.hits[0]._source});  // XXX These two always need to go together, better 
         this.getDocumentSummaries(data.hits.hits[0]._source); // abstraction needed
       },
@@ -139,7 +155,9 @@ const Master = React.createClass({
     let styles = this.props.muiTheme;
 	
 
-    const title = 'Virtual Research Assistant';
+    let title = (
+      <span>Virtual Research Assistant <i className='small'>({this.state.articleCount} articles and counting...)</i></span>
+    );
     let docked = true;
     let showMenuIconButton = false;
     let leftNavOpen = true;
@@ -154,6 +172,7 @@ const Master = React.createClass({
     return (
       <div>
         <AppBar
+          ref='appBar'
           title={title}
 		  titleStyle={styles.appBar.content}
           zDepth={0}
@@ -171,6 +190,7 @@ const Master = React.createClass({
           onSelectedContent={this.handleSelectedContent}
           open={leftNavOpen}
           data={this.state.data}
+          resultCountTotal={this.state.resultCountTotal}
         />
           <ContentDetail style={styles.fullWidthSection} content={this.state.content} summaries={this.state.summaries} onAction={this.handleContentAction}/> 
       </div>

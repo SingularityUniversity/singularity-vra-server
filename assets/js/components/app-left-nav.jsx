@@ -49,6 +49,7 @@ const AppLeftNav = React.createClass({
     onSelectedContent: React.PropTypes.func.isRequired, // Pass back the content.fields (corresponds to django Model)
     open: React.PropTypes.bool.isRequired,
     data: React.PropTypes.array, // A list of objects that come back from elasticsearch (currently)
+    resultCountTotal: React.PropTypes.number,
     style: React.PropTypes.object,
     muiTheme: React.PropTypes.object.isRequired,
   },
@@ -101,7 +102,7 @@ const AppLeftNav = React.createClass({
         onRequestChange={onRequestChangeLeftNav}
       >
           <div style={{position:'fixed', top:"64px", height: "64px"}}>
-            My Fixed Header 
+            <span className='small'>Results: {this.props.resultCountTotal}</span> 
           </div>
 
           <SelectableList  onChange={this.handleContentSelection} style={{height: "100%", overflow:"scroll"}}>

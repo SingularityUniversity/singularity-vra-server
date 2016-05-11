@@ -58,6 +58,10 @@ const Master = React.createClass({
   },
 
   handleSearch(e) {
+	console.log(e);
+	if (e.keyCode != 13) {
+		return;
+	}
     const searchTerms = e.currentTarget.value;
     $.ajax({
       url: '/api/v1/search',
@@ -128,7 +132,7 @@ const Master = React.createClass({
           style={styles.appBar}
           showMenuIconButton={showMenuIconButton} >
           <ToolbarGroup float='right'>
-            <TextField hintText='Search' onEnterKeyDown={this.handleSearch} />
+            <TextField hintText='Search' onKeyDown={this.handleSearch} />
           </ToolbarGroup>
         </AppBar>
         <AppLeftNav
@@ -141,8 +145,6 @@ const Master = React.createClass({
           data={this.state.data}
         />
           <ContentDetail style={styles.fullWidthSection} content={this.state.content} summaries={this.state.summaries}/> 
-          <p style={this.props.muiTheme.prepareStyles(styles.masterBar.p)}>
-          </p>
       </div>
     );
   },

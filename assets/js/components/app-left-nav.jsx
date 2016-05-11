@@ -30,7 +30,8 @@ function wrapState(ComposedComponent) {
         <ComposedComponent
           {...this.props}
           {...this.state}
-          valueLink={{value: this.state.selectedIndex, requestChange: this.handleUpdateSelectedIndex}}
+          value={this.state.selectedIndex}
+          onChange={this.handleUpdateSelectedIndex}
         />
       );
     },
@@ -44,10 +45,7 @@ const AppLeftNav = React.createClass({
 
   propTypes: {
     docked: React.PropTypes.bool.isRequired,
-    history: React.PropTypes.object.isRequired,
-    location: React.PropTypes.object.isRequired,
-    onRequestChangeLeftNav: React.PropTypes.func.isRequired,
-    onRequestChangeList: React.PropTypes.func.isRequired,
+    onRequestChangeLeftNav: React.PropTypes.func,
     onSelectedContent: React.PropTypes.func.isRequired, // Pass back the _source.fields (corresponds to django Model)
     open: React.PropTypes.bool.isRequired,
     data: React.PropTypes.array, // A list of objects that come back from elasticsearch (currently)
@@ -59,12 +57,6 @@ const AppLeftNav = React.createClass({
     window.location = value;
   },
 
-  handleTouchTapHeader() {
-    this.props.history.push('/');
-    this.setState({
-      leftNavOpen: false,
-    });
-  },
 
   handleContentSelection(e,content) {
     this.props.onSelectedContent(content._source);
@@ -72,10 +64,8 @@ const AppLeftNav = React.createClass({
 
   render() {
     const {
-      location,
       docked,
       onRequestChangeLeftNav,
-      onRequestChangeList,
       onSelectedContent,
       open,
       data
@@ -93,6 +83,7 @@ const AppLeftNav = React.createClass({
       }
       return (
         <ListItem 
+		  key={content}
           value={content} 
           primaryText={content._source.fields.extract['title']}
           secondaryText={

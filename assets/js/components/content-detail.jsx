@@ -15,7 +15,9 @@ const ContentDetail = React.createClass({
         summaries: React.PropTypes.arrayOf(React.PropTypes.string),
 		muiTheme: React.PropTypes.object.isRequired,
     }, 
-
+	clickedFindSimilar() {
+		console.log(this.props.content.pk);
+	},
     render() {
         const {
             content
@@ -58,7 +60,7 @@ const ContentDetail = React.createClass({
                         <pre>{JSON.stringify(fields)}</pre>
                     </CardText>
                     <CardActions>
-                        <RaisedButton primary={true} label="Action1"/>
+                        <RaisedButton primary={true} onMouseUp={this.clickedFindSimilar} label="Find similar articles"/>
                         <RaisedButton secondary={true} label="Action2"/>
                     </CardActions>
                     <Card expandable={true}>

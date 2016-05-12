@@ -1,6 +1,6 @@
 from django.conf import settings
 from requests import get
-from core.models import Publisher, PublisherURL, EnteredSource, Content
+from core.models import Publisher, PublisherURL, EnteredSource, Content, Issue
 import feedparser
 from datetime import datetime, timezone
 import logging
@@ -39,6 +39,13 @@ def ingest_rss_source(entered_source):
     for entry in feed_content.entries:
         if 'link' not in entry:
             logger.info("Ut-oh, we have a problem! {}".format(entry))
+            Issue.create(
+                source="ingestion.rss#ingest_rss_source", #  XXX Trying to make this more automatic
+                error_code=Issue.ERROR_MISSING_LINK,
+                object_type="EnteredSource",
+                object_id=entered_source.id,
+                other={"entry":entry}
+            )
         else:
             existing_content_by_url = Content.objects.filter(url=entry.link).first()
             if existing_content_by_url is not None:
@@ -66,6 +73,13 @@ def ingest_rss_source(entered_source):
                 errors.append(
                     {'error': "response {} {}".format(resp.status_code, resp.reason),
                      'url': entry.link}
+                )
+                Issue.create(
+                    source="ingestion.rss#ingest_rss_source", #  XXX Trying to make this more automatic
+                    error_code=Issue.ERROR_RETRIEVAL,
+                    object_type="EnteredSource",
+                    object_id=entered_source.id,
+                    other={"status_code": resp.status_code, "reason": resp.reason, "url": url}
                 )
                 continue
             provider_url = response['provider_url']

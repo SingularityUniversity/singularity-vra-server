@@ -1,6 +1,6 @@
 from requests import get
 from django.conf import settings
-from core.models import Publisher, PublisherURL, EnteredSource, Content
+from core.models import Publisher, PublisherURL, EnteredSource, Content, Issue
 from ingestion.util import IngestionItem
 from datetime import datetime, timezone
 
@@ -33,6 +33,14 @@ def ingest_source(entered_source):
             'last_error': "HTTP response {} {}".format(resp.status_code, resp.reason),
             'last_polled': datetime.now(timezone.utc)
         })
+        Issue.create(
+            source="ingestion.content#ingest_source", #  XXX Trying to make this more automatic
+            error_code=Issue.ERROR_RETRIEVAL,
+            object_type="EnteredSource",
+            object_id=entered_source.id,
+            other={"status_code": resp.status_code, "reason": resp.reason, "url": url}
+        )
+
         return {"error": "Got response {} {}".format(resp.status_code, resp.reason)}
     return _create_content(response, entered_source)
 

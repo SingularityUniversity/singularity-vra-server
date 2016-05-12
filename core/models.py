@@ -114,3 +114,42 @@ class LDAConfiguration(SingletonModel):
     lda_passes = models.SmallIntegerField(
         default=10
     )
+
+
+class Issue(models.Model):
+    '''
+    A class for tracking issues in the processing pipeline, such as empty content, bad URLs, etc
+    '''
+    ERROR_RETRIEVAL = 1
+    ERROR_MISSING_LINK = 2
+    ERROR_EXCEPTION = 3
+    CHOICES_ERROR = (
+        (ERROR_RETRIEVAL, ERROR_RETRIEVAL),
+        (ERROR_MISSING_LINK, ERROR_MISSING_LINK),
+        (ERROR_EXCEPTION, ERROR_EXCEPTION),
+    )
+
+    source = models.CharField(
+        null=True,
+        max_length=256
+    )
+    timestamp = DateTimeUTCField(
+        auto_now_add=True
+    )
+    error_code = models.PositiveIntegerField(
+        choices = CHOICES_ERROR
+    )
+    object_type = models.CharField(
+        null=True,
+        max_length=256
+    )
+    object_id = models.PositiveIntegerField(
+        null=True
+    )
+    summary = models.CharField(
+        null=True,
+        max_length=2048
+    )
+    other = JSONField(
+        null=True
+    )

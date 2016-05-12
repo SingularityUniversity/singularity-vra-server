@@ -11,6 +11,8 @@
     "babel-preset-react": "^6.5.0",
     "babel-preset-stage-0": "^6.5.0",
     "css-loader": "^0.23.1",
+    "d3": "^3.5.17",
+    "d3-cloud": "^1.2.1",
     "extract-text-webpack-plugin": "^1.0.1",
     "flux": "^2.1.1",
     "imports-loader": "^0.6.5",

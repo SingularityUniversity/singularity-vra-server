@@ -5,6 +5,7 @@ import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import {List, ListItem} from 'material-ui/List';
 import muiThemeable from 'material-ui/styles/muiThemeable';
+import TopicsList from './lda_topics'
 
 import Moment from 'moment';
 
@@ -46,7 +47,7 @@ const ContentDetail = React.createClass({
                         actAsExpander={true} showExpandableButton={true} 
                         subtitleStyle={{textAlign: 'center'}}/> 
 					<CardText expandable={true}>
-						<pre>{JSON.stringify(content.lda_similarity_topics)}</pre>
+						<TopicsList topics={content.lda_similarity_topics}/>
 					</CardText>
 					</Card>
 					</ListItem>

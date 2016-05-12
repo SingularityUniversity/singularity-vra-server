@@ -38,12 +38,23 @@ const ContentDetail = React.createClass({
 			var lda_stuff = null;
 			console.log("Looking at content objects: ", content);
 	  	 	if (content.lda_similarity_topics) {
-				lda_stuff = (<pre>{JSON.stringify(content.lda_similarity_topics)}</pre>);
+				lda_stuff = (
+					<ListItem>	
+					LDA Similarity Topics
+					<Card>
+                    <CardTitle 
+                        actAsExpander={true} showExpandableButton={true} 
+                        subtitleStyle={{textAlign: 'center'}}/> 
+					<CardText expandable={true}>
+						<pre>{JSON.stringify(content.lda_similarity_topics)}</pre>
+					</CardText>
+					</Card>
+					</ListItem>
+				)
 			} 
             return (
                 <Card style={this.props.muiTheme.fullWidthSection.root} containerStyle={this.props.muiTheme.fullWidthSection.container}t>
-                    <CardTitle actAsExpander={true}
-                        showExpandableButton={true}
+                    <CardTitle 
                         title={extract.title} 
                         subtitle={"From: "+extract.provider_name}
                         titleStyle={{textAlign: 'center'}}
@@ -65,21 +76,24 @@ const ContentDetail = React.createClass({
                                 </CardText>
                                 </Card>
                             </ListItem>
-                        </List>
-                        <pre>{JSON.stringify(fields)}</pre>
 						{lda_stuff}
+							<ListItem>
+							Content:
+							<Card>
+							<CardTitle actAsExpander={true} showExpandableButton={true}/>
+								<CardText expandable={true}>
+									<div dangerouslySetInnerHTML= {{__html: extract.content}}>
+									</div>
+								</CardText>
+							</Card>
+
+							</ListItem>
+                        </List>
                     </CardText>
                     <CardActions>
                         <RaisedButton primary={true} onMouseUp={this.clickedFindSimilar} label="Find similar articles"/>
                         <RaisedButton secondary={true} label="Action2"/>
                     </CardActions>
-                    <Card expandable={true}>
-                    <CardTitle title="Content"/>
-                        <CardText>
-                            <div dangerouslySetInnerHTML= {{__html: extract.content}}>
-                            </div>
-                        </CardText>
-                    </Card>
                 </Card>
                 );
         } else {

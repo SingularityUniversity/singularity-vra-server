@@ -50,6 +50,7 @@ const AppLeftNav = React.createClass({
     open: React.PropTypes.bool.isRequired,
     data: React.PropTypes.array, // A list of objects that come back from elasticsearch (currently)
     resultCountTotal: React.PropTypes.number,
+    searchType: React.PropTypes.string,
     style: React.PropTypes.object,
     muiTheme: React.PropTypes.object.isRequired,
   },
@@ -101,8 +102,9 @@ const AppLeftNav = React.createClass({
         open={open}
         onRequestChange={onRequestChangeLeftNav}
       >
-          <div style={{position:'fixed', top:"64px", height: "64px"}}>
-            <span className='small'>Results: {this.props.resultCountTotal}</span> 
+          <div className='pad-left' style={{position:'fixed', top:"64px", height: "64px"}}>
+            <span className='medium'>{this.props.searchType}</span><br />
+            <span className='small'><i>{this.props.resultCountTotal} results</i></span> 
           </div>
 
           <SelectableList  onChange={this.handleContentSelection} style={{height: "100%", overflow:"scroll"}}>

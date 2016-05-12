@@ -27,7 +27,8 @@ const Master = React.createClass({
       resultCountTotal: null,
       content: null,
       summaries: [],  // In theory this should be one piece of state with content
-      articleCount: 0
+      articleCount: 0,
+      searchType: null
     };
   },
 
@@ -39,6 +40,7 @@ const Master = React.createClass({
       success: (data) => {
         this.setState({data: data.hits.hits.map(function(x) { return x._source})});
         this.setState({resultCountTotal: data.hits.total});
+        this.setState({searchType: 'Keyword search'});
         this.setState({content: data.hits.hits[0]._source});
         this.getDocumentSummaries(data.hits.hits[0]._source);
       },
@@ -84,6 +86,7 @@ const Master = React.createClass({
       success: (data, textStatus, xhr) => {
         console.log('search on: ', searchTerms);
         this.setState({resultCountTotal: data.hits.total});
+        this.setState({searchType: 'Keyword search'});
         this.setState({data: data.hits.hits.map(function(x) { return x._source})});
         this.setState({content: data.hits.hits[0]._source});  // XXX These two always need to go together, better 
         this.getDocumentSummaries(data.hits.hits[0]._source); // abstraction needed
@@ -125,6 +128,7 @@ const Master = React.createClass({
                         resultCountTotal: annotated_results.length
 					});
 					this.getDocumentSummaries(annotated_results[0]);
+                    this.setState({searchType: 'Similarity search'});
                 },
                 error: (xhr, status, err) => {
                     console.log(xhr, status);
@@ -193,6 +197,7 @@ const Master = React.createClass({
           open={leftNavOpen}
           data={this.state.data}
           resultCountTotal={this.state.resultCountTotal}
+          searchType={this.state.searchType}
         />
           <ContentDetail style={styles.fullWidthSection} content={this.state.content} summaries={this.state.summaries} onAction={this.handleContentAction}/> 
       </div>

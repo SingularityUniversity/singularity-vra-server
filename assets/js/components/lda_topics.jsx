@@ -27,7 +27,6 @@ function normalizeWeights(wordmap) {
 
 function drawWordCloud(node, wordsobj) {
     var normalizedWords = normalizeWeights(wordsobj);
-    console.log("Before/after", wordsobj, normalizedWords);
     // wordsobj is a list of word,weight list/tuple 
     var cloud = d3Cloud()
     .size([300, 300])
@@ -44,7 +43,6 @@ function drawWordCloud(node, wordsobj) {
    * Create draw as a closure on "node" and "cloud" 
    */
   function draw(words) {
-    console.log("Node is ", node);
     d3.select(node).append('svg')
         .attr("width", cloud.size()[0])
         .attr("height", cloud.size()[1])
@@ -71,7 +69,6 @@ const WordCloud = React.createClass({
     },
     componentDidMount: function() {
         var el = ReactDOM.findDOMNode(this);
-        console.log("Using el and data", el, this.props.words);
         drawWordCloud(el, this.props.words);
     },
     render: function() {

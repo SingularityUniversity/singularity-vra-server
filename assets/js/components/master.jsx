@@ -115,6 +115,7 @@ const Master = React.createClass({
 					let annotated_results = data.results.map(function(item) {
 						var content = item.source;
 						content.lda_similarity_topics = item.topics;
+						content.lda_match_weight = item.weight;
 						return content;
 					});	
 					this.setState({

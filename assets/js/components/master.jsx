@@ -111,7 +111,7 @@ const Master = React.createClass({
        $.ajax({
                 url: `/api/v1/content/${content.pk}/similar`,
                 success: (data) => {
-                    console.log(this, data);
+                    console.log('similaritySearch result: ', this, data);
 					let annotated_results = data.results.map(function(item) {
 						var content = item.source;
 						content.lda_similarity_topics = item.topics;
@@ -121,7 +121,8 @@ const Master = React.createClass({
 					this.setState({
 						query_topics: data.query_topics,
         				data: annotated_results,
-			            content: annotated_results[0]
+			            content: annotated_results[0],
+                        resultCountTotal: annotated_results.length
 					});
 					this.getDocumentSummaries(annotated_results[0]);
                 },

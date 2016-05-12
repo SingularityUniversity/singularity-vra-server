@@ -35,7 +35,7 @@ const Master = React.createClass({
   loadObjectsFromServer: function() {
     $.ajax({
       url: '/api/v1/search',
-      data: 'q=space',
+      data: 'q=space&offset=0&limit=250',  // XXX: hardcoded pagination hack (fix with VRA-21)
       success: (data) => {
         this.setState({data: data.hits.hits.map(function(x) { return x._source})});
         this.setState({resultCountTotal: data.hits.total});
@@ -80,7 +80,7 @@ const Master = React.createClass({
     const searchTerms = e.currentTarget.value;
     $.ajax({
       url: '/api/v1/search',
-      data: `q=${searchTerms}`,
+      data: `q=${searchTerms}&offset=0&limit=250`,  // XXX: Hard coded to max of 250 results. fix this with infinite scrolling (see VRA-21)
       success: (data, textStatus, xhr) => {
         console.log('search on: ', searchTerms);
         this.setState({resultCountTotal: data.hits.total});

@@ -1,5 +1,6 @@
-from django.conf import settings
+import json
 import logging
+from django.conf import settings
 from rest_framework import viewsets, status, views
 from core.models import *
 from core.api.v1.serializers import *
@@ -9,6 +10,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from text.common import get_lda_data, tokenize_text_block, extract_words_from_content
 from text.summary import get_summary_sentences
+from core.api.v1.pagination import LargeResultsLimitOffsetPagination
 import numpy as np
 
 logger = logging.getLogger(__name__)
@@ -28,7 +30,8 @@ class SearchView(views.APIView):
             raise ValueError("settings.ELASTICSEARCH_INDEX is None")
 
         # These should only have single values
-        param_dict = {key:query_params[key] for key in query_params}
+        param_dict = {key:query_params[key] for key in query_params
+                      if key not in ['limit', 'offset']}
 
         for key in ('_source_include', '_source_exclude'):
             if key in param_dict:
@@ -36,6 +39,12 @@ class SearchView(views.APIView):
 
         param_dict['index'] = index
         param_dict['doc_type'] = settings.ELASTICSEARCH_TYPE
+        param_dict['from_'] = 0
+        if 'offset' in query_params:
+            param_dict['from_'] = query_params['offset']
+        param_dict['size'] = LargeResultsLimitOffsetPagination.default_limit
+        if 'limit' in query_params:
+            param_dict['size'] = query_params['limit']
         results = client.search(**param_dict)
 
         return Response(results, status=status.HTTP_200_OK)

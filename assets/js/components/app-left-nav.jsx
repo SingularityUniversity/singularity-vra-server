@@ -89,7 +89,7 @@ const AppLeftNav = React.createClass({
           value={content} 
           primaryText={content.fields.extract['title']}
           secondaryText={
-            <p><span><a href="#">{publisher}</a>   {published}</span></p>
+            <p><span>{content.score.toFixed(3)} <a href="#">{publisher}</a>   {published}</span></p>
           }
           />
       );

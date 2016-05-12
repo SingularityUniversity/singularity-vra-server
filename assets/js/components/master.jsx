@@ -38,7 +38,7 @@ const Master = React.createClass({
       url: '/api/v1/search',
       data: 'q=space&offset=0&limit=250',  // XXX: hardcoded pagination hack (fix with VRA-21)
       success: (data) => {
-        this.setState({data: data.hits.hits.map(function(x) { return x._source})});
+        this.setState({data: data.hits.hits.map(function(x) { return {score: x._score, ...x._source}})});
         this.setState({resultCountTotal: data.hits.total});
         this.setState({searchType: 'Keyword search'});
         this.setState({content: data.hits.hits[0]._source});
@@ -84,10 +84,9 @@ const Master = React.createClass({
       url: '/api/v1/search',
       data: `q=${searchTerms}&offset=0&limit=250`,  // XXX: Hard coded to max of 250 results. fix this with infinite scrolling (see VRA-21)
       success: (data, textStatus, xhr) => {
-        console.log('search on: ', searchTerms);
         this.setState({resultCountTotal: data.hits.total});
         this.setState({searchType: 'Keyword search'});
-        this.setState({data: data.hits.hits.map(function(x) { return x._source})});
+        this.setState({data: data.hits.hits.map(function(x) {return {score: x._score, ...x._source}})});
         this.setState({content: data.hits.hits[0]._source});  // XXX These two always need to go together, better 
         this.getDocumentSummaries(data.hits.hits[0]._source); // abstraction needed
       },
@@ -114,11 +113,10 @@ const Master = React.createClass({
        $.ajax({
                 url: `/api/v1/content/${content.pk}/similar`,
                 success: (data) => {
-                    console.log('similaritySearch result: ', this, data);
 					let annotated_results = data.results.map(function(item) {
 						var content = item.source;
 						content.lda_similarity_topics = item.topics;
-						content.lda_match_weight = item.weight;
+						content.score = item.weight;
 						return content;
 					});	
 					this.setState({

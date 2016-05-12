@@ -33,7 +33,7 @@ def ingest_source(entered_source):
             'last_error': "HTTP response {} {}".format(resp.status_code, resp.reason),
             'last_polled': datetime.now(timezone.utc)
         })
-        Issue.create(
+        Issue.objects.create(
             source="ingestion.content#ingest_source", #  XXX Trying to make this more automatic
             error_code=Issue.ERROR_RETRIEVAL,
             object_type="EnteredSource",
@@ -62,10 +62,20 @@ def _create_content(response, entered_source, complete_processing=True):
     else:
         publisher = publisher_url.publisher
 
+
     content = Content.objects.create(entered_source=entered_source,
                                      url=content_url,
                                      extract=response,
                                      publisher=publisher)
+
+    if response.get('content') is None:
+        Issue.objects.create(
+            source="ingestion.content#_create_content", #  XXX Trying to make this more automatic
+            error_code=Issue.ERROR_NO_CONTENT,
+            object_type="core.models.Content",
+            object_id=content.id,
+            other={"url": content.url}
+        )
     if complete_processing:
         content.add_to_search_index()
         content.add_to_s3()

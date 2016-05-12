@@ -105,6 +105,15 @@ def ingest_rss_source(entered_source):
                                              extract=response,
                                              publisher=publisher,
                                              guid=entry.guid if 'guid' in entry else None)
+            if response.get('content') is None:
+                Issue.objects.create(
+                    source="ingestion.content#ingest_rss_source", #  XXX Trying to make this more automatic
+                    error_code=Issue.ERROR_NO_CONTENT,
+                    object_type="core.models.Content",
+                    object_id=content.id,
+                    other={"url": content.url}
+                )
+
             content.add_to_search_index()
             content.add_to_s3()
             ingested.append(IngestionItem(content.id, response['url']))

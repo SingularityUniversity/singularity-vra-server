@@ -84,7 +84,7 @@ const Master = React.createClass({
       success: (data, textStatus, xhr) => {
         console.log('search on: ', searchTerms);
         this.setState({resultCountTotal: data.hits.total});
-        this.setState({data: data.hits.hits});
+        this.setState({data: data.hits.hits.map(function(x) { return x._source})});
         this.setState({content: data.hits.hits[0]._source});  // XXX These two always need to go together, better 
         this.getDocumentSummaries(data.hits.hits[0]._source); // abstraction needed
       },

@@ -41,7 +41,7 @@ const ContentDetail = React.createClass({
 	  	 	if (content.lda_similarity_topics) {
 				lda_stuff = (
 					<ListItem>	
-					LDA-Inferred Topics - Similarity to Query Candidate is {content.lda_match_weight}
+					LDA-Inferred Topics - Similarity to Query Candidate is {content.score.toFixed(3)}
 					<Card>
                     <CardTitle 
                         actAsExpander={true} showExpandableButton={true} 

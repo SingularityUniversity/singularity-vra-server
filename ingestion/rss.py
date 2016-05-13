@@ -74,7 +74,7 @@ def ingest_rss_source(entered_source):
                     {'error': "response {} {}".format(resp.status_code, resp.reason),
                      'url': entry.link}
                 )
-                Issue.create(
+                Issue.objects.create(
                     source="ingestion.rss#ingest_rss_source", #  XXX Trying to make this more automatic
                     error_code=Issue.ERROR_RETRIEVAL,
                     object_type="EnteredSource",

@@ -58,4 +58,4 @@ class Command(BaseCommand):
         if 'error' in results:
             raise CommandError(results['error'])
         else:
-            self.stdout.write(self.style.SUCCESS(results))
+            self.stdout.write(self.style.SUCCESS(str(results)))

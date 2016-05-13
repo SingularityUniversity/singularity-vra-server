@@ -11,7 +11,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         try:
             results = refresh_rss()
-            self.stdout.write(self.style.SUCCESS(results))
+            self.stdout.write(self.style.SUCCESS(str(results)))
         except Exception as e:
             Issue.objects.create(
                 source="core.management.commands.refresh_rss#Command.handle",

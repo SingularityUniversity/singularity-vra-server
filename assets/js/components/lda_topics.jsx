@@ -7,6 +7,7 @@ import muiThemeable from 'material-ui/styles/muiThemeable';
 import d3 from 'd3';
 import d3Cloud from 'd3-cloud';
 
+console.log('d3Cloud is ', d3Cloud);
 var fill = d3.scale.category20();
 
 function normalizeWeights(wordmap) {
@@ -18,7 +19,7 @@ function normalizeWeights(wordmap) {
   }, 999);
 
   var offset = min;
-  var scale = max-min; 
+  var scale = (max-min) * 1.8;  // Experimental value to make a smaller spread, so all words fit
   return wordmap.map(function(current) {
     var newWeight = (current[1]-offset)/scale;
     return [current[0], newWeight];
@@ -27,6 +28,7 @@ function normalizeWeights(wordmap) {
 
 function drawWordCloud(node, wordsobj) {
     var normalizedWords = normalizeWeights(wordsobj);
+    console.log("Normalized words", normalizedWords);
     // wordsobj is a list of word,weight list/tuple 
     var cloud = d3Cloud()
     .size([300, 300])
@@ -86,7 +88,7 @@ const TopicsList = React.createClass({
         var topicList = this.props.topics.map(function(topic) {
             var topicItems = topic[0].map(function(topicword) {
                 return (
-                    <ListItem innerDivStyle={{paddingTop: "5px", paddingBottom: "5px"}}>
+                    <ListItem key={topicword} innerDivStyle={{paddingTop: "5px", paddingBottom: "5px"}}>
                         {topicword[0]} - {topicword[1]}
                     </ListItem>
                 )

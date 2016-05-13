@@ -6,7 +6,6 @@ import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui
 import TextField from 'material-ui/TextField';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 
-
 import AppLeftNav from './app-left-nav';
 import ContentDetail from './content-detail';
 

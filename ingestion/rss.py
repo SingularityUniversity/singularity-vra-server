@@ -39,7 +39,7 @@ def ingest_rss_source(entered_source):
     for entry in feed_content.entries:
         if 'link' not in entry:
             logger.info("Ut-oh, we have a problem! {}".format(entry))
-            Issue.create(
+            Issue.objects.create(
                 source="ingestion.rss#ingest_rss_source", #  XXX Trying to make this more automatic
                 error_code=Issue.ERROR_MISSING_LINK,
                 object_type="EnteredSource",

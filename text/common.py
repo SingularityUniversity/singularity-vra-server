@@ -94,9 +94,13 @@ def make_nbow_and_dict(content_iterator):
     Given an ordered list of content, create a bow list (index == index from iterator)
     and a corpora.Dictionary, and also return a mapping from nbow index to content.id (id_map)
     '''
-    doc_words = [extract_words_from_content(content) for content in content_iterator]
+
+    # The elements in doc_words and id_map have to correspond one-one in the same order
+    doc_words = [extract_words_from_content(content) for content in content_iterator
+                 if content.extract['content'] not in (None, '')]
     # XXX: not efficient to go through content_iterator again?
-    id_map = [content.id for content in content_iterator]
+    id_map = [content.id for content in content_iterator
+              if content.extract['content'] not in (None, '')]
     ndict = corpora.Dictionary([word_list for word_list in doc_words])
     nbow = [ndict.doc2bow(doc) for doc in doc_words]
 

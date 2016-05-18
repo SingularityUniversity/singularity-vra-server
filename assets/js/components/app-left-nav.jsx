@@ -6,6 +6,7 @@ import {Table, TableBody, TableHeader, TableHeaderColumn, TableFooter, TableRow,
 import Moment from 'moment';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import {Card, CardActions, CardHeader, CardText, CardTitle}  from 'material-ui/Card';
+import RaisedButton from 'material-ui/RaisedButton';
 
 let SelectableList = MakeSelectable(List);
 
@@ -46,6 +47,7 @@ var propTypes = {
     selectedIndexes: React.PropTypes.arrayOf(React.PropTypes.number).isRequired,
     onRequestChangeLeftNav: React.PropTypes.func,
     onSelectedContent: React.PropTypes.func.isRequired, // Pass back the content.fields (corresponds to django Model)
+    onFindSimilar: React.PropTypes.func.isRequired, // Pressed the "find simliar"
     open: React.PropTypes.bool.isRequired,
     data: React.PropTypes.array, // A list of objects that come back from elasticsearch (currently)
     resultCountTotal: React.PropTypes.number,
@@ -76,6 +78,9 @@ const AppLeftNav = React.createClass({
       console.log("Selected: ", selectedItems);
 
       let value =  this.props.onSelectedContent(selectedItems);
+  },
+  onClickedSimilar(e) {
+      this.props.onFindSimilar();
   },
   render() {
       console.log("rendering app left nav");
@@ -126,8 +131,11 @@ const AppLeftNav = React.createClass({
         onRequestChange={onRequestChangeLeftNav}
       >
         <div style={{position:"fixed", "textAlign": "center", "width": "100%"}}>
-            <strong>{this.props.searchType}</strong><br/>
-            <i>{this.props.resultCountTotal} results</i>
+            <p><strong>{this.props.searchType}</strong><br/>
+            <i>{this.props.resultCountTotal} results</i><br/>
+            <i>{this.props.selectedIndexes.length} selected</i><br/>
+            </p>
+             <RaisedButton primary={true} label="Find Similar Documents" onMouseUp={this.onClickedSimilar} disabled={this.props.selectedIndexes.length == 0}/> 
         </div>
           <Table onRowSelection={this.onRowSelection} multiSelectable={true} fixedHeader={true} wrapperStyle={{height: "100%", overflowY: "scroll", marginTop: style.headerHeight}}>
             <TableBody deselectOnClickaway={false} displayRowCheckbox={false}>

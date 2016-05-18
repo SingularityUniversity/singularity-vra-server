@@ -13,14 +13,17 @@ import { TEST_ACTION} from '../actions/test-action';
 import { store } from '../configure-store';
 import { connect } from 'react-redux';
 
-const Master = React.createClass({
+const initialQuery="space";
 
+const Master = React.createClass({
+  
   propTypes: {
     children: React.PropTypes.node,
     history: React.PropTypes.object,
     location: React.PropTypes.object,
 	muiTheme: React.PropTypes.object.isRequired,
   },
+    searchField: null,
 
   getInitialState() {
     store.dispatch({type: TEST_ACTION})
@@ -31,15 +34,18 @@ const Master = React.createClass({
       resultCountTotal: null,
       articleCount: 0,
       searchType: null,
-      selected: []
+      selected: [],
+      searchQuery: 'space'
     };
   },
 
   // XXX: figure out what search we want for initial data
-  loadObjectsFromServer: function() {
+  // XXX: Please refactor me to use handleSearch
+  doInitialSearch: function() {
+      this.setSearch(initialQuery);
     $.ajax({
       url: '/api/v1/search',
-      data: 'q=space&offset=0&limit=250',  // XXX: hardcoded pagination hack (fix with VRA-21)
+      data: 'q='+initialQuery+'&offset=0&limit=250',  // XXX: hardcoded pagination hack (fix with VRA-21)
       success: (data) => {
           this.setState({data: data.hits.hits.map(function(x) { return {score: x._score, ...x._source}}),
               resultCountTotal: data.hits.total,
@@ -66,7 +72,7 @@ const Master = React.createClass({
   },
 
   componentDidMount: function() {
-    this.loadObjectsFromServer();
+    this.doInitialSearch();
     this.getArticleCountFromServer();
   },
 
@@ -77,6 +83,9 @@ const Master = React.createClass({
     });
   },
 
+  handleSearchChange(event) {
+      this.setState({searchQuery: event.target.value});
+  },
   handleSearch(e) {
 	if (e.keyCode != 13) {
 		return;
@@ -107,12 +116,29 @@ const Master = React.createClass({
   },
   handleContentAction(content, action, params) {
 	  if (action=="similar") {
-		this.doSimilaritySearch(content);
+        this.clearSearch();
+		this.doSimilaritySearch([content.pk]);
 	  }
   },
-  doSimilaritySearch(content) {
+  onFindSimilarMultiple() {
+      this.clearSearch();
+      this.doSimilaritySearch(this.state.selected);
+  },
+  setSearch(query) {
+      // XXX: Implement with a component that wraps the textarea with state and also lets the textarea value be set
+  },
+  clearSearch() {
+      // XXX: Implement with a component that wraps the textarea with state and also lets the textarea value be set
+  },
+  doSimilaritySearch(content_ids) {
+      let that = this;
        $.ajax({
-                url: `/api/v1/content/${content.pk}/similar`,
+                url: `/api/v1/similar`,
+                method: 'POST',
+                contentType: "application/json",
+                data: JSON.stringify({'ids': content_ids.map(function(id_index) {
+                    return that.state.data[id_index].pk; 
+                })}),
                 success: (data) => {
 					let annotated_results = data.results.map(function(item) {
 						var content = item.source;
@@ -180,13 +206,14 @@ const Master = React.createClass({
           style={styles.appBar}
           showMenuIconButton={showMenuIconButton} >
           <ToolbarGroup float='right'>
-            <TextField hintText='Search' onKeyDown={this.handleSearch} />
+            <TextField defaultValue={initialQuery} hintText='Search' ref="searchField"  onKeyDown={this.handleSearch} />
           </ToolbarGroup>
         </AppBar>
         <AppLeftNav
           docked={docked}
           onRequestChangeList={this.handleRequestChangeList}
           onSelectedContent={this.handleSelectedContent}
+          onFindSimilar={this.onFindSimilarMultiple}
           open={leftNavOpen}
           data={this.state.data}
           resultCountTotal={this.state.resultCountTotal}

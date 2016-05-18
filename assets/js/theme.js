@@ -100,8 +100,8 @@ export default {
       boxSizing: 'border-box',
       paddingTop: desktopGutter,
       paddingBottom: desktopGutter,
-      marginTop: desktopKeylineIncrement,
-      marginBottom: desktopKeylineIncrement
+      marginTop: desktopGutter,
+      marginBottom: desktopGutter
     },
     root: {
       maxWidth: '1200px',

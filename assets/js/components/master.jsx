@@ -122,7 +122,9 @@ const Master = React.createClass({
   },
   onFindSimilarMultiple() {
       this.clearSearch();
-      this.doSimilaritySearch(this.state.selected);
+      this.doSimilaritySearch(this.state.selected.map((id_index) => {
+          return this.state.data[id_index].pk; 
+      }));
   },
   setSearch(query) {
       // XXX: Implement with a component that wraps the textarea with state and also lets the textarea value be set
@@ -136,9 +138,7 @@ const Master = React.createClass({
                 url: `/api/v1/similar`,
                 method: 'POST',
                 contentType: "application/json",
-                data: JSON.stringify({'ids': content_ids.map(function(id_index) {
-                    return that.state.data[id_index].pk; 
-                })}),
+                data: JSON.stringify({'ids': content_ids}),
                 success: (data) => {
 					let annotated_results = data.results.map(function(item) {
 						var content = item.source;

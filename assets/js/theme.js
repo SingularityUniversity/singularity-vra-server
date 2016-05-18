@@ -1,7 +1,6 @@
 import {fade} from 'material-ui/utils/colorManipulator';
 import {spacing, colors, typography, zIndex} from 'material-ui/styles';
 
-
 /**
  *  Light Theme is the default theme used in material-ui. It is guaranteed to
  *  have all theme variables needed for every component. Variables not defined
@@ -14,6 +13,9 @@ const {fontWeightLight, textFullWhite} = typography;
 export default {
   spacing: spacing,
   fontFamily: 'Roboto, sans-serif',
+  tableRowColumn: {
+    spacing: 8
+  },
   palette: {
     primary1Color: colors.blueGrey500,
     primary2Color: colors.blueGrey700,
@@ -68,8 +70,8 @@ export default {
   },
   leftNav: {
       zIndex: zIndex.appBar -1,
-      paddingBottom: "64px",
-      paddingTop: "128px"  // This is the 64 for the app bar + 64 for fixed div at the top of left nav
+      paddingTop: desktopKeylineIncrement,
+      headerHeight: desktopKeylineIncrement,
   },
   masterBar: {
     contentWhenMedium: {
@@ -93,18 +95,20 @@ export default {
     },
   },
   fullWidthSection: {
-    container: {
+    item: {
       padding: desktopGutter + 'px',
       boxSizing: 'border-box',
       paddingTop: desktopGutter,
       paddingBottom: desktopGutter,
+      marginTop: desktopKeylineIncrement,
+      marginBottom: desktopKeylineIncrement
     },
     root: {
       maxWidth: '1200px',
-      marginTop: 128,
-      marginRight: 64,
-      marginBottom: 128,
-      marginLeft: desktopGutter+256,
+      marginTop: desktopKeylineIncrement * 2,
+      marginRight: desktopKeylineIncrement,
+      marginBottom: desktopKeylineIncrement,
+      marginLeft: desktopGutter + (desktopKeylineIncrement * 4),
     },
   }
 };

@@ -24,10 +24,9 @@ const Master = React.createClass({
       data: [],
 	  query_topics: [], // LDA query topics - [ [ [(term, weight),...], topicweight]...]
       resultCountTotal: null,
-      content: null,
-      summaries: [],  // In theory this should be one piece of state with content
       articleCount: 0,
-      searchType: null
+      searchType: null,
+      selected: []
     };
   },
 
@@ -37,11 +36,10 @@ const Master = React.createClass({
       url: '/api/v1/search',
       data: 'q=space&offset=0&limit=250',  // XXX: hardcoded pagination hack (fix with VRA-21)
       success: (data) => {
-        this.setState({data: data.hits.hits.map(function(x) { return {score: x._score, ...x._source}})});
-        this.setState({resultCountTotal: data.hits.total});
-        this.setState({searchType: 'Keyword search'});
-        this.setState({content: data.hits.hits[0]._source});
-        this.getDocumentSummaries(data.hits.hits[0]._source);
+          this.setState({data: data.hits.hits.map(function(x) { return {score: x._score, ...x._source}}),
+              resultCountTotal: data.hits.total,
+              searchType: 'Keyword search',
+              selected: []});
       },
       error: (xhr, status, err) => {
         // XXX: display error popup or something here
@@ -83,11 +81,11 @@ const Master = React.createClass({
       url: '/api/v1/search',
       data: `q=${searchTerms}&offset=0&limit=250`,  // XXX: Hard coded to max of 250 results. fix this with infinite scrolling (see VRA-21)
       success: (data, textStatus, xhr) => {
-        this.setState({resultCountTotal: data.hits.total});
-        this.setState({searchType: 'Keyword search'});
-        this.setState({data: data.hits.hits.map(function(x) {return {score: x._score, ...x._source}})});
-        this.setState({content: data.hits.hits[0]._source});  // XXX These two always need to go together, better 
-        this.getDocumentSummaries(data.hits.hits[0]._source); // abstraction needed
+          this.setState({resultCountTotal: data.hits.total,
+              searchType: 'Keyword search',
+              data: data.hits.hits.map(function(x) {return {score: x._score, ...x._source}}),
+              selected: []
+          });
       },
       error: (xhr, textStatus, errorThrown) => {
         console.log(`search error: ${textStatus}`);
@@ -99,13 +97,12 @@ const Master = React.createClass({
    * AppLeftNavBar. Thus the content object is the one that 
    * corresponds to the django content model
    */
-  handleSelectedContent(content) {
-      this.setState({content: content, summaries: []});
-      this.getDocumentSummaries(content);
+  handleSelectedContent(selected) {
+      this.setState({ selected: selected});
   },
-  handleContentAction(action, params) {
+  handleContentAction(content, action, params) {
 	  if (action=="similar") {
-		this.doSimilaritySearch(params.content);
+		this.doSimilaritySearch(content);
 	  }
   },
   doSimilaritySearch(content) {
@@ -121,10 +118,9 @@ const Master = React.createClass({
 					this.setState({
 						query_topics: data.query_topics,
         				data: annotated_results,
-			            content: annotated_results[0],
+                        selected: [],
                         resultCountTotal: annotated_results.length
 					});
-					this.getDocumentSummaries(annotated_results[0]);
                     this.setState({searchType: 'Similarity search'});
                 },
                 error: (xhr, status, err) => {
@@ -133,21 +129,7 @@ const Master = React.createClass({
             });
 
   },
-  getDocumentSummaries(content) {
-       $.ajax({
-                url: `/api/v1/content/${content.pk}/summary`,
-                success: (data) => {
-                    console.log(this, data);
-                    this.setState({summaries: data.summary});
-                },
-                error: (xhr, status, err) => {
-                    console.log(xhr, status);
-                }
-            });
-
-  },
-
-
+    
   render() {
     const {
       history,
@@ -168,12 +150,18 @@ const Master = React.createClass({
       docked = true;
       leftNavOpen = true;
       showMenuIconButton = false;
-
+    let that = this;
+    let contentItems = this.state.selected.map(function(itemIndex) {  
+        let selectedContent = that.state.data[itemIndex];
+        return (
+                <ContentDetail key={selectedContent.pk} style={styles.fullWidthSection} content={selectedContent} onAction={that.handleContentAction}/> 
+               );
+    });
 	// XXX: This is really hacky - there are styles from the theme that we're setting in the theme.js
 	// but then we are extracting them from the theme and passing in the containerStyle and style, because
 	// I haven't figured out exactly  how to structure the entries in theme.js
     return (
-      <div>
+      <div style={styles.root}>
         <AppBar
           ref='appBar'
           title={title}
@@ -186,8 +174,6 @@ const Master = React.createClass({
           </ToolbarGroup>
         </AppBar>
         <AppLeftNav
-          history={history}
-          location={location}
           docked={docked}
           onRequestChangeList={this.handleRequestChangeList}
           onSelectedContent={this.handleSelectedContent}
@@ -195,8 +181,11 @@ const Master = React.createClass({
           data={this.state.data}
           resultCountTotal={this.state.resultCountTotal}
           searchType={this.state.searchType}
+          selectedIndexes={this.state.selected}
         />
-          <ContentDetail style={styles.fullWidthSection} content={this.state.content} summaries={this.state.summaries} onAction={this.handleContentAction}/> 
+        <div style={styles.fullWidthSection.root}>
+        {contentItems}
+        </div>
       </div>
     );
   },

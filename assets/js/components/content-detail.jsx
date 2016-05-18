@@ -1,3 +1,4 @@
+import $ from 'jquery';
 import React from 'react';
 import Divider from 'material-ui/Divider';
 import {Card, CardActions, CardHeader, CardText, CardTitle}  from 'material-ui/Card';
@@ -13,16 +14,30 @@ const ContentDetail = React.createClass({
 
     propTypes: {
         content: React.PropTypes.object,
-        summaries: React.PropTypes.arrayOf(React.PropTypes.string),
 		muiTheme: React.PropTypes.object.isRequired,
-		onAction: React.PropTypes.func.isRequired  // onAction(action_id, params)
+		onAction: React.PropTypes.func.isRequired  // onAction(content, action_id, params)
     }, 
+    getInitialState() {
+        return {summaries: []}
+    },
 	clickedFindSimilar() {
 		console.log(this.props.content.pk);
 		if (this.props.onAction) {
-			this.props.onAction('similar', {content:this.props.content})
+			this.props.onAction(this.props.content, 'similar');
 		}
 	},
+    componentDidMount() {
+        $.ajax({
+            url: `/api/v1/content/${this.props.content.pk}/summary`,
+            success: (data) => {
+                console.log(this, data);
+                this.setState({summaries: data.summary});
+            },
+            error: (xhr, status, err) => {
+                console.log(xhr, status);
+            }
+        });
+    },
     render() {
         const {
             content
@@ -54,7 +69,7 @@ const ContentDetail = React.createClass({
 				)
 			} 
             return (
-                <Card style={this.props.muiTheme.fullWidthSection.root} containerStyle={this.props.muiTheme.fullWidthSection.container}t>
+                <Card  containerStyle={this.props.muiTheme.fullWidthSection.item}t>
                     <CardTitle 
                         title={extract.title} 
                         subtitle={"From: "+extract.provider_name}
@@ -69,8 +84,8 @@ const ContentDetail = React.createClass({
                                 <Card>
                                 <CardText>
                                     {
-                                        (this.props.summaries.length ==0 ) ? "No content" :
-                                            this.props.summaries.map(function(val) {
+                                        (this.state.summaries.length ==0 ) ? "No content" :
+                                            this.state.summaries.map(function(val) {
                                             return (<li key={val}>{val}</li>);
                                             })
                                     }

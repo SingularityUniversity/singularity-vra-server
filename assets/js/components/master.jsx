@@ -3,6 +3,7 @@ import $ from 'jquery';
 import AppBar from 'material-ui/AppBar';
 import IconButton from 'material-ui/IconButton';
 import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
+import {Card, CardActions, CardHeader, CardText, CardTitle}  from 'material-ui/Card';
 import TextField from 'material-ui/TextField';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 
@@ -161,6 +162,11 @@ const Master = React.createClass({
                 <ContentDetail key={selectedContent.pk} style={styles.fullWidthSection} content={selectedContent} onAction={that.handleContentAction}/> 
                );
     });
+    if (contentItems.length == 0) {
+        contentItems = [
+            (<Card><CardTitle title="Please select content"/></Card>)
+        ];
+    }
 	// XXX: This is really hacky - there are styles from the theme that we're setting in the theme.js
 	// but then we are extracting them from the theme and passing in the containerStyle and style, because
 	// I haven't figured out exactly  how to structure the entries in theme.js

@@ -79,7 +79,8 @@ def ingest_rss_source(entered_source):
                     error_code=Issue.ERROR_RETRIEVAL,
                     object_type="EnteredSource",
                     object_id=entered_source.id,
-                    other={"status_code": resp.status_code, "reason": resp.reason, "url": url}
+                    other={"status_code": resp.status_code, "reason": resp.reason,
+                           "rss_url": url, "url": entry.link}
                 )
                 continue
             provider_url = response['provider_url']

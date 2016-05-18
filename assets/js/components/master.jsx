@@ -8,6 +8,9 @@ import muiThemeable from 'material-ui/styles/muiThemeable';
 
 import AppLeftNav from './app-left-nav';
 import ContentDetail from './content-detail';
+import { TEST_ACTION} from '../actions/test-action';
+import { store } from '../configure-store';
+import { connect } from 'react-redux';
 
 const Master = React.createClass({
 
@@ -19,6 +22,7 @@ const Master = React.createClass({
   },
 
   getInitialState() {
+    store.dispatch({type: TEST_ACTION})
     return {
       leftNavOpen: false,
       data: [],
@@ -191,5 +195,8 @@ const Master = React.createClass({
   },
 });
 
+const mapStateToProps = (state) => {
+  return {test: state.test}
+}
 
-export default muiThemeable()(Master);
+export default connect(mapStateToProps)(muiThemeable()(Master));

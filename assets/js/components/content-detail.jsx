@@ -69,13 +69,15 @@ const ContentDetail = React.createClass({
 				)
 			} 
             return (
-                <Card  containerStyle={this.props.muiTheme.fullWidthSection.item}t>
+                <Card  initiallyExpanded={true} containerStyle={this.props.muiTheme.fullWidthSection.item}>
                     <CardTitle 
+                        actAsExpander={true}
+                        showExpandableButton={true}
                         title={extract.title} 
                         subtitle={"From: "+extract.provider_name}
                         titleStyle={{textAlign: 'center'}}
                         subtitleStyle={{textAlign: 'center'}}/> 
-                    <CardText>
+                    <CardText expandable={true}>
                         <List>
                             <ListItem>Published on:  {`${publishedDate}`} </ListItem>
                             <ListItem>URL: <a target="vra_preview" href={extract.url}>{extract.url}</a></ListItem>
@@ -106,7 +108,7 @@ const ContentDetail = React.createClass({
 							</ListItem>
                         </List>
                     </CardText>
-                    <CardActions>
+                    <CardActions expandable={true}>
                         <RaisedButton primary={true} onMouseUp={this.clickedFindSimilar} label="Find similar articles"/>
                         <RaisedButton secondary={true} label="Action2"/>
                     </CardActions>

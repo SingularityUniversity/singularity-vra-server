@@ -31,11 +31,12 @@ const Master = React.createClass({
       leftNavOpen: false,
       data: [],
 	  query_topics: [], // LDA query topics - [ [ [(term, weight),...], topicweight]...]
-      resultCountTotal: null,
+      resultCountTotal: 0,
       articleCount: 0,
-      searchType: null,
+      searchType: "",
       selected: [],
-      searchQuery: 'space'
+      searchQuery: 'space',
+      scrollOfset: 0
     };
   },
 
@@ -50,6 +51,7 @@ const Master = React.createClass({
           this.setState({data: data.hits.hits.map(function(x) { return {score: x._score, ...x._source}}),
               resultCountTotal: data.hits.total,
               searchType: 'Keyword search',
+              scrollOffset: 0,
               selected: []});
       },
       error: (xhr, status, err) => {
@@ -98,6 +100,7 @@ const Master = React.createClass({
           this.setState({resultCountTotal: data.hits.total,
               searchType: 'Keyword search',
               data: data.hits.hits.map(function(x) {return {score: x._score, ...x._source}}),
+              scrollOffset: 0,
               selected: []
           });
       },
@@ -107,12 +110,26 @@ const Master = React.createClass({
     });
   },
 
-  /* This method corresponds to the onSelectedContent method of 
-   * AppLeftNavBar. Thus the content object is the one that 
-   * corresponds to the django content model
-   */
-  handleSelectedContent(selected) {
-      this.setState({ selected: selected});
+  handleSelectedContent(content, selected) {
+      // XXX: choose a better data structure to make this more simple
+      if (!selected) { // Turn off membership in selected - filter out if it somehow exists in the selected list
+          let filtered_selected = this.state.selected.filter(function(selected_content) {
+              return (content.pk != selected_content.pk)
+          });
+          this.setState({selected: filtered_selected});
+      }
+      let alreadySelected = false;
+      this.state.selected.forEach(function(selected_content) {
+          if (selected_content.pk == content.pk) {
+              alreadySelected = true;
+          }
+      });
+      
+      if (!alreadySelected) {
+          let selected = this.state.selected;
+          selected.push(content);
+          this.setState({selected: selected});
+      }
   },
   handleContentAction(content, action, params) {
 	  if (action=="similar") {
@@ -122,8 +139,8 @@ const Master = React.createClass({
   },
   onFindSimilarMultiple() {
       this.clearSearch();
-      this.doSimilaritySearch(this.state.selected.map((id_index) => {
-          return this.state.data[id_index].pk; 
+      this.doSimilaritySearch(this.state.selected.map((content) => {
+          return content.pk; 
       }));
   },
   setSearch(query) {
@@ -160,7 +177,6 @@ const Master = React.createClass({
             });
 
   },
-    
   render() {
     const {
       history,
@@ -182,10 +198,9 @@ const Master = React.createClass({
       leftNavOpen = true;
       showMenuIconButton = false;
     let that = this;
-    let contentItems = this.state.selected.map(function(itemIndex) {  
-        let selectedContent = that.state.data[itemIndex];
+    let contentItems = this.state.selected.map(function(content) {  
         return (
-                <ContentDetail key={selectedContent.pk} style={styles.fullWidthSection} content={selectedContent} onAction={that.handleContentAction}/> 
+                <ContentDetail key={content.pk} style={styles.fullWidthSection} content={content} onAction={that.handleContentAction}/> 
                );
     });
     if (contentItems.length == 0) {
@@ -210,15 +225,14 @@ const Master = React.createClass({
           </ToolbarGroup>
         </AppBar>
         <AppLeftNav
-          docked={docked}
-          onRequestChangeList={this.handleRequestChangeList}
-          onSelectedContent={this.handleSelectedContent}
+          onChangeSelected={this.handleSelectedContent}
           onFindSimilar={this.onFindSimilarMultiple}
-          open={leftNavOpen}
-          data={this.state.data}
-          resultCountTotal={this.state.resultCountTotal}
+          displayedContent={this.state.data}
+          selectedContent={this.state.selected}
+          totalCount={this.state.resultCountTotal}
           searchType={this.state.searchType}
-          selectedIndexes={this.state.selected}
+          previousPage={function() {console.log("called previousPage")}}
+          nextPage={function() {console.log("called nextPage")}}
         />
         <div style={styles.fullWidthSection.root}>
         {contentItems}

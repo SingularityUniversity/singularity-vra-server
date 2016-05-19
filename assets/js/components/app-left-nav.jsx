@@ -7,6 +7,7 @@ import Moment from 'moment';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import {Card, CardActions, CardHeader, CardText, CardTitle}  from 'material-ui/Card';
 import RaisedButton from 'material-ui/RaisedButton';
+import {spacing, colors, typography, zIndex} from 'material-ui/styles';
 
 let SelectableList = MakeSelectable(List);
 
@@ -42,18 +43,16 @@ function wrapState(ComposedComponent) {
 }
 
 SelectableList = wrapState(SelectableList);
-var propTypes = {
-    docked: React.PropTypes.bool.isRequired,
-    selectedIndexes: React.PropTypes.arrayOf(React.PropTypes.number).isRequired,
-    onRequestChangeLeftNav: React.PropTypes.func,
-    onSelectedContent: React.PropTypes.func.isRequired, // Pass back the content.fields (corresponds to django Model)
-    onFindSimilar: React.PropTypes.func.isRequired, // Pressed the "find simliar"
-    open: React.PropTypes.bool.isRequired,
-    data: React.PropTypes.array, // A list of objects that come back from elasticsearch (currently)
-    resultCountTotal: React.PropTypes.number,
-    searchType: React.PropTypes.string,
-    style: React.PropTypes.object,
+let propTypes = {
     muiTheme: React.PropTypes.object.isRequired,
+    displayedContent: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
+    selectedContent: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
+    totalCount: React.PropTypes.number.isRequired,
+    onChangeSelected: React.PropTypes.func.isRequired, // function(content, isSelected)
+    previousPage: React.PropTypes.func,
+    nextPage: React.PropTypes.func,
+    onFindSimilar: React.PropTypes.func.isRequired,
+    searchType: React.PropTypes.string,
   };
 const AppLeftNav = React.createClass({
 
@@ -64,36 +63,33 @@ const AppLeftNav = React.createClass({
   handleContentSelection(e,content) {
     this.props.onSelectedContent(content);
   },
-
-  onRowSelection(selectionList) {
-      let that=this;
-      let selectedItems;
-      if (selectionList == "all") {
-            selectedItems = this.props.data.map(function(item, index) {
-                return index;
-            });
-      } else {
-          selectedItems = selectionList;
-      }
-      console.log("Selected: ", selectedItems);
-
-      let value =  this.props.onSelectedContent(selectedItems);
-  },
   onClickedSimilar(e) {
       this.props.onFindSimilar();
+  },
+  getSelectedIDS() {
+    // XXX: Don't recalculate this every time, only should have to calculate once when mounted component
+    return this.props.selectedContent.map((content) => {
+        return content.pk;
+    });
+  },
+  onClickedItem(content) {
+    let selectedPKIDs = this.getSelectedIDS();
+    this.props.onChangeSelected(content, selectedPKIDs.indexOf(content.pk) < 0);
   },
   render() {
       console.log("rendering app left nav");
     const {
-      docked,
-      onRequestChangeLeftNav,
       onSelectedContent,
-      open,
-      data
+      displayedContent, 
+      selectedContent,
+      searchType,
+      muiTheme,
+      totalCount
     } = this.props;
-
-	const style = this.props.muiTheme.leftNav;
-    let contentItems = data.map((content, index, array) => {
+    let that = this;
+	const style = muiTheme.leftNav;
+    let selectedPKIDs = this.getSelectedIDS();
+    let contentItems = displayedContent.map((content, index, array) => {
         let published = '';
         let publisher = '';
         if (content.fields.extract['published']) {
@@ -108,40 +104,36 @@ const AppLeftNav = React.createClass({
         let subtitle = (
                 <span>{content.score.toFixed(3)}<br/> <a href="#">{publisher}</a>   {published}</span>
                 );
-        let selected = (this.props.selectedIndexes.indexOf(index) >= 0);
+        let cardStyle ={whiteSpace: "inherit", cursor: "pointer", boxShadow: 0, backgroundColor:null} ;
+        if (selectedPKIDs.indexOf(content.pk) >=0 ) {
+            cardStyle['backgroundColor'] = colors.grey300;
+        };
         return (
-                <TableRow selected={selected} key={content.pk}>
-                <TableRowColumn style={{whiteSpace: "inherit", cursor: "pointer"}}>
-                <Card style={{boxShadow: 0, backgroundColor:null}}> 
+                <Card onClick={function(e) {that.onClickedItem(content)}} key={content.pk} style={cardStyle}> 
                 <CardTitle 
                 title={title} 
                 subtitle={subtitle}
-                titleStyle={{fontSize: '95%', lineHeight:null }}/>
+                titleStyle={{fontSize: '75%', lineHeight:null }}/>
                 </Card>
-                </TableRowColumn>
-                </TableRow>
                );
     });
 
     return (
       <Drawer
         containerStyle={style}
-        docked={docked}
-        open={open}
-        onRequestChange={onRequestChangeLeftNav}
+        docked={true}
+        open={true}
       >
         <div style={{position:"fixed", "textAlign": "center", "width": "100%"}}>
-            <p><strong>{this.props.searchType}</strong><br/>
-            <i>{this.props.resultCountTotal} results</i><br/>
-            <i>{this.props.selectedIndexes.length} selected</i><br/>
+            <p><strong>{searchType}</strong><br/>
+            <i>{totalCount} results</i><br/>
+            <i>{selectedContent.length} selected</i><br/>
             </p>
-             <RaisedButton primary={true} label="Find Similar Documents" onMouseUp={this.onClickedSimilar} disabled={this.props.selectedIndexes.length == 0}/> 
+             <RaisedButton primary={true} label="Find Similar Documents" onMouseUp={this.onClickedSimilar} disabled={selectedContent.length == 0}/> 
         </div>
-          <Table onRowSelection={this.onRowSelection} multiSelectable={true} fixedHeader={true} wrapperStyle={{height: "100%", overflowY: "scroll", marginTop: style.headerHeight}}>
-            <TableBody deselectOnClickaway={false} displayRowCheckbox={false}>
+          <div style={{height: "100%", overflowY: "scroll", marginTop: style.headerHeight}}>
             {contentItems}
-            </TableBody>
-          </Table>
+          </div>
 	</Drawer>
     );
   },

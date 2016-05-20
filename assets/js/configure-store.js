@@ -5,16 +5,19 @@ import rootReducer from './reducers/root-reducer';
 
 export const initialState = {
   test: false,
+  clipboardVisibility: false,
+  clipboard: [],
 };
 
 const loggerMiddleware = createLogger();
 
-export const store = createStore(
+export default function configureStore(initialState) {
+  return createStore(
   rootReducer,
   initialState,
   applyMiddleware(
     thunkMiddleware,
     loggerMiddleware,
   ),
-);
+)};
 

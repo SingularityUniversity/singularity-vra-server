@@ -1,12 +1,13 @@
 import React from 'react';
 import { Provider } from 'react-redux';
-import Master from './components/master';
+import Master from './containers/master';
 import MyRawTheme from './theme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
-import { store } from './configure-store';
+import configureStore, { initialState }  from './configure-store';
 
+const store = configureStore(initialState);
 const muiTheme = getMuiTheme(MyRawTheme);
 
 // MuiThemeProvider surrounds the very top level and provides a new theme to everything below it

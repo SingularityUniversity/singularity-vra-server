@@ -1,32 +1,34 @@
 import React from 'react';
 import $ from 'jquery';
 import AppBar from 'material-ui/AppBar';
-import IconButton from 'material-ui/IconButton';
 import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
 import {Card, CardActions, CardHeader, CardText, CardTitle}  from 'material-ui/Card';
 import TextField from 'material-ui/TextField';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 
-import AppLeftNav from './app-left-nav';
-import ContentDetail from './content-detail';
-import { TEST_ACTION} from '../actions/test-action';
+import AppLeftNav from '../components/app-left-nav';
+import Clipboard from '../components/clipboard';
+import ClipboardVisibilityButton from '../components/clipboard-visibility-button';
+import ContentDetail from '../components/content-detail';
+import { test_action } from '../actions/test-action';
 import { store } from '../configure-store';
 import { connect } from 'react-redux';
+import { toggleClipboard } from '../actions/clipboard-actions';
 
 const initialQuery="space";
 
 const Master = React.createClass({
-  
   propTypes: {
     children: React.PropTypes.node,
     history: React.PropTypes.object,
     location: React.PropTypes.object,
 	muiTheme: React.PropTypes.object.isRequired,
   },
-    searchField: null,
+
+  searchField: null,
 
   getInitialState() {
-    store.dispatch({type: TEST_ACTION})
+    this.props.testAction();
     return {
       leftNavOpen: false,
       data: [],
@@ -43,16 +45,17 @@ const Master = React.createClass({
   // XXX: figure out what search we want for initial data
   // XXX: Please refactor me to use handleSearch
   doInitialSearch: function() {
-      this.setSearch(initialQuery);
+    this.setSearch(initialQuery);
     $.ajax({
       url: '/api/v1/search',
       data: 'q='+initialQuery+'&offset=0&limit=250',  // XXX: hardcoded pagination hack (fix with VRA-21)
       success: (data) => {
-          this.setState({data: data.hits.hits.map(function(x) { return {score: x._score, ...x._source}}),
-              resultCountTotal: data.hits.total,
-              searchType: 'Keyword search',
-              scrollOffset: 0,
-              selected: []});
+        this.setState({data: data.hits.hits.map(function(x) { return {score: x._score, ...x._source}}),
+          resultCountTotal: data.hits.total,
+          searchType: 'Keyword search',
+          scrollOffset: 0,
+          selected: []
+        });
       },
       error: (xhr, status, err) => {
         // XXX: display error popup or something here
@@ -198,6 +201,10 @@ const Master = React.createClass({
       docked = true;
       leftNavOpen = true;
       showMenuIconButton = false;
+
+    let clipboardDocked = true;
+    let clipboardWidth = 450;
+
     let that = this;
     let contentItems = this.state.selected.map(function(content) {  
         return (
@@ -223,6 +230,9 @@ const Master = React.createClass({
           showMenuIconButton={showMenuIconButton} >
           <ToolbarGroup float='right'>
             <TextField defaultValue={initialQuery} hintText='Search' ref="searchField"  onKeyDown={this.handleSearch} />
+            <ClipboardVisibilityButton
+              onClick={this.props.onClipboardVisibilityClick}
+              open={this.props.clipboardVisibility} />
           </ToolbarGroup>
         </AppBar>
         <AppLeftNav
@@ -235,6 +245,11 @@ const Master = React.createClass({
           previousPage={function() {console.log("called previousPage")}}
           nextPage={function() {console.log("called nextPage")}}
         />
+        <Clipboard 
+          docked={clipboardDocked}
+          open={this.props.clipboardVisibility}
+          openSecondary={true} 
+          width={clipboardWidth} />
         <div style={styles.fullWidthSection.root}>
         {contentItems}
         </div>
@@ -244,7 +259,21 @@ const Master = React.createClass({
 });
 
 const mapStateToProps = (state) => {
-  return {test: state.test}
+  return {
+    test: state.test,
+    clipboardVisibility: state.clipboardVisibility
+  }
 }
 
-export default connect(mapStateToProps)(muiThemeable()(Master));
+const mapDispatchToProps = (dispatch) => {
+  return {
+    testAction: () => {
+      dispatch(test_action());
+    },
+    onClipboardVisibilityClick: (openState) => {
+      dispatch(toggleClipboard());
+    }
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(muiThemeable()(Master));

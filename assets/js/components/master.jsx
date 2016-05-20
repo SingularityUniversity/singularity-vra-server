@@ -177,6 +177,7 @@ const Master = React.createClass({
             });
 
   },
+    
   render() {
     const {
       history,
@@ -205,7 +206,7 @@ const Master = React.createClass({
     });
     if (contentItems.length == 0) {
         contentItems = [
-            (<Card><CardTitle title="Please select content"/></Card>)
+            (<Card key={"empty"}><CardTitle title="Please select content"/></Card>)
         ];
     }
 	// XXX: This is really hacky - there are styles from the theme that we're setting in the theme.js

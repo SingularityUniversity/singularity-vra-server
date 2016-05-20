@@ -8,6 +8,7 @@ import muiThemeable from 'material-ui/styles/muiThemeable';
 import {Card, CardActions, CardHeader, CardText, CardTitle}  from 'material-ui/Card';
 import RaisedButton from 'material-ui/RaisedButton';
 import {spacing, colors, typography, zIndex} from 'material-ui/styles';
+import Infinite from 'react-infinite';
 
 let SelectableList = MakeSelectable(List);
 
@@ -55,6 +56,22 @@ let propTypes = {
     searchType: React.PropTypes.string,
   };
 const AppLeftNav = React.createClass({
+  getInitialState: function() {
+    return {listHeight: window.innerHeight - this.props.muiTheme.leftNav.headerHeight - spacing.desktopGutter
+    };
+  },
+
+  handleResize: function(e) {
+    this.setState({listHeight: window.innerHeight - this.props.muiTheme.leftNav.headerHeight - spacing.desktopGutter});
+  },
+
+  componentDidMount: function() {
+    window.addEventListener('resize', this.handleResize);
+  },
+
+  componentWillUnmount: function() {
+    window.removeEventListener('resize', this.handleResize);
+  },
 
   propTypes: propTypes, 
   handleRequestChangeLink(event, value) {
@@ -117,7 +134,6 @@ const AppLeftNav = React.createClass({
                 </Card>
                );
     });
-
     return (
       <Drawer
         containerStyle={style}
@@ -132,7 +148,9 @@ const AppLeftNav = React.createClass({
              <RaisedButton primary={true} label="Find Similar Documents" onMouseUp={this.onClickedSimilar} disabled={selectedContent.length == 0}/> 
         </div>
           <div style={{height: "100%", overflowY: "scroll", marginTop: style.headerHeight}}>
+            <Infinite elementHeight={58} containerHeight={this.state.listHeight}>
             {contentItems}
+            </Infinite>
           </div>
 	</Drawer>
     );

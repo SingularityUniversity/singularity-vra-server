@@ -17,8 +17,13 @@ export function toggleClipboard() {
   return {type: TOGGLE_CLIPBOARD};
 }
 
-export function addSnippetToClipboard(snippet) {
-  return {type: ADD_SNIPPET_TO_CLIPBOARD, snippet};
+export function addSnippetToClipboard(id, title, snippet) {
+  return {
+    type: ADD_SNIPPET_TO_CLIPBOARD, 
+    id, id,
+    title: title,
+    snippet: snippet
+  };
 }
 
 export function removeSnippetFromClipboard(snippet) {

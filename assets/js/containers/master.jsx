@@ -11,7 +11,7 @@ import Clipboard from '../components/clipboard';
 import ClipboardVisibilityButton from '../components/clipboard-visibility-button';
 import ContentDetail from '../components/content-detail';
 import { test_action } from '../actions/test-action';
-import { store } from '../configure-store';
+import { addSnippetToClipboard } from '../actions/clipboard-actions.js';
 import { connect } from 'react-redux';
 import { toggleClipboard } from '../actions/clipboard-actions';
 
@@ -29,6 +29,7 @@ const Master = React.createClass({
 
   getInitialState() {
     this.props.testAction();
+    this.props.addSnippet(1, 'title', 'snippet 1');
     return {
       leftNavOpen: false,
       data: [],
@@ -274,6 +275,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     onClipboardVisibilityClick: (openState) => {
       dispatch(toggleClipboard());
+    },
+    addSnippet: (id, title, snippet) => {
+      dispatch(addSnippetToClipboard(id, title, snippet));
     }
   }
 }

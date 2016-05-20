@@ -249,7 +249,8 @@ const Master = React.createClass({
           docked={clipboardDocked}
           open={this.props.clipboardVisibility}
           openSecondary={true} 
-          width={clipboardWidth} />
+          width={clipboardWidth} 
+          articleSnippetList={this.props.articleSnippetList} />
         <div style={styles.fullWidthSection.root}>
         {contentItems}
         </div>
@@ -261,7 +262,8 @@ const Master = React.createClass({
 const mapStateToProps = (state) => {
   return {
     test: state.test,
-    clipboardVisibility: state.clipboardVisibility
+    clipboardVisibility: state.clipboardVisibility,
+    articleSnippetList: state.articleSnippetList
   }
 }
 

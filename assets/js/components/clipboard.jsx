@@ -2,9 +2,12 @@ import React from 'react';
 import Drawer from 'material-ui/Drawer';
 import Moment from 'moment';
 import muiThemeable from 'material-ui/styles/muiThemeable';
-import {Table, TableBody, TableHeader, TableHeaderColumn, TableFooter, TableRow, TableRowColumn} from 'material-ui/Table';
 import {closeClipboard} from '../actions/clipboard-actions';
 import { store } from '../configure-store';
+import Divider from 'material-ui/Divider';
+import IconButton from 'material-ui/IconButton';
+import ContentCopy from 'material-ui/svg-icons/content/content-copy';
+import ArticleSnippetList from './article-snippet-list'
 
 
 const propTypes = {
@@ -12,6 +15,7 @@ const propTypes = {
     open: React.PropTypes.bool.isRequired,
     style: React.PropTypes.object,
     muiTheme: React.PropTypes.object.isRequired,
+    articleSnippetList: React.PropTypes.array.isRequired,
   };
 
 const Clipboard = React.createClass({
@@ -23,12 +27,8 @@ const Clipboard = React.createClass({
       open,
       openSecondary,
       width,
-      snippetList,
+      articleSnippetList,
     } = this.props;
-
-    //let clipboardContent = snippetList.map((snippets, index, array) => {
-    let clipboardContent = [].map((snippets, index, array) => {
-    });
 
 	const style = this.props.muiTheme.leftNav;
     return (
@@ -39,10 +39,14 @@ const Clipboard = React.createClass({
         openSecondary={openSecondary}
         width={width}
       >
-      <Table>
-        <TableBody>
-        </TableBody>
-      </Table>
+        <div style={{paddingLeft: '10px', paddingBottom: '10px'}}>
+          Clipboard
+          <IconButton tooltip='Copy to system clipboard'>
+            <ContentCopy />
+          </IconButton>
+        </div>
+        <Divider />
+        <ArticleSnippetList articleSnippets={articleSnippetList}/>
 	  </Drawer>
     );
   },

@@ -5,7 +5,7 @@ import { clipboardVisibilityReducer, clipboardReducer } from './clipboard-reduce
 const rootReducer = combineReducers({
   test: testReducer,
   clipboardVisibility: clipboardVisibilityReducer,
-  clipboard: clipboardReducer,
+  articleSnippetList: clipboardReducer,
 });
 
 export default rootReducer

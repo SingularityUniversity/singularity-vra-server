@@ -6,7 +6,7 @@ import rootReducer from './reducers/root-reducer';
 export const initialState = {
   test: false,
   clipboardVisibility: false,
-  clipboard: [],
+  articleSnippetList: [],
 };
 
 const loggerMiddleware = createLogger();

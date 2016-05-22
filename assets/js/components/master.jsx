@@ -36,29 +36,14 @@ const Master = React.createClass({
       searchType: "",
       selected: [],
       searchQuery: 'space',
-      scrollOfset: 0
+      scrollOffset: 0,
+      lastScrollPage: false
     };
   },
 
   // XXX: figure out what search we want for initial data
-  // XXX: Please refactor me to use handleSearch
   doInitialSearch: function() {
-      this.setSearch(initialQuery);
-    $.ajax({
-      url: '/api/v1/search',
-      data: 'q='+initialQuery+'&offset=0&limit=250',  // XXX: hardcoded pagination hack (fix with VRA-21)
-      success: (data) => {
-          this.setState({data: data.hits.hits.map(function(x) { return {score: x._score, ...x._source}}),
-              resultCountTotal: data.hits.total,
-              searchType: 'Keyword search',
-              scrollOffset: 0,
-              selected: []});
-      },
-      error: (xhr, status, err) => {
-        // XXX: display error popup or something here
-        console.log(xhr, status);
-      }
-    });
+      this.doSearch(initialQuery, true, 0);
   },
 
   getArticleCountFromServer: function() {
@@ -88,28 +73,45 @@ const Master = React.createClass({
   handleSearchChange(event) {
       this.setState({searchQuery: event.target.value});
   },
+  doSearch(query, reset_selected, offset) {
+      if (!offset) {
+          offset=0;
+      }
+      let that = this;
+      $.ajax({
+          url: '/api/v1/search',
+          data: `q=${query}&offset=${offset}&limit=100`, // XXX: 100 should be config var 
+          success: (data, textStatus, xhr) => {
+              this.setState({resultCountTotal: data.hits.total,
+                  searchType: 'Keyword search',
+                  data: data.hits.hits.map(function(x) {return {score: x._score, ...x._source}}),
+                  scrollOffset: offset+100, // XXX: this 100 needs to be same as the one above
+                  selected: reset_selected ? [] : that.state.selected,
+                  searchQuery: query,
+                  lastScrollPage: (offset+100 > data.hits.total)
+              });
+          },
+          error: (xhr, textStatus, errorThrown) => {
+              console.log(`search error: ${textStatus}`);
+          }
+      });
+  },
   handleSearch(e) {
 	if (e.keyCode != 13) {
 		return;
 	}
-    const searchTerms = e.currentTarget.value;
-    $.ajax({
-      url: '/api/v1/search',
-      data: `q=${searchTerms}&offset=0&limit=250`,  // XXX: Hard coded to max of 250 results. fix this with infinite scrolling (see VRA-21)
-      success: (data, textStatus, xhr) => {
-          this.setState({resultCountTotal: data.hits.total,
-              searchType: 'Keyword search',
-              data: data.hits.hits.map(function(x) {return {score: x._score, ...x._source}}),
-              scrollOffset: 0,
-              selected: []
-          });
-      },
-      error: (xhr, textStatus, errorThrown) => {
-        console.log(`search error: ${textStatus}`);
-      }
-    });
+    const searchQuery = e.currentTarget.value;
+    this.doSearch(searchQuery, true, 0);
   },
-
+  nextPage() {
+      if (!this.state.lastScrollPage) {
+          this.doSearch(this.state.searchQuery, false, this.state.scrollOffset);
+      } else {
+          this.setState({
+              data: this.state.data.slice() // Make a copy of the search data, so left nav will reset "inifinteLoading" state
+          })
+      }
+  },
   handleSelectedContent(content, selected) {
       // XXX: choose a better data structure to make this more simple
       if (!selected) { // Turn off membership in selected - filter out if it somehow exists in the selected list
@@ -232,8 +234,8 @@ const Master = React.createClass({
           selectedContent={this.state.selected}
           totalCount={this.state.resultCountTotal}
           searchType={this.state.searchType}
-          previousPage={function() {console.log("called previousPage")}}
-          nextPage={function() {console.log("called nextPage")}}
+          nextPage={this.nextPage}
+
         />
         <div style={styles.fullWidthSection.root}>
         {contentItems}

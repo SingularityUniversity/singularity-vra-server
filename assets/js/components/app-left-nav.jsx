@@ -50,14 +50,15 @@ let propTypes = {
     selectedContent: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
     totalCount: React.PropTypes.number.isRequired,
     onChangeSelected: React.PropTypes.func.isRequired, // function(content, isSelected)
-    previousPage: React.PropTypes.func,
     nextPage: React.PropTypes.func,
     onFindSimilar: React.PropTypes.func.isRequired,
-    searchType: React.PropTypes.string,
+    searchType: React.PropTypes.string
   };
 const AppLeftNav = React.createClass({
   getInitialState: function() {
-    return {listHeight: window.innerHeight - this.props.muiTheme.leftNav.headerHeight - spacing.desktopGutter
+    return {
+        listHeight: window.innerHeight - this.props.muiTheme.leftNav.headerHeight - spacing.desktopGutter,
+        isInfiniteLoading: false 
     };
   },
 
@@ -93,6 +94,29 @@ const AppLeftNav = React.createClass({
     let selectedPKIDs = this.getSelectedIDS();
     this.props.onChangeSelected(content, selectedPKIDs.indexOf(content.pk) < 0);
   },
+  componentWillReceiveProps(nextProps)  {
+      console.log("Checking new props");
+      console.log("Current, Nextprops is ",this.props, nextProps);
+      if (this.props.displayedContent != nextProps.displayedContent) {
+          console.log("No longer infinite scrolling");
+          this.setState({
+              isInfiniteLoading: false
+          });
+      }
+
+  },
+  handleInfiniteLoad() {   
+        console.log("called handleInfiniteLoad");
+      this.setState({
+          isInfiniteLoading: true
+      });
+      this.props.nextPage();
+  },
+  elementInfiniteLoad: function() {
+      return <div className="infinite-list-item">
+          Loading...
+          </div>;
+  },
   render() {
       console.log("rendering app left nav");
     const {
@@ -121,7 +145,7 @@ const AppLeftNav = React.createClass({
         let subtitle = (
                 <span>{content.score.toFixed(3)}<br/> <a href="#">{publisher}</a>   {published}</span>
                 );
-        let cardStyle ={whiteSpace: "inherit", cursor: "pointer", boxShadow: 0, backgroundColor:null} ;
+        let cardStyle ={whiteSpace: "inherit", cursor: "pointer", boxShadow: 0, height: "120px", backgroundColor:null} ;
         if (selectedPKIDs.indexOf(content.pk) >=0 ) {
             cardStyle['backgroundColor'] = colors.grey300;
         };
@@ -134,6 +158,7 @@ const AppLeftNav = React.createClass({
                 </Card>
                );
     });
+    console.log("Container height is ", this.state.listHeight);
     return (
       <Drawer
         containerStyle={style}
@@ -147,11 +172,18 @@ const AppLeftNav = React.createClass({
             </p>
              <RaisedButton primary={true} label="Find Similar Documents" onMouseUp={this.onClickedSimilar} disabled={selectedContent.length == 0}/> 
         </div>
+        {  (contentItems.length > 0) ? ( 
           <div style={{height: "100%", overflowY: "scroll", marginTop: style.headerHeight}}>
-            <Infinite elementHeight={58} containerHeight={this.state.listHeight}>
+            <Infinite elementHeight={120} containerHeight={this.state.listHeight} 
+                        loadingSpinnerDelegate={this.elementInfiniteLoad()}
+                         isInfiniteLoading={this.state.isInfiniteLoading}
+                         infiniteLoadBeginEdgeOffset={100}
+                         timeScrollStateLastsForAfterUserScrolls={100}
+                         onInfiniteLoad={this.handleInfiniteLoad}>
             {contentItems}
             </Infinite>
-          </div>
+          </div> )
+        : <div></div>}
 	</Drawer>
     );
   },

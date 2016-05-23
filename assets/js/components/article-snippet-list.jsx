@@ -14,7 +14,7 @@ const ArticleSnippetList = React.createClass({
   articleSnippets() {
     return this.props.articleSnippets.map((article) => {
       return (
-       <div>
+       <div key={article.id}>
           <ArticleSnippets 
             id={article.id}
             title={article.title} 

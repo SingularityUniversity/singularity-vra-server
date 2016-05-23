@@ -38,6 +38,12 @@ const ContentDetail = React.createClass({
             }
         });
     },
+
+    handleSelect(e) {
+      console.log('handleSelect ', e);
+      console.log('selection=', window.selection.toString());
+    },
+
     render() {
         const {
             content
@@ -100,7 +106,7 @@ const ContentDetail = React.createClass({
 							<Card>
 							<CardTitle actAsExpander={true} showExpandableButton={true}/>
 								<CardText expandable={true}>
-									<div dangerouslySetInnerHTML= {{__html: extract.content}}>
+									<div onSelect={this.handleSelect} dangerouslySetInnerHTML= {{__html: extract.content}}>
 									</div>
 								</CardText>
 							</Card>

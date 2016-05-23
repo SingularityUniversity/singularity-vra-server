@@ -12,15 +12,15 @@ const ArticleSnippets = React.createClass({
   snippets() {
     return this.props.snippets.map((snippet) => {
       return (
-          <div>{snippet}<br /></div>
+          <div key={snippet}>{snippet}<br /></div>
       );
     });
   },
 
   render() {
     return (
-      <ListItem>
-        <div><b>{this.props.title}</b></div><br />
+      <ListItem key={this.props.id}>
+        <div key={this.props.id}><b>{this.props.title}</b></div><br />
         { this.snippets() }
       </ListItem>
     );

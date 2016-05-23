@@ -17,7 +17,7 @@ var config = {
     entry: ASSETS_DIR + 'js/index',
     loaders: [
       {
-        test: /(\.scss|\.sass| \.css)$/,
+        test: /(\.scss|\.sass|\.css)$/,
             loader: "style-loader!css-loader?sourceMap&importLoaders=1!postcss-loader!sass?sourceMap"
       },
       {

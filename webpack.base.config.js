@@ -23,10 +23,15 @@ var config = {
       {
         test: /vendor\/.+\.(jsx|js)$/,
         loader: 'imports?jQuery=jquery,$=jquery,this=>window'
-      }
+      },
     ]
   },
-  plugins: [],
+  plugins: [
+    new webpack.ProvidePlugin({
+      Tether: 'tether',
+      'window.Tether': 'tether'
+    })
+  ],
   postcss: [autoprefixer],
   resolve: {
     modulesDirectories: ['node_modules'],

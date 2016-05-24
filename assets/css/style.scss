@@ -7,7 +7,7 @@ a {
     text-decoration: none;
 }
 
-
+// Misc classes
 .centered-toolbar-group {
     float: none !important;
     width: 300px !important;
@@ -27,6 +27,7 @@ a {
     padding-left: 8px;
 }
 
+// Styles for pagination using react-paginate
 #react-paginate {
     text-align: center;
 }
@@ -51,4 +52,185 @@ a {
     cursor: default;
     color: blue;
     text-decoration: none;
+}
+
+// Styles for selection-menu
+.selection-menu {
+  font: 20px/100% Roboto, sans-serif;
+  color: white;
+  text-transform: uppercase;
+  position: absolute;
+  padding: 0;
+}
+
+.selection-menu:hover {
+  color: #B3B3B3;
+}
+.selection-menu ul {
+  list-style-type: none;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  /* gets rid of the space between inline-block elements: https://css-tricks.com/fighting-the-space-between-inline-block-elements/ */
+  margin: 0;
+  padding: 0;
+}
+.selection-menu li {
+  all: unset;
+  cursor: pointer;
+  display: inline-block;
+  margin: 0;
+  padding: .75em 1em;
+  border-left: 3px solid #666666;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -moz-user-select: none;
+  background: none;
+}
+.selection-menu li.shortcut {
+  font-weight: bold;
+}
+
+//.selection-menu li:first-child {
+//  border: none;
+//  padding: 0 .4em;
+//  /* or padding 0 & margin auto .4em but the hover selection is smaller */
+//  margin: auto;
+//  -webkit-align-self: center;
+//      -ms-flex-item-align: center;
+//          align-self: center;
+//  /* For IE10; Chrome acts correctly on margin+padding alone */
+//}
+.selection-menu li a {
+  display: inline-block;
+}
+.selection-menu li:hover {
+  background: #3FA9F5;
+  color: white;
+}
+
+.tether-smenu-element,
+.tether-smenu-element:after,
+.tether-smenu-element:before,
+.tether-smenu-element *,
+.tether-smenu-element *:after,
+.tether-smenu-element *:before {
+  box-sizing: border-box;
+}
+.tether-smenu-element > * {
+  position: relative;
+  background: #464646;
+  -webkit-filter: drop-shadow(0 20px 20px rgba(0, 0, 0, 0.7));
+  filter: drop-shadow(0 20px 20px rgba(0, 0, 0, 0.7));
+}
+.tether-smenu-element > *:before {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-width: 16px;
+  border-style: solid;
+}
+.tether-smenu-element.tether-smenu-element-attached-bottom.tether-smenu-element-attached-center > ul {
+  margin-bottom: 16px;
+}
+.tether-smenu-element.tether-smenu-element-attached-bottom.tether-smenu-element-attached-center > ul:before {
+  top: 100%;
+  left: 50%;
+  margin-left: -16px;
+  border-top-color: #464646;
+}
+.tether-smenu-element.tether-smenu-element-attached-top.tether-smenu-element-attached-center > * {
+  margin-top: 16px;
+}
+.tether-smenu-element.tether-smenu-element-attached-top.tether-smenu-element-attached-center > *:before {
+  bottom: 100%;
+  left: 50%;
+  margin-left: -16px;
+  border-bottom-color: #464646;
+}
+.tether-smenu-element.tether-smenu-element-attached-right.tether-smenu-element-attached-middle > * {
+  margin-right: 16px;
+}
+.tether-smenu-element.tether-smenu-element-attached-right.tether-smenu-element-attached-middle > *:before {
+  left: 100%;
+  top: 50%;
+  margin-top: -16px;
+  border-left-color: #464646;
+}
+.tether-smenu-element.tether-smenu-element-attached-left.tether-smenu-element-attached-middle > * {
+  margin-left: 16px;
+}
+.tether-smenu-element.tether-smenu-element-attached-left.tether-smenu-element-attached-middle > *:before {
+  right: 100%;
+  top: 50%;
+  margin-top: -16px;
+  border-right-color: #464646;
+}
+.tether-smenu-element.tether-smenu-element-attached-top.tether-smenu-element-attached-left.tether-smenu-target-attached-bottom > * {
+  margin-top: 16px;
+}
+.tether-smenu-element.tether-smenu-element-attached-top.tether-smenu-element-attached-left.tether-smenu-target-attached-bottom > *:before {
+  bottom: 100%;
+  left: 16px;
+  border-bottom-color: #464646;
+}
+.tether-smenu-element.tether-smenu-element-attached-top.tether-smenu-element-attached-right.tether-smenu-target-attached-bottom > * {
+  margin-top: 16px;
+}
+.tether-smenu-element.tether-smenu-element-attached-top.tether-smenu-element-attached-right.tether-smenu-target-attached-bottom > *:before {
+  bottom: 100%;
+  right: 16px;
+  border-bottom-color: #464646;
+}
+.tether-smenu-element.tether-smenu-element-attached-bottom.tether-smenu-element-attached-left.tether-smenu-target-attached-top > * {
+  margin-bottom: 16px;
+}
+.tether-smenu-element.tether-smenu-element-attached-bottom.tether-smenu-element-attached-left.tether-smenu-target-attached-top > *:before {
+  top: 100%;
+  left: 16px;
+  border-top-color: #464646;
+}
+.tether-smenu-element.tether-smenu-element-attached-bottom.tether-smenu-element-attached-right.tether-smenu-target-attached-top > * {
+  margin-bottom: 16px;
+}
+.tether-smenu-element.tether-smenu-element-attached-bottom.tether-smenu-element-attached-right.tether-smenu-target-attached-top > *:before {
+  top: 100%;
+  right: 16px;
+  border-top-color: #464646;
+}
+.tether-smenu-element.tether-smenu-element-attached-top.tether-smenu-element-attached-right.tether-smenu-target-attached-left > * {
+  margin-right: 16px;
+}
+.tether-smenu-element.tether-smenu-element-attached-top.tether-smenu-element-attached-right.tether-smenu-target-attached-left > *:before {
+  top: 16px;
+  left: 100%;
+  border-left-color: #464646;
+}
+.tether-smenu-element.tether-smenu-element-attached-top.tether-smenu-element-attached-left.tether-smenu-target-attached-right > * {
+  margin-left: 16px;
+}
+.tether-smenu-element.tether-smenu-element-attached-top.tether-smenu-element-attached-left.tether-smenu-target-attached-right > *:before {
+  top: 16px;
+  right: 100%;
+  border-right-color: #464646;
+}
+.tether-smenu-element.tether-smenu-element-attached-bottom.tether-smenu-element-attached-right.tether-smenu-target-attached-left > * {
+  margin-right: 16px;
+}
+.tether-smenu-element.tether-smenu-element-attached-bottom.tether-smenu-element-attached-right.tether-smenu-target-attached-left > *:before {
+  bottom: 16px;
+  left: 100%;
+  border-left-color: #464646;
+}
+.tether-smenu-element.tether-smenu-element-attached-bottom.tether-smenu-element-attached-left.tether-smenu-target-attached-right > * {
+  margin-left: 16px;
+}
+.tether-smenu-element.tether-smenu-element-attached-bottom.tether-smenu-element-attached-left.tether-smenu-target-attached-right > *:before {
+  bottom: 16px;
+  right: 100%;
+  border-right-color: #464646;
 }

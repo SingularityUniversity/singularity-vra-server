@@ -1,12 +1,14 @@
 import $ from 'jquery';
 import React from 'react';
+import {findDOMNode} from 'react-dom';
 import Divider from 'material-ui/Divider';
 import {Card, CardActions, CardHeader, CardText, CardTitle}  from 'material-ui/Card';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import {List, ListItem} from 'material-ui/List';
 import muiThemeable from 'material-ui/styles/muiThemeable';
-import TopicsList from './lda_topics'
+import SelectionMenu from 'selection-menu';
+import TopicsList from './lda_topics';
 
 import Moment from 'moment';
 
@@ -18,7 +20,10 @@ const ContentDetail = React.createClass({
 		onAction: React.PropTypes.func.isRequired  // onAction(content, action_id, params)
     }, 
     getInitialState() {
-        return {summaries: []}
+        return {
+          summaries: [],
+          selectedText: null
+        };
     },
 	clickedFindSimilar() {
 		console.log(this.props.content.pk);
@@ -26,7 +31,37 @@ const ContentDetail = React.createClass({
 			this.props.onAction(this.props.content, 'similar');
 		}
 	},
+
+    handleSelectionMenu(e, text) {
+            console.log('summary')
+            if (e.target.id == 'clip-text') {
+              console.log('clipping text: ', text);
+            } else if (e.target.id == 'search-text') {
+              console.log('searching text: ', text);
+            } else {
+              console.log(`SelectionMenu: unknown action (${e.target.id})`);
+            }
+    },
+
     componentDidMount() {
+      console.log('refs: ',this.refs);
+      let that=this;
+        new SelectionMenu({
+          container: findDOMNode(this.refs.summary_section),
+          content: '<div  class="selection-menu"> <ul> <li id="clip-text" class="shortcut" style="padding-left: .5em; padding-right: .5em">Clip&nbsp;Text</li> <li id="search-text" class="shortcut">Search</li> </ul> </div>',
+          handler: function(e) {
+            that.handleSelectionMenu(e, this.selectedText);
+          }
+        });
+
+        new SelectionMenu({
+          container: findDOMNode(this.refs.content_section),
+          content: '<div class="selection-menu"> <ul> <li id="clip-text" class="shortcut" style="padding-left: .5em; padding-right: .5em">Clip&nbsp;Text</li> <li id="search-text" class="shortcut">Search</li> </ul> </div>',
+          handler: function(e) {
+            that.handleSelectionMenu(e, this.selectedText);
+          }
+        });
+
         $.ajax({
             url: `/api/v1/content/${this.props.content.pk}/summary`,
             success: (data) => {
@@ -75,7 +110,7 @@ const ContentDetail = React.createClass({
 				)
 			} 
             return (
-                <Card  initiallyExpanded={true} containerStyle={this.props.muiTheme.fullWidthSection.item}>
+                <Card initiallyExpanded={true} containerStyle={this.props.muiTheme.fullWidthSection.item}>
                     <CardTitle 
                         actAsExpander={true}
                         showExpandableButton={true}
@@ -90,7 +125,7 @@ const ContentDetail = React.createClass({
                             <ListItem>
                                 Summary:
                                 <Card>
-                                <CardText>
+                                <CardText ref='summary_section'>
                                     {
                                         (this.state.summaries.length ==0 ) ? "No content" :
                                             this.state.summaries.map(function(val) {
@@ -103,11 +138,11 @@ const ContentDetail = React.createClass({
 						{lda_stuff}
 							<ListItem>
 							Content:
-							<Card>
+							<Card ref='content_section'>
 							<CardTitle actAsExpander={true} showExpandableButton={true}/>
 								<CardText expandable={true}>
-									<div onSelect={this.handleSelect} dangerouslySetInnerHTML= {{__html: extract.content}}>
-									</div>
+									<div dangerouslySetInnerHTML= {{__html: extract.content}}>
+                                    </div>
 								</CardText>
 							</Card>
 

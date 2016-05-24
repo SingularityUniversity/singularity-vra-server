@@ -32,10 +32,13 @@ const ContentDetail = React.createClass({
 		}
 	},
 
-    handleSelectionMenu(e, text) {
-            console.log('summary')
+    handleSelectionMenu(that, e, text) {
             if (e.target.id == 'clip-text') {
-              console.log('clipping text: ', text);
+              that.props.onTextSelected(
+                  that.props.content.pk,
+                  that.props.content.fields.extract.title,
+                  text
+              );
             } else if (e.target.id == 'search-text') {
               console.log('searching text: ', text);
             } else {
@@ -50,7 +53,7 @@ const ContentDetail = React.createClass({
           container: findDOMNode(this.refs.summary_section),
           content: '<div  class="selection-menu"> <ul> <li id="clip-text" class="shortcut" style="padding-left: .5em; padding-right: .5em">Clip&nbsp;Text</li> <li id="search-text" class="shortcut">Search</li> </ul> </div>',
           handler: function(e) {
-            that.handleSelectionMenu(e, this.selectedText);
+            that.handleSelectionMenu(that, e, this.selectedText);
             this.hide(true);
           }
         });
@@ -59,7 +62,7 @@ const ContentDetail = React.createClass({
           container: findDOMNode(this.refs.content_section),
           content: '<div class="selection-menu"> <ul> <li id="clip-text" class="shortcut" style="padding-left: .5em; padding-right: .5em">Clip&nbsp;Text</li> <li id="search-text" class="shortcut">Search</li> </ul> </div>',
           handler: function(e) {
-            that.handleSelectionMenu(e, this.selectedText);
+            that.handleSelectionMenu(that, e, this.selectedText);
             this.hide(true);
           }
         });

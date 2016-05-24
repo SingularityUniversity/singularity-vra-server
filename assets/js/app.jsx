@@ -4,6 +4,7 @@ import Master from './containers/master';
 import MyRawTheme from './theme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import 'react-virtualized/styles.css';
 
 import configureStore, { initialState }  from './configure-store';
 

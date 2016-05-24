@@ -8,7 +8,7 @@ import muiThemeable from 'material-ui/styles/muiThemeable';
 import {Card, CardActions, CardHeader, CardText, CardTitle}  from 'material-ui/Card';
 import RaisedButton from 'material-ui/RaisedButton';
 import {spacing, colors, typography, zIndex} from 'material-ui/styles';
-import Infinite from 'react-infinite';
+import {AutoSizer,VirtualScroll, InfiniteLoader } from 'react-virtualized';
 
 let SelectableList = MakeSelectable(List);
 
@@ -50,21 +50,28 @@ let propTypes = {
     selectedContent: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
     totalCount: React.PropTypes.number.isRequired,
     onChangeSelected: React.PropTypes.func.isRequired, // function(content, isSelected)
-    previousPage: React.PropTypes.func,
-    nextPage: React.PropTypes.func,
+    loadItems: React.PropTypes.func,
     onFindSimilar: React.PropTypes.func.isRequired,
     searchType: React.PropTypes.string,
   };
 const AppLeftNav = React.createClass({
-  getInitialState: function() {
-    return {listHeight: window.innerHeight - this.props.muiTheme.leftNav.headerHeight - spacing.desktopGutter
-    };
-  },
+    getInitialState: function() {
+        return {listHeight: window.innerHeight - this.props.muiTheme.leftNav.headerHeight - spacing.desktopGutter,
+            selectedPKIDs: []
+        };
+    },
 
-  handleResize: function(e) {
-    this.setState({listHeight: window.innerHeight - this.props.muiTheme.leftNav.headerHeight - spacing.desktopGutter});
-  },
-
+    handleResize: function(e) {
+        this.setState({listHeight: window.innerHeight - this.props.muiTheme.leftNav.headerHeight - spacing.desktopGutter});
+    },
+    componentWillMount: function() {
+        this.setState({selectedPKIDs: this.getSelectedIDS()});
+    },
+    componentWillReceiveProps: function(nextProps) {
+        if (nextProps.selectedContent) {
+            this.setState({selectedPKIDs: nextProps.selectedContent.map((content) => content.pk)});
+        }
+    },
   componentDidMount: function() {
     window.addEventListener('resize', this.handleResize);
   },
@@ -93,8 +100,44 @@ const AppLeftNav = React.createClass({
     let selectedPKIDs = this.getSelectedIDS();
     this.props.onChangeSelected(content, selectedPKIDs.indexOf(content.pk) < 0);
   },
+  _renderRow(index) {
+      let published = '';
+      let publisher = '';
+      let cardStyle ={whiteSpace: "inherit", cursor: "pointer", boxShadow: 0, backgroundColor:null, height:120} ;
+
+      let content = this.props.displayedContent[index];
+      if (!content) {
+            return (<Card key={'empty-'+index} style={cardStyle}></Card> );
+          
+      }
+      let that = this;
+      if (content.fields.extract['published']) {
+          published = Moment(parseInt(content.fields.extract['published'])).format('YYYY-MM-DD');
+      }
+      if (content.fields.extract['provider_name']) {
+          publisher = content.fields.extract['provider_name'];
+      }
+      let title = (
+              <span style={{fontSize: "125%"}}>{content.fields.extract['title']}</span>
+              );
+      let subtitle = (
+              <span>{content.score.toFixed(3)}<br/> <a href="#">{publisher}</a>   {published}</span>
+              );
+      if (this.state.selectedPKIDs.indexOf(content.pk) >=0 ) {
+          cardStyle['backgroundColor'] = colors.grey300;
+      };
+      return (
+              <Card onClick={function(e) {that.onClickedItem(content)}} key={content.pk} style={cardStyle}> 
+              <CardTitle 
+              title={title} 
+              subtitle={subtitle}
+              titleStyle={{fontSize: '75%', lineHeight:null }}/>
+              </Card>
+             );
+
+
+  },
   render() {
-      console.log("rendering app left nav");
     const {
       onSelectedContent,
       displayedContent, 
@@ -105,35 +148,6 @@ const AppLeftNav = React.createClass({
     } = this.props;
     let that = this;
 	const style = muiTheme.leftNav;
-    let selectedPKIDs = this.getSelectedIDS();
-    let contentItems = displayedContent.map((content, index, array) => {
-        let published = '';
-        let publisher = '';
-        if (content.fields.extract['published']) {
-            published = Moment(parseInt(content.fields.extract['published'])).format('YYYY-MM-DD');
-        }
-        if (content.fields.extract['provider_name']) {
-            publisher = content.fields.extract['provider_name'];
-        }
-        let title = (
-                <span style={{fontSize: "125%"}}>{content.fields.extract['title']}</span>
-                );
-        let subtitle = (
-                <span>{content.score.toFixed(3)}<br/> <a href="#">{publisher}</a>   {published}</span>
-                );
-        let cardStyle ={whiteSpace: "inherit", cursor: "pointer", boxShadow: 0, backgroundColor:null} ;
-        if (selectedPKIDs.indexOf(content.pk) >=0 ) {
-            cardStyle['backgroundColor'] = colors.grey300;
-        };
-        return (
-                <Card onClick={function(e) {that.onClickedItem(content)}} key={content.pk} style={cardStyle}> 
-                <CardTitle 
-                title={title} 
-                subtitle={subtitle}
-                titleStyle={{fontSize: '75%', lineHeight:null }}/>
-                </Card>
-               );
-    });
     return (
       <Drawer
         containerStyle={style}
@@ -147,11 +161,33 @@ const AppLeftNav = React.createClass({
             </p>
              <RaisedButton primary={true} label="Find Similar Documents" onMouseUp={this.onClickedSimilar} disabled={selectedContent.length == 0}/> 
         </div>
-          <div style={{height: "100%", overflowY: "scroll", marginTop: style.headerHeight}}>
-            <Infinite elementHeight={58} containerHeight={this.state.listHeight}>
-            {contentItems}
-            </Infinite>
-          </div>
+        <div style={{marginTop: style.headerHeight, height: "100%"}}>
+            <InfiniteLoader
+                isRowLoaded={({index}) => !!this.props.displayedContent[index]}
+                loadMoreRows={this.props.loadItems}
+                rowCount={totalCount}
+                minimumBatchSize={30}
+            >
+            {({ onRowsRendered, registerChild }) => (
+                <AutoSizer>
+                    {({height, width }) => 
+                            (<VirtualScroll 
+                                ref={registerChild}
+                                width={width}
+                                height={height-style.headerHeight}
+                                rowHeight={120}
+                                rowCount={totalCount}
+                                onRowsRendered={onRowsRendered}
+                                rowRenderer={
+                                    ({index, isScrolling}) => that._renderRow(index)
+                                }
+                                overscanRowCount={10}
+                            />
+                            )}    
+                    </AutoSizer>
+            )}
+            </InfiniteLoader>
+        </div>
 	</Drawer>
     );
   },

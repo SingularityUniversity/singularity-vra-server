@@ -44,25 +44,8 @@ const Master = React.createClass({
   },
 
   // XXX: figure out what search we want for initial data
-  // XXX: Please refactor me to use handleSearch
   doInitialSearch: function() {
-    this.setSearch(initialQuery);
-    $.ajax({
-      url: '/api/v1/search',
-      data: 'q='+initialQuery+'&offset=0&limit=250',  // XXX: hardcoded pagination hack (fix with VRA-21)
-      success: (data) => {
-        this.setState({data: data.hits.hits.map(function(x) { return {score: x._score, ...x._source}}),
-          resultCountTotal: data.hits.total,
-          searchType: 'Keyword search',
-          scrollOffset: 0,
-          selected: []
-        });
-      },
-      error: (xhr, status, err) => {
-        // XXX: display error popup or something here
-        console.log(xhr, status);
-      }
-    });
+      this.doSearch(initialQuery, true, 0);
   },
 
   getArticleCountFromServer: function() {
@@ -92,26 +75,41 @@ const Master = React.createClass({
   handleSearchChange(event) {
       this.setState({searchQuery: event.target.value});
   },
+
+  doSearch(query, reset_selected, offset, limit) {
+      if (!offset) {
+          offset=0;
+      }
+      if (!limit) {
+          limit=50;
+      }
+      let that = this;
+      return $.ajax({
+          url: '/api/v1/search',
+          data: `q=${query}&offset=${offset}&limit=${limit}`, 
+          success: (data, textStatus, xhr) => {
+              this.state.data.splice(offset, data.hits.total, ...data.hits.hits.map(function(x) {return {score: x._score, ...x._source}}))
+              this.setState({resultCountTotal: data.hits.total,
+                  searchType: 'Keyword search',
+                  data: this.state.data,
+                  scrollOffset: offset+limit, 
+                  selected: reset_selected ? [] : that.state.selected,
+                  searchQuery: query,
+                  lastScrollPage: (offset+limit > data.hits.total)
+              });
+          },
+          error: (xhr, textStatus, errorThrown) => {
+              console.log(`search error: ${textStatus}`);
+          }
+      });
+  },
+
   handleSearch(e) {
 	if (e.keyCode != 13) {
 		return;
 	}
-    const searchTerms = e.currentTarget.value;
-    $.ajax({
-      url: '/api/v1/search',
-      data: `q=${searchTerms}&offset=0&limit=250`,  // XXX: Hard coded to max of 250 results. fix this with infinite scrolling (see VRA-21)
-      success: (data, textStatus, xhr) => {
-          this.setState({resultCountTotal: data.hits.total,
-              searchType: 'Keyword search',
-              data: data.hits.hits.map(function(x) {return {score: x._score, ...x._source}}),
-              scrollOffset: 0,
-              selected: []
-          });
-      },
-      error: (xhr, textStatus, errorThrown) => {
-        console.log(`search error: ${textStatus}`);
-      }
-    });
+    const searchQuery = e.currentTarget.value;
+    this.doSearch(searchQuery, true, 0);
   },
 
   handleSelectedContent(content, selected) {
@@ -243,8 +241,7 @@ const Master = React.createClass({
           selectedContent={this.state.selected}
           totalCount={this.state.resultCountTotal}
           searchType={this.state.searchType}
-          previousPage={function() {console.log("called previousPage")}}
-          nextPage={function() {console.log("called nextPage")}}
+          loadItems={this.getItems}
         />
         <Clipboard 
           docked={clipboardDocked}
@@ -258,6 +255,11 @@ const Master = React.createClass({
       </div>
     );
   },
+  getItems({startIndex, stopIndex}) {
+    // XXX: We are assuming we are getting more searchItems for paging, This is probably a bad assumption moving forward
+   let promise = this.doSearch(this.state.searchQuery, false, startIndex, stopIndex-startIndex);
+
+  }
 });
 
 const mapStateToProps = (state) => {

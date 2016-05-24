@@ -51,6 +51,7 @@ const ContentDetail = React.createClass({
           content: '<div  class="selection-menu"> <ul> <li id="clip-text" class="shortcut" style="padding-left: .5em; padding-right: .5em">Clip&nbsp;Text</li> <li id="search-text" class="shortcut">Search</li> </ul> </div>',
           handler: function(e) {
             that.handleSelectionMenu(e, this.selectedText);
+            this.hide(true);
           }
         });
 
@@ -59,6 +60,7 @@ const ContentDetail = React.createClass({
           content: '<div class="selection-menu"> <ul> <li id="clip-text" class="shortcut" style="padding-left: .5em; padding-right: .5em">Clip&nbsp;Text</li> <li id="search-text" class="shortcut">Search</li> </ul> </div>',
           handler: function(e) {
             that.handleSelectionMenu(e, this.selectedText);
+            this.hide(true);
           }
         });
 

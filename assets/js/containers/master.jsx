@@ -34,7 +34,7 @@ const Master = React.createClass({
       articleCount: 0,
       searchType: "",
       selected: [],
-      searchQuery: 'space',
+      searchQuery: '',
       scrollOfset: 0
     };
   },
@@ -98,8 +98,7 @@ const Master = React.createClass({
 	if (e.keyCode != 13) {
 		return;
 	}
-    const searchQuery = e.currentTarget.value;
-    this.doSearch(searchQuery, true, 0);
+    this.doSearch(this.state.searchQuery, true, 0);
   },
 
   handleSelectedContent(content, selected) {
@@ -135,11 +134,8 @@ const Master = React.createClass({
           return content.pk; 
       }));
   },
-  setSearch(query) {
-      // XXX: Implement with a component that wraps the textarea with state and also lets the textarea value be set
-  },
   clearSearch() {
-      // XXX: Implement with a component that wraps the textarea with state and also lets the textarea value be set
+      this.setState({searchQuery: ""});
   },
   doSimilaritySearch(content_ids) {
       let that = this;
@@ -218,7 +214,7 @@ const Master = React.createClass({
           style={styles.appBar}
           showMenuIconButton={showMenuIconButton} >
           <ToolbarGroup float='right'>
-            <TextField hintText='Search' ref="searchField"  onKeyDown={this.handleSearch} />
+            <TextField value={this.state.searchQuery} hintText='Search' ref="searchField"  onChange={this.handleSearchChange} onKeyDown={this.handleSearch} />
             <ClipboardVisibilityButton
               onClick={this.props.onClipboardVisibilityClick}
               open={this.props.clipboardVisibility} />

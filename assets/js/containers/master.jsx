@@ -179,7 +179,15 @@ const Master = React.createClass({
             });
 
   },
-    
+  componentWillReceiveProps(nextProps) {
+      if ((nextProps.articleSnippetList != this.props.articleSnippetList) 
+              && nextProps.articleSnippetList && nextProps.articleSnippetList != []) {
+          this.setState({
+              snackbarOpen: true,
+              snackbarMessage: "Content copied to clipboard"
+          });
+      }
+  },
   render() {
     const {
       history,

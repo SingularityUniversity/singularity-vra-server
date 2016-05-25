@@ -47,6 +47,7 @@ const Clipboard = React.createClass({
     } 
 
 	const style = this.props.muiTheme.leftNav;
+    const showButtons = (articleSnippetList.length > 0);
     return (
       <Drawer
         containerStyle={style}
@@ -59,13 +60,15 @@ const Clipboard = React.createClass({
           <b>Clipboard</b>
           <IconButton 
             ref='clipboard_button' 
-            tooltip='Copy to system clipboard'
+            tooltip={showButtons ? 'Copy to system clipboard' : ''}
+            disabled={!showButtons}
             data-clipboard-text={clipboardText}>
             <ContentCopy />
           </IconButton>
           <IconButton 
             ref='clipboard_clear_button' 
-            tooltip='Clear clipboard'
+            tooltip={showButtons ? 'Clear clipboard' : ''}
+            disabled={!showButtons}
             onClick={onClear}>
             <ContentClear />
           </IconButton>

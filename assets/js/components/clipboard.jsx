@@ -40,7 +40,7 @@ const Clipboard = React.createClass({
         width={width}
       >
         <div style={{paddingLeft: '10px', paddingBottom: '10px'}}>
-          Clipboard
+          <b>Clipboard</b>
           <IconButton tooltip='Copy to system clipboard'>
             <ContentCopy />
           </IconButton>

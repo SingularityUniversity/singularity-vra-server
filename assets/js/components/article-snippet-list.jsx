@@ -19,7 +19,6 @@ const ArticleSnippetList = React.createClass({
             id={article.id}
             title={article.title} 
             snippets={article.snippets} />
-          <Divider />
         </div>
       );
     }); 

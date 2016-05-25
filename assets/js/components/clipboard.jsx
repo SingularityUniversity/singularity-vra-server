@@ -1,4 +1,5 @@
 import React from 'react';
+import { findDOMNode } from 'react-dom';
 import Drawer from 'material-ui/Drawer';
 import Moment from 'moment';
 import muiThemeable from 'material-ui/styles/muiThemeable';
@@ -7,7 +8,8 @@ import { store } from '../configure-store';
 import Divider from 'material-ui/Divider';
 import IconButton from 'material-ui/IconButton';
 import ContentCopy from 'material-ui/svg-icons/content/content-copy';
-import ArticleSnippetList from './article-snippet-list'
+import ArticleSnippetList from './article-snippet-list';
+import ClipboardCopy from 'clipboard';
 
 
 const propTypes = {
@@ -21,6 +23,10 @@ const propTypes = {
 const Clipboard = React.createClass({
   propTypes: propTypes, 
 
+  componentDidMount() {
+    new ClipboardCopy(findDOMNode(this.refs.clipboard_button));
+  },
+
   render() {
     const {
       docked,
@@ -29,6 +35,13 @@ const Clipboard = React.createClass({
       width,
       articleSnippetList,
     } = this.props;
+
+    let clipboardText = '';
+    if (articleSnippetList.length > 0) {
+      clipboardText = articleSnippetList.reduce((previousValue, article) => {
+        return previousValue + article.title + '\n\n' + article.snippets.join('\n') + '\n\n';
+      }, '');
+    } 
 
 	const style = this.props.muiTheme.leftNav;
     return (
@@ -41,7 +54,10 @@ const Clipboard = React.createClass({
       >
         <div style={{paddingLeft: '10px', paddingBottom: '10px'}}>
           <b>Clipboard</b>
-          <IconButton tooltip='Copy to system clipboard'>
+          <IconButton 
+            ref='clipboard_button' 
+            tooltip='Copy to system clipboard'
+            data-clipboard-text={clipboardText}>
             <ContentCopy />
           </IconButton>
         </div>

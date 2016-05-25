@@ -10,7 +10,6 @@ import AppLeftNav from '../components/app-left-nav';
 import Clipboard from '../components/clipboard';
 import ClipboardVisibilityButton from '../components/clipboard-visibility-button';
 import SelectableContentDetail from '../containers/selectable-content-detail';
-import { test_action } from '../actions/test-action';
 import { addSnippetToClipboard } from '../actions/clipboard-actions.js';
 import { connect } from 'react-redux';
 import { toggleClipboard } from '../actions/clipboard-actions';
@@ -272,7 +271,6 @@ const Master = React.createClass({
 
 const mapStateToProps = (state) => {
   return {
-    test: state.test,
     clipboardVisibility: state.clipboardVisibility,
     articleSnippetList: state.articleSnippetList
   }
@@ -280,9 +278,6 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    testAction: () => {
-      dispatch(test_action());
-    },
     onClipboardVisibilityClick: (openState) => {
       dispatch(toggleClipboard());
     },

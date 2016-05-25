@@ -4,7 +4,6 @@ import thunkMiddleware from 'redux-thunk';
 import rootReducer from './reducers/root-reducer';
 
 export const initialState = {
-  test: false,
   clipboardVisibility: false,
   articleSnippetList: [],
 };

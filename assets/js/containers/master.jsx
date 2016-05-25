@@ -14,6 +14,7 @@ import { test_action } from '../actions/test-action';
 import { addSnippetToClipboard } from '../actions/clipboard-actions.js';
 import { connect } from 'react-redux';
 import { toggleClipboard } from '../actions/clipboard-actions';
+import Snackbar from 'material-ui/Snackbar';
 
 const Master = React.createClass({
   propTypes: {
@@ -35,7 +36,9 @@ const Master = React.createClass({
       searchType: "",
       selected: [],
       searchQuery: '',
-      scrollOfset: 0
+      scrollOfset: 0,
+      snackbarOpen: false,
+      snackbarMessage: ''
     };
   },
 
@@ -67,6 +70,14 @@ const Master = React.createClass({
   },
 
   doSearch(query, reset_selected, offset, limit) {
+      this.setState({
+          snackbarOpen: true,
+          snackbarMessage: (
+                  <span> 
+                  Doing a content search with <em>{this.state.searchQuery}</em>
+                  </span>)
+      });
+      
       if (!offset) {
           offset=0;
       }
@@ -139,6 +150,10 @@ const Master = React.createClass({
   },
   doSimilaritySearch(content_ids) {
       let that = this;
+      this.setState({
+          snackbarOpen: true,
+          snackbarMessage: "Doing a similarity search"
+      });
        $.ajax({
                 url: `/api/v1/similar`,
                 method: 'POST',
@@ -238,6 +253,13 @@ const Master = React.createClass({
         <div style={styles.fullWidthSection.root}>
         {contentItems}
         </div>
+        <Snackbar
+        style={{textAlign: "center"}}
+            open={this.state.snackbarOpen}
+            message={this.state.snackbarMessage}
+            autoHideDuration={2500}
+            onRequestClose={() => this.setState({'snackbarOpen': false})}
+        />
       </div>
     );
   },

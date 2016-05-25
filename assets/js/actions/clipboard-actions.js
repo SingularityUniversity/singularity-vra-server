@@ -25,7 +25,7 @@ export function toggleClipboard() {
 export function addSnippetToClipboard(id, title, snippet) {
   return {
     type: ADD_SNIPPET_TO_CLIPBOARD, 
-    id, id,
+    id: id,
     title: title,
     snippet: snippet
   };

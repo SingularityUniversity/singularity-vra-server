@@ -180,12 +180,16 @@ const Master = React.createClass({
 
   },
   componentWillReceiveProps(nextProps) {
+      console.log("In nextprops", nextProps);
+
       if ((nextProps.articleSnippetList != this.props.articleSnippetList) 
-              && nextProps.articleSnippetList && nextProps.articleSnippetList != []) {
-          this.setState({
-              snackbarOpen: true,
-              snackbarMessage: "Content copied to clipboard"
-          });
+              && nextProps.articleSnippetList) {
+          if (nextProps.articleSnippetList.length > 0) {
+              this.setState({
+                  snackbarOpen: true,
+                  snackbarMessage: "Content copied to clipboard"
+              });
+            }
       }
   },
   render() {

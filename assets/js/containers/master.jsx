@@ -15,8 +15,6 @@ import { addSnippetToClipboard } from '../actions/clipboard-actions.js';
 import { connect } from 'react-redux';
 import { toggleClipboard } from '../actions/clipboard-actions';
 
-const initialQuery="space";
-
 const Master = React.createClass({
   propTypes: {
     children: React.PropTypes.node,
@@ -41,11 +39,6 @@ const Master = React.createClass({
     };
   },
 
-  // XXX: figure out what search we want for initial data
-  doInitialSearch: function() {
-      this.doSearch(initialQuery, true, 0);
-  },
-
   getArticleCountFromServer: function() {
     $.ajax({
       url: '/api/v1/content/count',
@@ -59,7 +52,6 @@ const Master = React.createClass({
   },
 
   componentDidMount: function() {
-    this.doInitialSearch();
     this.getArticleCountFromServer();
   },
 
@@ -226,7 +218,7 @@ const Master = React.createClass({
           style={styles.appBar}
           showMenuIconButton={showMenuIconButton} >
           <ToolbarGroup float='right'>
-            <TextField defaultValue={initialQuery} hintText='Search' ref="searchField"  onKeyDown={this.handleSearch} />
+            <TextField hintText='Search' ref="searchField"  onKeyDown={this.handleSearch} />
             <ClipboardVisibilityButton
               onClick={this.props.onClipboardVisibilityClick}
               open={this.props.clipboardVisibility} />

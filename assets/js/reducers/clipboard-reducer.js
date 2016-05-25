@@ -1,7 +1,8 @@
 import $ from 'jquery';
 import {CLOSE_CLIPBOARD, OPEN_CLIPBOARD, 
         TOGGLE_CLIPBOARD, ADD_SNIPPET_TO_CLIPBOARD,
-        REMOVE_SNIPPET_FROM_CLIPBOARD} from '../actions/clipboard-actions';
+        REMOVE_SNIPPET_FROM_CLIPBOARD,
+        CLEAR_CLIPBOARD} from '../actions/clipboard-actions';
 
 export function clipboardVisibilityReducer(state=false, action) {
   switch(action.type) {
@@ -46,6 +47,8 @@ export function clipboardReducer(state=[], action) {
         ];
       }
     case REMOVE_SNIPPET_FROM_CLIPBOARD:
+      return state;
+    case CLEAR_CLIPBOARD:
       return [];
     default:
       return state;

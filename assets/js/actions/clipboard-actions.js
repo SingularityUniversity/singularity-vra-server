@@ -3,9 +3,14 @@ export const OPEN_CLIPBOARD = 'OPEN_CLIPBOARD'
 export const TOGGLE_CLIPBOARD = 'TOGGLE_CLIPBOARD'
 export const ADD_SNIPPET_TO_CLIPBOARD = 'ADD_SNIPPET_TO_CLIPBOARD'
 export const REMOVE_SNIPPET_FROM_CLIPBOARD = 'REMOVE_SNIPPET_FROM_CLIPBOARD'
+export const CLEAR_CLIPBOARD = 'CLEAR_CLIPBOARD'
+
+
+export function clearClipboard() {
+  return{type: CLEAR_CLIPBOARD};
+}
 
 export function closeClipboard() {
-  console.log('closeClipboard action called');
   return {type: CLOSE_CLIPBOARD};
 }
 

@@ -8,6 +8,7 @@ import { store } from '../configure-store';
 import Divider from 'material-ui/Divider';
 import IconButton from 'material-ui/IconButton';
 import ContentCopy from 'material-ui/svg-icons/content/content-copy';
+import ContentClear from 'material-ui/svg-icons/content/clear';
 import ArticleSnippetList from './article-snippet-list';
 import ClipboardCopy from 'clipboard';
 
@@ -18,6 +19,7 @@ const propTypes = {
     style: React.PropTypes.object,
     muiTheme: React.PropTypes.object.isRequired,
     articleSnippetList: React.PropTypes.array.isRequired,
+    onClear: React.PropTypes.func.isRequired
   };
 
 const Clipboard = React.createClass({
@@ -34,6 +36,7 @@ const Clipboard = React.createClass({
       openSecondary,
       width,
       articleSnippetList,
+      onClear
     } = this.props;
 
     let clipboardText = '';
@@ -59,6 +62,12 @@ const Clipboard = React.createClass({
             tooltip='Copy to system clipboard'
             data-clipboard-text={clipboardText}>
             <ContentCopy />
+          </IconButton>
+          <IconButton 
+            ref='clipboard_clear_button' 
+            tooltip='Clear clipboard'
+            onClick={onClear}>
+            <ContentClear />
           </IconButton>
         </div>
         <Divider />

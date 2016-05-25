@@ -12,7 +12,7 @@ import ClipboardVisibilityButton from '../components/clipboard-visibility-button
 import SelectableContentDetail from '../containers/selectable-content-detail';
 import { addSnippetToClipboard } from '../actions/clipboard-actions.js';
 import { connect } from 'react-redux';
-import { toggleClipboard } from '../actions/clipboard-actions';
+import { toggleClipboard, clearClipboard } from '../actions/clipboard-actions';
 import Snackbar from 'material-ui/Snackbar';
 
 const Master = React.createClass({
@@ -248,7 +248,8 @@ const Master = React.createClass({
           open={this.props.clipboardVisibility}
           openSecondary={true} 
           width={clipboardWidth} 
-          articleSnippetList={this.props.articleSnippetList} />
+          articleSnippetList={this.props.articleSnippetList}
+          onClear={this.props.onClearClipboard} />
         <div style={styles.fullWidthSection.root}>
         {contentItems}
         </div>
@@ -283,6 +284,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     addSnippet: (id, title, snippet) => {
       dispatch(addSnippetToClipboard(id, title, snippet));
+    },
+    onClearClipboard: () => {
+      dispatch(clearClipboard());
     }
   }
 }

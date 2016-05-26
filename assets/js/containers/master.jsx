@@ -27,7 +27,6 @@ const Master = React.createClass({
 
   getInitialState() {
     return {
-      leftNavOpen: false,
       data: [],
 	  query_topics: [], // LDA query topics - [ [ [(term, weight),...], topicweight]...]
       resultCountTotal: 0,
@@ -55,13 +54,6 @@ const Master = React.createClass({
 
   componentDidMount: function() {
     this.getArticleCountFromServer();
-  },
-
-  handleRequestChangeList(event, value) {
-    this.props.history.push(value);
-    this.setState({
-      leftNavOpen: false,
-    });
   },
 
   handleSearchChange(event) {
@@ -226,14 +218,7 @@ const Master = React.createClass({
     let title = (
       <span>Virtual Research Assistant <i className='small'>({this.state.articleCount} articles and counting...)</i></span>
     );
-    let docked = true;
     let showMenuIconButton = false;
-    let leftNavOpen = true;
-
-      docked = true;
-      leftNavOpen = true;
-      showMenuIconButton = false;
-
     let clipboardDocked = true;
     let clipboardWidth = 450;
 

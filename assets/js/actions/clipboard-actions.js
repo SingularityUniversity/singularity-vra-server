@@ -31,6 +31,10 @@ export function addSnippetToClipboard(id, title, snippet) {
   };
 }
 
-export function removeSnippetFromClipboard(snippet) {
-  return {type: REMOVE_SNIPPET_FROM_CLIPBOARD, snippet};
+export function removeSnippetFromClipboard(id, snippet_index) {
+  return {
+    type: REMOVE_SNIPPET_FROM_CLIPBOARD, 
+    id: id,
+    snippet_index: snippet_index
+  };
 }

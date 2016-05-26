@@ -185,10 +185,20 @@ const Master = React.createClass({
       if ((nextProps.articleSnippetList != this.props.articleSnippetList) 
               && nextProps.articleSnippetList) {
           if (nextProps.articleSnippetList.length > 0) {
-              this.setState({
-                  snackbarOpen: true,
-                  snackbarMessage: "Content copied to clipboard"
-              });
+              let total_new_snippets = 0;
+              let total_old_snippets = 0; 
+              for (let x of nextProps.articleSnippetList) {
+                  total_new_snippets += x.snippets.length
+              }
+              for (let x of this.props.articleSnippetList) {
+                  total_old_snippets += x.snippets.length
+              }
+              if (total_new_snippets > total_old_snippets) {
+                  this.setState({
+                      snackbarOpen: true,
+                      snackbarMessage: "Content copied to clipboard"
+                  });
+              }
             }
       }
   },

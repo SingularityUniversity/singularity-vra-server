@@ -47,7 +47,18 @@ export function clipboardReducer(state=[], action) {
         ];
       }
     case REMOVE_SNIPPET_FROM_CLIPBOARD:
-      return state;
+      let article_index = state.findIndex(x => x.id == action.id);
+      if (article_index >= 0) {
+        let state_copy = state.slice();
+        state_copy[article_index].snippets = state_copy[article_index].snippets.slice();
+        state_copy[article_index].snippets.splice(action.snippet_index,1);
+        if (state_copy[article_index].snippets.length == 0){
+          state_copy.splice(article_index, 1);
+        }
+        return state_copy;
+      } else {
+        return state;
+     }
     case CLEAR_CLIPBOARD:
       return [];
     default:

@@ -5,14 +5,13 @@ import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui
 import {Card, CardActions, CardHeader, CardText, CardTitle}  from 'material-ui/Card';
 import TextField from 'material-ui/TextField';
 import muiThemeable from 'material-ui/styles/muiThemeable';
-
 import AppLeftNav from '../components/app-left-nav';
 import Clipboard from '../components/clipboard';
 import ClipboardVisibilityButton from '../components/clipboard-visibility-button';
 import SelectableContentDetail from '../containers/selectable-content-detail';
-import { addSnippetToClipboard } from '../actions/clipboard-actions.js';
+import { addSnippetToClipboard, toggleClipboard, 
+         clearClipboard } from '../actions/clipboard-actions.js';
 import { connect } from 'react-redux';
-import { toggleClipboard, clearClipboard } from '../actions/clipboard-actions';
 import Snackbar from 'material-ui/Snackbar';
 
 const Master = React.createClass({

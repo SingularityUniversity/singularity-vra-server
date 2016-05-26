@@ -18,8 +18,6 @@ import { keywordSearch, clearSearch } from '../actions/search-actions';
 const Master = React.createClass({
   propTypes: {
     children: React.PropTypes.node,
-    history: React.PropTypes.object,
-    location: React.PropTypes.object,
 	muiTheme: React.PropTypes.object.isRequired,
   },
 
@@ -204,8 +202,6 @@ const Master = React.createClass({
   },
   render() {
     const {
-      history,
-      location,
       children,
     } = this.props;
 

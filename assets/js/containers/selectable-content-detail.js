@@ -4,7 +4,7 @@ import ContentDetail from '../components/content-detail';
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onTextSelected: (id, title, text) => {
+    onClip: (id, title, text) => {
       dispatch(addSnippetToClipboard(id, title, text));
     }
   };

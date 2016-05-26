@@ -34,13 +34,14 @@ const ContentDetail = React.createClass({
 
     handleSelectionMenu(that, e, text) {
             if (e.target.id == 'clip-text') {
-              that.props.onTextSelected(
+              that.props.onClip(
                   that.props.content.pk,
                   that.props.content.fields.extract.title,
                   text
               );
             } else if (e.target.id == 'search-text') {
               console.log('searching text: ', text);
+              
             } else {
               console.log(`SelectionMenu: unknown action (${e.target.id})`);
             }

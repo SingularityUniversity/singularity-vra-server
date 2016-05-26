@@ -26,21 +26,20 @@ const ContentDetail = React.createClass({
         };
     },
 	clickedFindSimilar() {
-		console.log(this.props.content.pk);
 		if (this.props.onAction) {
 			this.props.onAction(this.props.content, 'similar');
 		}
 	},
 
-    handleSelectionMenu(that, e, text) {
+    handleSelectionMenu(e, text) {
             if (e.target.id == 'clip-text') {
-              that.props.onClip(
-                  that.props.content.pk,
-                  that.props.content.fields.extract.title,
+              this.props.onClip(
+                  this.props.content.pk,
+                  this.props.content.fields.extract.title,
                   text
               );
             } else if (e.target.id == 'search-text') {
-              console.log('searching text: ', text);
+              this.props.onSearch(text);
               
             } else {
               console.log(`SelectionMenu: unknown action (${e.target.id})`);
@@ -48,13 +47,12 @@ const ContentDetail = React.createClass({
     },
 
     componentDidMount() {
-      console.log('refs: ',this.refs);
       let that=this;
         new SelectionMenu({
           container: findDOMNode(this.refs.summary_section),
           content: '<div  class="selection-menu"> <ul> <li id="clip-text" class="shortcut" style="padding-left: .5em; padding-right: .5em">Clip&nbsp;Text</li> <li id="search-text" class="shortcut">Search</li> </ul> </div>',
           handler: function(e) {
-            that.handleSelectionMenu(that, e, this.selectedText);
+            that.handleSelectionMenu(e, this.selectedText);
             this.hide(true);
           }
         });
@@ -63,7 +61,7 @@ const ContentDetail = React.createClass({
           container: findDOMNode(this.refs.content_section),
           content: '<div class="selection-menu"> <ul> <li id="clip-text" class="shortcut" style="padding-left: .5em; padding-right: .5em">Clip&nbsp;Text</li> <li id="search-text" class="shortcut">Search</li> </ul> </div>',
           handler: function(e) {
-            that.handleSelectionMenu(that, e, this.selectedText);
+            that.handleSelectionMenu(e, this.selectedText);
             this.hide(true);
           }
         });
@@ -71,18 +69,12 @@ const ContentDetail = React.createClass({
         $.ajax({
             url: `/api/v1/content/${this.props.content.pk}/summary`,
             success: (data) => {
-                console.log(this, data);
                 this.setState({summaries: data.summary});
             },
             error: (xhr, status, err) => {
                 console.log(xhr, status);
             }
         });
-    },
-
-    handleSelect(e) {
-      console.log('handleSelect ', e);
-      console.log('selection=', window.selection.toString());
     },
 
     render() {
@@ -99,7 +91,6 @@ const ContentDetail = React.createClass({
                     format('YYYY-MM-DD');
             }
 			var lda_stuff = null;
-			console.log("Looking at content objects: ", content);
 	  	 	if (content.lda_similarity_topics) {
 				lda_stuff = (
 					<ListItem>	

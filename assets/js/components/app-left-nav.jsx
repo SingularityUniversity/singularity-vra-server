@@ -81,9 +81,6 @@ const AppLeftNav = React.createClass({
   },
 
   propTypes: propTypes, 
-  handleRequestChangeLink(event, value) {
-    window.location = value;
-  },
   handleContentSelection(e,content) {
     this.props.onSelectedContent(content);
   },

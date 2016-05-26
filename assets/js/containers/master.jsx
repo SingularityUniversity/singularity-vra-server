@@ -60,6 +60,13 @@ const Master = React.createClass({
       this.setState({searchQuery: event.target.value});
   },
 
+  handleSearchKeypress(e) {
+	if (e.keyCode != 13) {
+		return;
+	}
+    this.props.onKeywordSearch(this.state.searchQuery);
+  },
+
   doSearch(query, reset_selected, offset, limit) {
       // IMPORTANT:  This function is called by componentWillReceiveProps,
       // so this.props is in the "previous" state.  Be careful about using
@@ -100,13 +107,6 @@ const Master = React.createClass({
               console.log(`search error: ${textStatus}`);
           }
       });
-  },
-
-  handleSearch(e) {
-	if (e.keyCode != 13) {
-		return;
-	}
-    this.props.onKeywordSearch(this.state.searchQuery);
   },
 
   handleSelectedContent(content, selected) {
@@ -246,7 +246,7 @@ const Master = React.createClass({
           style={styles.appBar}
           showMenuIconButton={showMenuIconButton} >
           <ToolbarGroup float='right'>
-            <TextField value={this.state.searchQuery} hintText='Search' ref="searchField"  onChange={this.handleSearchChange} onKeyDown={this.handleSearch} />
+            <TextField value={this.state.searchQuery} hintText='Search' ref="searchField"  onChange={this.handleSearchChange} onKeyDown={this.handleSearchKeypress} />
             <ClipboardVisibilityButton
               onClick={this.props.onClipboardVisibilityClick}
               open={this.props.clipboardVisibility} />

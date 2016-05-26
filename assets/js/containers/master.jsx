@@ -34,7 +34,7 @@ const Master = React.createClass({
       searchType: "",
       selected: [],
       searchQuery: '',
-      scrollOfset: 0,
+      scrollOffset: 0,
       snackbarOpen: false,
       snackbarMessage: ''
     };

@@ -111,7 +111,7 @@ const Master = React.createClass({
 	if (e.keyCode != 13) {
 		return;
 	}
-    this.doSearch(this.state.searchQuery, true, 0);
+    this.props.onKeywordSearch(this.state.searchQuery);
   },
 
   handleSelectedContent(content, selected) {
@@ -149,6 +149,7 @@ const Master = React.createClass({
   },
   clearSearch() {
       this.setState({searchQuery: ""});
+      this.props.onClearSearch();
   },
   doSimilaritySearch(content_ids) {
       let that = this;
@@ -183,8 +184,6 @@ const Master = React.createClass({
 
   },
   componentWillReceiveProps(nextProps) {
-      console.log("In nextprops", nextProps);
-
       if ((nextProps.articleSnippetList != this.props.articleSnippetList) 
               && nextProps.articleSnippetList) {
           if (nextProps.articleSnippetList.length > 0) {
@@ -203,6 +202,12 @@ const Master = React.createClass({
                   });
               }
             }
+      }
+
+      if ((nextProps.keywordSearchText != this.props.keywordSearchText) &&
+          nextProps.keywordSearchText !== null && 
+          nextProps.keywordSearchText != '') {
+        this.doSearch(nextProps.keywordSearchText, true, 0);
       }
   },
   render() {
@@ -290,7 +295,7 @@ const Master = React.createClass({
   },
   getItems({startIndex, stopIndex}) {
     // XXX: We are assuming we are getting more searchItems for paging, This is probably a bad assumption moving forward
-   let promise = this.doSearch(this.state.searchQuery, false, startIndex, stopIndex-startIndex);
+   let promise = this.doSearch(this.props.keywordSearchText, false, startIndex, stopIndex-startIndex);
 
   }
 });
@@ -298,7 +303,8 @@ const Master = React.createClass({
 const mapStateToProps = (state) => {
   return {
     clipboardVisibility: state.clipboardVisibility,
-    articleSnippetList: state.articleSnippetList
+    articleSnippetList: state.articleSnippetList,
+    keywordSearchText: state.keywordSearchText
   }
 }
 

@@ -23,8 +23,6 @@ const Master = React.createClass({
 	muiTheme: React.PropTypes.object.isRequired,
   },
 
-  searchField: null,
-
   getInitialState() {
     return {
       searchResultData: [],
@@ -33,7 +31,7 @@ const Master = React.createClass({
       searchType: "",
       articleCount: 0,
       selected: [],
-      searchQuery: '',
+      enteredSearchText: '',
       snackbarOpen: false,
       snackbarMessage: ''
     };
@@ -56,14 +54,14 @@ const Master = React.createClass({
   },
 
   handleSearchChange(event) {
-      this.setState({searchQuery: event.target.value});
+      this.setState({enteredSearchText: event.target.value});
   },
 
   handleSearchKeypress(e) {
 	if (e.keyCode != 13) {
 		return;
 	}
-    this.props.onKeywordSearch(this.state.searchQuery);
+    this.props.onKeywordSearch(this.state.enteredSearchText);
   },
 
   doSearch(query, reset_selected, offset, limit) {
@@ -98,7 +96,7 @@ const Master = React.createClass({
                   data: this.state.searchResultData,
                   scrollOffset: offset+limit, 
                   selected: reset_selected ? [] : that.state.selected,
-                  searchQuery: query,
+                  enteredSearchText: query,
                   lastScrollPage: (offset+limit > data.hits.total)
               });
           },
@@ -142,7 +140,7 @@ const Master = React.createClass({
       }));
   },
   clearSearch() {
-      this.setState({searchQuery: ""});
+      this.setState({enteredSearchText: ""});
       this.props.onClearSearch();
   },
   doSimilaritySearch(content_ids) {
@@ -245,7 +243,7 @@ const Master = React.createClass({
           style={styles.appBar}
           showMenuIconButton={showMenuIconButton} >
           <ToolbarGroup float='right'>
-            <TextField value={this.state.searchQuery} hintText='Search' ref="searchField"  onChange={this.handleSearchChange} onKeyDown={this.handleSearchKeypress} />
+            <TextField value={this.state.enteredSearchText} hintText='Search' onChange={this.handleSearchChange} onKeyDown={this.handleSearchKeypress} />
             <ClipboardVisibilityButton
               onClick={this.props.onClipboardVisibilityClick}
               open={this.props.clipboardVisibility} />

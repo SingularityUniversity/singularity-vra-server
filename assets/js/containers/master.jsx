@@ -69,6 +69,9 @@ const Master = React.createClass({
   },
 
   doSearch(query, reset_selected, offset, limit) {
+      // IMPORTANT:  This function is called by componentWillReceiveProps,
+      // so this.props is in the "previous" state.  Be careful about using
+      // any props that might be changing.
       if (!offset) {
           offset=0;
       }

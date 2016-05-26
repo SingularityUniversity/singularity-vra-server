@@ -69,20 +69,23 @@ const Master = React.createClass({
   },
 
   doSearch(query, reset_selected, offset, limit) {
-      this.setState({
-          snackbarOpen: true,
-          snackbarMessage: (
-                  <span> 
-                  Doing a content search with <em>{this.state.searchQuery}</em>
-                  </span>)
-      });
-      
       if (!offset) {
           offset=0;
       }
       if (!limit) {
           limit=50;
       }
+      // XXX: Are there situations where offset=0 and we aren't doing a new search?
+      if (offset == 0) {
+          this.setState({
+              snackbarOpen: true,
+              snackbarMessage: (
+                      <span> 
+                      Doing a content search with <em>{this.state.searchQuery}</em>
+                      </span>)
+          });
+      }
+      
       let that = this;
       return $.ajax({
           url: '/api/v1/search',

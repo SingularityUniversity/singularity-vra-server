@@ -13,7 +13,7 @@ import { addSnippetToClipboard, toggleClipboard,
          clearClipboard } from '../actions/clipboard-actions';
 import { connect } from 'react-redux';
 import Snackbar from 'material-ui/Snackbar';
-import { keywordSearch, clearSearch } from '../actions/search-actions';
+import { similaritySearch, keywordSearch, clearSearch, addSearchResults } from '../actions/search-actions';
 
 const Master = React.createClass({
   propTypes: {
@@ -23,10 +23,6 @@ const Master = React.createClass({
 
   getInitialState() {
     return {
-      searchResultData: [],
-	  searchResultTopics: [], // LDA query topics - [ [ [(term, weight),...], topicweight]...]
-      searchResultTotalCount: 0,
-      searchType: "",
       articleCount: 0,
       selected: [],
       enteredSearchText: '',
@@ -88,14 +84,11 @@ const Master = React.createClass({
           url: '/api/v1/search',
           data: `q=${query}&offset=${offset}&limit=${limit}`, 
           success: (data, textStatus, xhr) => {
-              this.state.searchResultData.splice(offset, data.hits.total, ...data.hits.hits.map(function(x) {return {score: x._score, ...x._source}}))
-              this.setState({searchResultTotalCount: data.hits.total,
-                  searchType: 'Keyword search',
-                  data: this.state.searchResultData,
-                  scrollOffset: offset+limit, 
+              let entries = data.hits.hits.map(function(x) {return {score: x._score, ...x._source}});
+              this.props.onAddSearchResults(entries, offset, data.hits.total);
+              this.setState({
                   selected: reset_selected ? [] : that.state.selected,
-                  enteredSearchText: query,
-                  lastScrollPage: (offset+limit > data.hits.total)
+                  eneteredSearchText: query
               });
           },
           error: (xhr, textStatus, errorThrown) => {
@@ -128,12 +121,12 @@ const Master = React.createClass({
   handleContentAction(content, action, params) {
 	  if (action=="similar") {
         this.clearSearch();
-		this.doSimilaritySearch([content.pk]);
+        this.props.onSimilaritySearch([content.pk]);
 	  }
   },
   onFindSimilarMultiple() {
       this.clearSearch();
-      this.doSimilaritySearch(this.state.selected.map((content) => {
+      this.props.onSimilaritySearch(this.state.selected.map((content) => {
           return content.pk; 
       }));
   },
@@ -159,13 +152,11 @@ const Master = React.createClass({
 						content.score = item.weight;
 						return content;
 					});	
+                    // Only ever send one page of similarity search results for now
+                    this.props.onAddSearchResults(annotated_results, 0, annotated_results.length, data.query_topics);
 					this.setState({
-						searchResultTopics: data.query_topics,
-        				data: annotated_results,
                         selected: [],
-                        searchResultTotalCount: annotated_results.length
 					});
-                    this.setState({searchType: 'Similarity search'});
                 },
                 error: (xhr, status, err) => {
                     console.log(xhr, status);
@@ -194,10 +185,15 @@ const Master = React.createClass({
             }
       }
 
-      if ((nextProps.keywordSearchText != this.props.keywordSearchText) &&
-          nextProps.keywordSearchText !== null && 
-          nextProps.keywordSearchText != '') {
-        this.doSearch(nextProps.keywordSearchText, true, 0);
+      if ((nextProps.searchData.searchText != this.props.searchData.searchText) &&
+          nextProps.searchData.searchText !== null && 
+          nextProps.searchData.searchText != '') {
+        this.doSearch(nextProps.searchData.searchText, true, 0);
+      }
+      if ((nextProps.searchData.searchContentIDs != this.props.searchData.searchContentIDs) &&
+          nextProps.searchData.searchContentIDs !== null && 
+          nextProps.searchData.searchContentIDs.length > 0) {
+          this.doSimilaritySearch(nextProps.searchData.searchContentIDs);
       }
   },
   render() {
@@ -248,10 +244,10 @@ const Master = React.createClass({
         <AppLeftNav
           onChangeSelected={this.handleSelectedContent}
           onFindSimilar={this.onFindSimilarMultiple}
-          displayedContent={this.state.searchResultData}
+          displayedContent={this.props.searchData.searchResultData}
           selectedContent={this.state.selected}
-          totalCount={this.state.searchResultTotalCount}
-          searchType={this.state.searchType}
+          totalCount={this.props.searchData.searchResultTotalCount}
+          searchType={this.props.searchData.searchType}
           loadItems={this.getItems}
         />
         <Clipboard 
@@ -276,8 +272,7 @@ const Master = React.createClass({
   },
   getItems({startIndex, stopIndex}) {
     // XXX: We are assuming we are getting more searchItems for paging, This is probably a bad assumption moving forward
-   let promise = this.doSearch(this.props.keywordSearchText, false, startIndex, stopIndex-startIndex);
-
+   let promise = this.doSearch(this.props.searchData.searchText, false, startIndex, stopIndex-startIndex);
   }
 });
 
@@ -285,7 +280,7 @@ const mapStateToProps = (state) => {
   return {
     clipboardVisibility: state.clipboardVisibility,
     articleSnippetList: state.articleSnippetList,
-    keywordSearchText: state.keywordSearchText
+    searchData: state.searchData
   }
 }
 
@@ -303,9 +298,15 @@ const mapDispatchToProps = (dispatch) => {
     onKeywordSearch: (text) => {
       dispatch(keywordSearch(text));
     },
+    onSimilaritySearch: (content_ids) => {
+        dispatch(similaritySearch(content_ids));
+    },
     onClearSearch: () => {
       dispatch(clearSearch());
-    }
+    },
+    onAddSearchResults: (results, start, totalCount) => {
+        dispatch(addSearchResults(results, start, totalCount));
+    },
   }
 }
 

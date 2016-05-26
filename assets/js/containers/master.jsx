@@ -312,6 +312,12 @@ const mapDispatchToProps = (dispatch) => {
     },
     onClearClipboard: () => {
       dispatch(clearClipboard());
+    },
+    onKeywordSearch: (text) => {
+      dispatch(keywordSearch(text));
+    },
+    onClearSearch: () => {
+      dispatch(clearSearch());
     }
   }
 }

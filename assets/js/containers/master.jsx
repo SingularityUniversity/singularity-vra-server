@@ -81,7 +81,7 @@ const Master = React.createClass({
               snackbarOpen: true,
               snackbarMessage: (
                       <span> 
-                      Doing a content search with <em>{this.state.searchQuery}</em>
+                      Doing a content search with <em>{query}</em>
                       </span>)
           });
       }

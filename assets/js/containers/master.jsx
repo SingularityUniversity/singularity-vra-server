@@ -27,11 +27,11 @@ const Master = React.createClass({
 
   getInitialState() {
     return {
-      data: [],
-	  query_topics: [], // LDA query topics - [ [ [(term, weight),...], topicweight]...]
-      resultCountTotal: 0,
-      articleCount: 0,
+      searchResultData: [],
+	  searchResultTopics: [], // LDA query topics - [ [ [(term, weight),...], topicweight]...]
+      searchResultTotalCount: 0,
       searchType: "",
+      articleCount: 0,
       selected: [],
       searchQuery: '',
       snackbarOpen: false,
@@ -92,10 +92,10 @@ const Master = React.createClass({
           url: '/api/v1/search',
           data: `q=${query}&offset=${offset}&limit=${limit}`, 
           success: (data, textStatus, xhr) => {
-              this.state.data.splice(offset, data.hits.total, ...data.hits.hits.map(function(x) {return {score: x._score, ...x._source}}))
-              this.setState({resultCountTotal: data.hits.total,
+              this.state.searchResultData.splice(offset, data.hits.total, ...data.hits.hits.map(function(x) {return {score: x._score, ...x._source}}))
+              this.setState({searchResultTotalCount: data.hits.total,
                   searchType: 'Keyword search',
-                  data: this.state.data,
+                  data: this.state.searchResultData,
                   scrollOffset: offset+limit, 
                   selected: reset_selected ? [] : that.state.selected,
                   searchQuery: query,
@@ -164,10 +164,10 @@ const Master = React.createClass({
 						return content;
 					});	
 					this.setState({
-						query_topics: data.query_topics,
+						searchResultTopics: data.query_topics,
         				data: annotated_results,
                         selected: [],
-                        resultCountTotal: annotated_results.length
+                        searchResultTotalCount: annotated_results.length
 					});
                     this.setState({searchType: 'Similarity search'});
                 },
@@ -254,9 +254,9 @@ const Master = React.createClass({
         <AppLeftNav
           onChangeSelected={this.handleSelectedContent}
           onFindSimilar={this.onFindSimilarMultiple}
-          displayedContent={this.state.data}
+          displayedContent={this.state.searchResultData}
           selectedContent={this.state.selected}
-          totalCount={this.state.resultCountTotal}
+          totalCount={this.state.searchResultTotalCount}
           searchType={this.state.searchType}
           loadItems={this.getItems}
         />

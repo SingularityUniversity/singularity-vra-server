@@ -10,9 +10,10 @@ import Clipboard from '../components/clipboard';
 import ClipboardVisibilityButton from '../components/clipboard-visibility-button';
 import SelectableContentDetail from '../containers/selectable-content-detail';
 import { addSnippetToClipboard, toggleClipboard, 
-         clearClipboard } from '../actions/clipboard-actions.js';
+         clearClipboard } from '../actions/clipboard-actions';
 import { connect } from 'react-redux';
 import Snackbar from 'material-ui/Snackbar';
+import { keywordSearch, clearSearch } from '../actions/search-actions';
 
 const Master = React.createClass({
   propTypes: {

@@ -14,6 +14,8 @@ import { addSnippetToClipboard, toggleClipboard,
 import { connect } from 'react-redux';
 import Snackbar from 'material-ui/Snackbar';
 import { similaritySearch, keywordSearch, clearSearch, addSearchResults } from '../actions/search-actions';
+import { clearSelected, setSelected} from '../actions/selected-actions';
+
 
 const Master = React.createClass({
   propTypes: {
@@ -24,7 +26,6 @@ const Master = React.createClass({
   getInitialState() {
     return {
       articleCount: 0,
-      selected: [],
       enteredSearchText: '',
       snackbarOpen: false,
       snackbarMessage: ''
@@ -86,8 +87,10 @@ const Master = React.createClass({
           success: (data, textStatus, xhr) => {
               let entries = data.hits.hits.map(function(x) {return {score: x._score, ...x._source}});
               this.props.onAddSearchResults(entries, offset, data.hits.total);
+              if (reset_selected) {
+                  this.props.onClearSelected();
+              }
               this.setState({
-                  selected: reset_selected ? [] : that.state.selected,
                   eneteredSearchText: query
               });
           },
@@ -98,25 +101,7 @@ const Master = React.createClass({
   },
 
   handleSelectedContent(content, selected) {
-      // XXX: choose a better data structure to make this more simple
-      if (!selected) { // Turn off membership in selected - filter out if it somehow exists in the selected list
-          let filtered_selected = this.state.selected.filter(function(selected_content) {
-              return (content.pk != selected_content.pk)
-          });
-          this.setState({selected: filtered_selected});
-      }
-      let alreadySelected = false;
-      this.state.selected.forEach(function(selected_content) {
-          if (selected_content.pk == content.pk) {
-              alreadySelected = true;
-          }
-      });
-      
-      if (!alreadySelected) {
-          let selected = this.state.selected;
-          selected.push(content);
-          this.setState({selected: selected});
-      }
+      this.props.onSetSelected(content, selected);
   },
   handleContentAction(content, action, params) {
 	  if (action=="similar") {
@@ -126,7 +111,7 @@ const Master = React.createClass({
   },
   onFindSimilarMultiple() {
       this.clearSearch();
-      this.props.onSimilaritySearch(this.state.selected.map((content) => {
+      this.props.onSimilaritySearch(this.props.selectedData.map((content) => {
           return content.pk; 
       }));
   },
@@ -212,7 +197,7 @@ const Master = React.createClass({
     let clipboardWidth = 450;
 
     let that = this;
-    let contentItems = this.state.selected.map(function(content) {  
+    let contentItems = this.props.selectedData.map(function(content) {  
         return (
                 <SelectableContentDetail key={content.pk} style={styles.fullWidthSection} content={content} onAction={that.handleContentAction}/> 
                );
@@ -245,7 +230,7 @@ const Master = React.createClass({
           onChangeSelected={this.handleSelectedContent}
           onFindSimilar={this.onFindSimilarMultiple}
           displayedContent={this.props.searchData.searchResultData}
-          selectedContent={this.state.selected}
+          selectedContent={this.props.selectedData}
           totalCount={this.props.searchData.searchResultTotalCount}
           searchType={this.props.searchData.searchType}
           loadItems={this.getItems}
@@ -280,7 +265,8 @@ const mapStateToProps = (state) => {
   return {
     clipboardVisibility: state.clipboardVisibility,
     articleSnippetList: state.articleSnippetList,
-    searchData: state.searchData
+    searchData: state.searchData,
+    selectedData: state.selectedData
   }
 }
 
@@ -307,6 +293,12 @@ const mapDispatchToProps = (dispatch) => {
     onAddSearchResults: (results, start, totalCount) => {
         dispatch(addSearchResults(results, start, totalCount));
     },
+      onClearSelected: () => {
+          dispatch(clearSelected());
+      },
+      onSetSelected: (content, isSelected) => {
+          dispatch(setSelected(content, isSelected));
+      }
   }
 }
 

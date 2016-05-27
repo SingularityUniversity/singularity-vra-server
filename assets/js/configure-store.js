@@ -4,13 +4,15 @@ import thunkMiddleware from 'redux-thunk';
 import rootReducer from './reducers/root-reducer';
 import {initialState as searchInitialState} from './reducers/search-reducer';
 import {initialState as selectedInitialState} from './reducers/selected-reducer';
+import {initialStaate as snackbarInitiateState} from './reducers/snackbar-reducer';
 
 export const initialState = {
   clipboardVisibility: false,
   articleSnippetList: [],
   searchData: searchInitialState,
   selectedData: selectedInitialState,
-  articleCount: 0
+  articleCount: 0,
+  snackbar: snackbarInitiateState
 };
 
 const loggerMiddleware = createLogger();

@@ -13,9 +13,10 @@ import { addSnippetToClipboard, toggleClipboard,
          clearClipboard } from '../actions/clipboard-actions';
 import { connect } from 'react-redux';
 import Snackbar from 'material-ui/Snackbar';
-import { similaritySearch, keywordSearch, clearSearch, addSearchResults } from '../actions/search-actions';
+import { similaritySearch, startKeywordSearch, keywordSearch, clearSearch, addSearchResults } from '../actions/search-actions';
 import { clearSelected, setSelected} from '../actions/selected-actions';
 import { getArticleCount } from '../actions/article-count-actions';
+import { showSnackbarMessage, closeSnackbar} from '../actions/snackbar-actions';
 
 
 const Master = React.createClass({
@@ -44,48 +45,8 @@ const Master = React.createClass({
 	if (e.keyCode != 13) {
 		return;
 	}
-    this.props.onKeywordSearch(this.state.enteredSearchText);
-  },
-
-  doSearch(query, reset_selected, offset, limit) {
-      // IMPORTANT:  This function is called by componentWillReceiveProps,
-      // so this.props is in the "previous" state.  Be careful about using
-      // any props that might be changing.
-      if (!offset) {
-          offset=0;
-      }
-      if (!limit) {
-          limit=50;
-      }
-      // XXX: Are there situations where offset=0 and we aren't doing a new search?
-      if (offset == 0) {
-          this.setState({
-              snackbarOpen: true,
-              snackbarMessage: (
-                      <span> 
-                      Doing a content search with <em>{query}</em>
-                      </span>)
-          });
-      }
-      
-      let that = this;
-      return $.ajax({
-          url: '/api/v1/search',
-          data: `q=${query}&offset=${offset}&limit=${limit}`, 
-          success: (data, textStatus, xhr) => {
-              let entries = data.hits.hits.map(function(x) {return {score: x._score, ...x._source}});
-              this.props.onAddSearchResults(entries, offset, data.hits.total);
-              if (reset_selected) {
-                  this.props.onClearSelected();
-              }
-              this.setState({
-                  enteredSearchText: query
-              });
-          },
-          error: (xhr, textStatus, errorThrown) => {
-              console.log(`search error: ${textStatus}`);
-          }
-      });
+    this.props.onStartKeywordSearch(this.state.enteredSearchText);
+    this.props.onKeywordSearch(this.state.enteredSearchText, true, 0);
   },
 
   handleSelectedContent(content, selected) {
@@ -106,68 +67,6 @@ const Master = React.createClass({
   clearSearch() {
       this.setState({enteredSearchText: ""});
       this.props.onClearSearch();
-  },
-  doSimilaritySearch(content_ids) {
-      let that = this;
-      this.setState({
-          snackbarOpen: true,
-          snackbarMessage: "Doing a similarity search"
-      });
-       $.ajax({
-                url: `/api/v1/similar`,
-                method: 'POST',
-                contentType: "application/json",
-                data: JSON.stringify({'ids': content_ids}),
-                success: (data) => {
-					let annotated_results = data.results.map(function(item) {
-						var content = item.source;
-						content.lda_similarity_topics = item.topics;
-						content.score = item.weight;
-						return content;
-					});	
-                    // Only ever send one page of similarity search results for now
-                    this.props.onAddSearchResults(annotated_results, 0, annotated_results.length, data.query_topics);
-					this.setState({
-                        selected: [],
-					});
-                },
-                error: (xhr, status, err) => {
-                    console.log(xhr, status);
-                }
-            });
-
-  },
-  componentWillReceiveProps(nextProps) {
-      if ((nextProps.articleSnippetList != this.props.articleSnippetList) 
-              && nextProps.articleSnippetList) {
-          if (nextProps.articleSnippetList.length > 0) {
-              let total_new_snippets = 0;
-              let total_old_snippets = 0; 
-              for (let x of nextProps.articleSnippetList) {
-                  total_new_snippets += x.snippets.length
-              }
-              for (let x of this.props.articleSnippetList) {
-                  total_old_snippets += x.snippets.length
-              }
-              if (total_new_snippets > total_old_snippets) {
-                  this.setState({
-                      snackbarOpen: true,
-                      snackbarMessage: "Content copied to clipboard"
-                  });
-              }
-            }
-      }
-
-      if ((nextProps.searchData.searchText != this.props.searchData.searchText) &&
-          nextProps.searchData.searchText !== null && 
-          nextProps.searchData.searchText != '') {
-        this.doSearch(nextProps.searchData.searchText, true, 0);
-      }
-      if ((nextProps.searchData.searchContentIDs != this.props.searchData.searchContentIDs) &&
-          nextProps.searchData.searchContentIDs !== null && 
-          nextProps.searchData.searchContentIDs.length > 0) {
-          this.doSimilaritySearch(nextProps.searchData.searchContentIDs);
-      }
   },
   render() {
     const {
@@ -235,17 +134,17 @@ const Master = React.createClass({
         </div>
         <Snackbar
         style={{textAlign: "center"}}
-            open={this.state.snackbarOpen}
-            message={this.state.snackbarMessage}
+            open={this.props.snackbar.open}
+            message={this.props.snackbar.message}
             autoHideDuration={2500}
-            onRequestClose={() => this.setState({'snackbarOpen': false})}
+            onRequestClose={() => this.props.onCloseSnackbar()}
         />
       </div>
     );
   },
   getItems({startIndex, stopIndex}) {
     // XXX: We are assuming we are getting more searchItems for paging, This is probably a bad assumption moving forward
-   let promise = this.doSearch(this.props.searchData.searchText, false, startIndex, stopIndex-startIndex);
+   let promise = this.props.onKeywordSearch(this.props.searchData.searchText, false, startIndex, stopIndex-startIndex);
   }
 });
 
@@ -255,7 +154,8 @@ const mapStateToProps = (state) => {
     articleSnippetList: state.articleSnippetList,
     searchData: state.searchData,
     selectedData: state.selectedData,
-    articleCount: state.articleCount
+    articleCount: state.articleCount,
+    snackbar: state.snackbar
   }
 }
 
@@ -270,8 +170,11 @@ const mapDispatchToProps = (dispatch) => {
     onClearClipboard: () => {
       dispatch(clearClipboard());
     },
-    onKeywordSearch: (text) => {
-      dispatch(keywordSearch(text));
+      onStartKeywordSearch: (text) => {
+          dispatch(startKeywordSearch(text));
+      },
+    onKeywordSearch: (text, reset, offset, limit) => {
+      dispatch(keywordSearch(text, reset, offset, limit));
     },
     onSimilaritySearch: (content_ids) => {
         dispatch(similaritySearch(content_ids));
@@ -290,7 +193,14 @@ const mapDispatchToProps = (dispatch) => {
       },
     onGetArticleCount: () => {
         dispatch(getArticleCount());
-    }
+    },
+      onCloseSnackbar: () => {
+          dispatch(closeSnackbar());
+      },
+      onShowSnackbarMessage: (message) => { 
+          dispatch(showSnackbarMessage(message));
+      }
+
   }
 }
 

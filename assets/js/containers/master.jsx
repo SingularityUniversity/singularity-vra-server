@@ -28,8 +28,6 @@ const Master = React.createClass({
   getInitialState() {
     return {
       enteredSearchText: '',
-      snackbarOpen: false,
-      snackbarMessage: ''
     };
   },
 

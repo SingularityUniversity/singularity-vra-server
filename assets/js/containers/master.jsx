@@ -91,7 +91,7 @@ const Master = React.createClass({
                   this.props.onClearSelected();
               }
               this.setState({
-                  eneteredSearchText: query
+                  enteredSearchText: query
               });
           },
           error: (xhr, textStatus, errorThrown) => {

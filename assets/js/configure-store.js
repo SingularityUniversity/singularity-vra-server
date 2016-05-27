@@ -9,7 +9,8 @@ export const initialState = {
   clipboardVisibility: false,
   articleSnippetList: [],
   searchData: searchInitialState,
-  selectedData: selectedInitialState
+  selectedData: selectedInitialState,
+  articleCount: 0
 };
 
 const loggerMiddleware = createLogger();

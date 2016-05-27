@@ -15,6 +15,7 @@ import { connect } from 'react-redux';
 import Snackbar from 'material-ui/Snackbar';
 import { similaritySearch, keywordSearch, clearSearch, addSearchResults } from '../actions/search-actions';
 import { clearSelected, setSelected} from '../actions/selected-actions';
+import { getArticleCount } from '../actions/article-count-actions';
 
 
 const Master = React.createClass({
@@ -25,27 +26,14 @@ const Master = React.createClass({
 
   getInitialState() {
     return {
-      articleCount: 0,
       enteredSearchText: '',
       snackbarOpen: false,
       snackbarMessage: ''
     };
   },
 
-  getArticleCountFromServer: function() {
-    $.ajax({
-      url: '/api/v1/content/count',
-      success: (data) => {
-        this.setState({articleCount: data.count});
-      },
-      error: (xhr, status, err) => {
-        console.log(xhr, status);
-      }
-    });
-  },
-
   componentDidMount: function() {
-    this.getArticleCountFromServer();
+      this.props.onGetArticleCount();
   },
 
   handleSearchChange(event) {
@@ -190,7 +178,7 @@ const Master = React.createClass({
 	
 
     let title = (
-      <span>Virtual Research Assistant <i className='small'>({this.state.articleCount} articles and counting...)</i></span>
+      <span>Virtual Research Assistant <i className='small'>({this.props.articleCount} articles and counting...)</i></span>
     );
     let showMenuIconButton = false;
     let clipboardDocked = true;
@@ -266,7 +254,8 @@ const mapStateToProps = (state) => {
     clipboardVisibility: state.clipboardVisibility,
     articleSnippetList: state.articleSnippetList,
     searchData: state.searchData,
-    selectedData: state.selectedData
+    selectedData: state.selectedData,
+    articleCount: state.articleCount
   }
 }
 
@@ -298,7 +287,10 @@ const mapDispatchToProps = (dispatch) => {
       },
       onSetSelected: (content, isSelected) => {
           dispatch(setSelected(content, isSelected));
-      }
+      },
+    onGetArticleCount: () => {
+        dispatch(getArticleCount());
+    }
   }
 }
 

@@ -8,6 +8,8 @@ export const ADD_SEARCH_RESULTS = 'ADD_SEARCH_RESULTS'
 export const SIMILARITY_SEARCH = 'SIMILARITY_SEARCH'
 
 
+let keywordSearchRequests = {};
+
 export function keywordSearch(query, reset_selected, offset, limit) {
    
     return function(dispatch) {
@@ -17,9 +19,14 @@ export function keywordSearch(query, reset_selected, offset, limit) {
         if (!limit) {
             limit=50;
         }
-        return $.ajax({
+        let data = `q=${query}&offset=${offset}&limit=${limit}`;
+        if (data in keywordSearchRequests) {
+          return;
+        }
+        keywordSearchRequests[data]=1;
+        let promise=$.ajax({
             url: '/api/v1/search',
-            data: `q=${query}&offset=${offset}&limit=${limit}`, 
+            data: data, 
             success: (data, textStatus, xhr) => {
                 let entries = data.hits.hits.map(function(x) {return {score: x._score, ...x._source}});
                 dispatch(addSearchResults(entries, offset, data.hits.total));
@@ -30,7 +37,10 @@ export function keywordSearch(query, reset_selected, offset, limit) {
             error: (xhr, textStatus, errorThrown) => {
                 console.log(`search error: ${textStatus}`);
             }
+        }).always(function() {
+          delete keywordSearchRequests[data];
         });
+        return promise;
     }
 }
 

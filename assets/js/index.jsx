@@ -26,4 +26,20 @@ $.ajaxSetup({
     }
 });
 
+let state = {hello: 1};
+
+history.pushState(state, "App", "#app");
+
+$(window).on('popstate', function (e) {
+    console.log("Got popstate", e);
+    var state = e.originalEvent.state;
+    if (state !== null) {
+        document.title = state.title;
+        load(state.url);
+    } else {
+        alert("Please don't use the back button. You can see previous search results using the arrows near the search bar.");
+        history.pushState(state, "App", "#app");
+    }
+});
+
 render(<App/>, document.getElementById('app'))

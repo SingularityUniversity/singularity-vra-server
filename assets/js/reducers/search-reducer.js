@@ -1,15 +1,22 @@
 import { KEYWORD_SEARCH, SIMILARITY_SEARCH, CLEAR_SEARCH, ADD_SEARCH_RESULTS } from '../actions/search-actions'
+import undoable, { combineFilters, distinctState } from 'redux-undo'
 
-export const initialState = {
-  searchResultData: [],
-  searchResultTopics: [], // LDA query topics - [ [ [(term, weight),...], topicweight]...]
-  searchResultTotalCount: 0,
-  searchType: "",
-  searchText: "",
-  searchContentIDs: []
+export const initialState= {
+    searchResultData: [],
+    searchResultTopics: [], // LDA query topics - [ [ [(term, weight),...], topicweight]...]
+    searchResultTotalCount: 0,
+    searchType: "",
+    searchText: "",
+    searchContentIDs: []
 }
 
-export function searchReducer(state=initialState, action) {
+export const initialHistory= {
+  past: [],
+  present: Object.assign({}, initialState),
+  future: []
+}
+
+function _searchReducer(state=initialState, action) {
   switch (action.type) {
     case KEYWORD_SEARCH:
         return Object.assign({}, state,
@@ -53,3 +60,22 @@ export function searchReducer(state=initialState, action) {
       return state;
   }
 }
+
+function newSearchResult(action, currentState, previousHistory) {
+  console.log("Filter is looking at currentState", currentState, previousHistory);
+  if (!previousHistory) {
+    return;
+  }
+  let present;
+  // XXX There seems to be a bug in redux-undo where the filter gets passed the actual state, not the past/present/future structure,
+  // in previousHistory, until the point when a history entry is created, then past/present/future structure is passed in
+  if (previousHistory.present) { 
+    present=previousHistory.present;
+  } else {
+    present = previousHistory;
+  }
+  return (((action.type == KEYWORD_SEARCH) || (action.type == CLEAR_SEARCH) || (action.type == SIMILARITY_SEARCH)) &&
+      present.searchResultTotalCount != 0)
+}
+
+export let searchReducer = undoable(_searchReducer, {filter: newSearchResult, debug:true})

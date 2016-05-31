@@ -17,7 +17,10 @@ import { similaritySearch, startKeywordSearch, keywordSearch, clearSearch, addSe
 import { clearSelected, setSelected} from '../actions/selected-actions';
 import { getArticleCount } from '../actions/article-count-actions';
 import { showSnackbarMessage, closeSnackbar} from '../actions/snackbar-actions';
-
+import ArrowBack from 'material-ui/svg-icons/navigation/arrow-back';
+import ArrowForward from 'material-ui/svg-icons/navigation/arrow-forward';
+import IconButton from 'material-ui/IconButton';
+import { ActionCreators as UndoActionCreators } from 'redux-undo'
 
 const Master = React.createClass({
   propTypes: {
@@ -30,7 +33,11 @@ const Master = React.createClass({
       enteredSearchText: '',
     };
   },
-
+  componentWillReceiveProps(nextProps) {
+      if (this.props.searchData.searchText != nextProps.searchData.searchText) {
+          this.setState({enteredSearchText: nextProps.searchData.searchText});
+      }
+  },
   componentDidMount: function() {
       this.props.onGetArticleCount();
   },
@@ -104,6 +111,10 @@ const Master = React.createClass({
           zDepth={0}
           style={styles.appBar}
           showMenuIconButton={showMenuIconButton} >
+          <ToolbarGroup>
+            <IconButton disabled={!this.props.canUndoSearch} onClick={this.props.onUndo}><ArrowBack/></IconButton>
+            <IconButton disabled={!this.props.canRedoSearch} onClick={this.props.onRedo}><ArrowForward/></IconButton>
+          </ToolbarGroup>
           <ToolbarGroup float='right'>
             <TextField value={this.state.enteredSearchText} hintText='Search' onChange={this.handleSearchChange} onKeyDown={this.handleSearchKeypress} />
             <ClipboardVisibilityButton
@@ -118,6 +129,7 @@ const Master = React.createClass({
           selectedContent={this.props.selectedData}
           totalCount={this.props.searchData.searchResultTotalCount}
           searchType={this.props.searchData.searchType}
+          searchText={this.props.searchData.searchText}
           loadItems={this.getItems}
         />
         <Clipboard 
@@ -150,10 +162,12 @@ const mapStateToProps = (state) => {
   return {
     clipboardVisibility: state.clipboardVisibility,
     articleSnippetList: state.articleSnippetList,
-    searchData: state.searchData,
+    searchData: state.searchData.present,
     selectedData: state.selectedData,
     articleCount: state.articleCount,
-    snackbar: state.snackbar
+    snackbar: state.snackbar,
+    canUndoSearch: state.searchData.past.length > 0,
+    canRedoSearch: state.searchData.future.length > 0
   }
 }
 
@@ -197,8 +211,9 @@ const mapDispatchToProps = (dispatch) => {
       },
       onShowSnackbarMessage: (message) => { 
           dispatch(showSnackbarMessage(message));
-      }
-
+      },
+    onUndo: () => dispatch(UndoActionCreators.undo()),
+    onRedo: () => dispatch(UndoActionCreators.redo())
   }
 }
 

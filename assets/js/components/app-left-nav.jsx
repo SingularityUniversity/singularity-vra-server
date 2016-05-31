@@ -53,6 +53,7 @@ let propTypes = {
     loadItems: React.PropTypes.func,
     onFindSimilar: React.PropTypes.func.isRequired,
     searchType: React.PropTypes.string,
+    searchText: React.PropTypes.string
   };
 const AppLeftNav = React.createClass({
     getInitialState: function() {
@@ -140,6 +141,7 @@ const AppLeftNav = React.createClass({
       displayedContent, 
       selectedContent,
       searchType,
+      searchText,
       muiTheme,
       totalCount
     } = this.props;
@@ -153,6 +155,7 @@ const AppLeftNav = React.createClass({
       >
         <div style={{position:"fixed", "textAlign": "center", "width": "100%"}}>
             <p><strong>{searchType}</strong><br/>
+            {searchText ? (<span><i>'{searchText}'</i><br/></span>) : ''}
             <i>{totalCount} results</i><br/>
             <i>{selectedContent.length} selected</i><br/>
             </p>

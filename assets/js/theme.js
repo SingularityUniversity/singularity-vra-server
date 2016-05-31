@@ -70,8 +70,8 @@ export default {
   },
   leftNav: {
       zIndex: zIndex.appBar -1,
-      paddingTop: desktopKeylineIncrement + desktopGutter,
-      headerHeight: desktopKeylineIncrement*2,
+      paddingTop: desktopKeylineIncrement, 
+      headerHeight: desktopKeylineIncrement*3,
   },
   masterBar: {
     contentWhenMedium: {

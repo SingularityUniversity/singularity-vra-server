@@ -2,9 +2,9 @@ import { createStore, applyMiddleware } from 'redux';
 import createLogger from 'redux-logger';
 import thunkMiddleware from 'redux-thunk';
 import rootReducer from './reducers/root-reducer';
-import {initialState as searchInitialState} from './reducers/search-reducer';
+import {initialHistory as searchInitialState} from './reducers/search-reducer';
 import {initialState as selectedInitialState} from './reducers/selected-reducer';
-import {initialStaate as snackbarInitiateState} from './reducers/snackbar-reducer';
+import {initialState as snackbarInitiateState} from './reducers/snackbar-reducer';
 
 export const initialState = {
   clipboardVisibility: false,

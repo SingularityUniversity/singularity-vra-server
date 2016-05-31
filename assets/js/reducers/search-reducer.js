@@ -78,4 +78,4 @@ function newSearchResult(action, currentState, previousHistory) {
       present.searchResultTotalCount != 0)
 }
 
-export let searchReducer = undoable(_searchReducer, {filter: newSearchResult, debug:true})
+export let searchReducer = undoable(_searchReducer, {filter: newSearchResult})

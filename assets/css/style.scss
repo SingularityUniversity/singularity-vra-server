@@ -27,33 +27,6 @@ a {
     padding-left: 8px;
 }
 
-// Styles for pagination using react-paginate
-#react-paginate {
-    text-align: center;
-}
-
-#react-paginate .selected a {
-    font-weight: bold;
-    color: red;
-}
-
-#react-paginate ul {
-    display: inline-block;
-    padding-left: 15px;
-    padding-right: 15px;
-}
-
-#react-paginate li {
-    display: inline-block;
-    padding: 5;
-}
-
-#react-paginate .break a {
-    cursor: default;
-    color: blue;
-    text-decoration: none;
-}
-
 // Styles for selection-menu
 .selection-menu {
   font: 20px/100% Roboto, sans-serif;

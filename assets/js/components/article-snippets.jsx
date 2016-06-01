@@ -29,6 +29,9 @@ const iconStyle= {
 const buttonStyle= {
      width: 18,
     height: 18,
+    padding: 0,
+    marginLeft: 5,
+    verticalAlign: "middle"
 }
 
 let ArticleSnippets = React.createClass({
@@ -50,8 +53,8 @@ let ArticleSnippets = React.createClass({
   render() {
     return (
       <ListItem key={this.props.content.pk}>
-        <div key={this.props.content.pk}><b>{this.props.content.fields.extract.title}</b></div><br />
-          <ul>
+        <div key={this.props.content.pk}><b>{this.props.content.fields.extract.title}</b></div>
+          <ul style={{marginTop:5}}>
             { this.snippets() }
           </ul>
       </ListItem>

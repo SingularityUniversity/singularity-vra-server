@@ -102,6 +102,7 @@ const Master = React.createClass({
 	// XXX: This is really hacky - there are styles from the theme that we're setting in the theme.js
 	// but then we are extracting them from the theme and passing in the containerStyle and style, because
 	// I haven't figured out exactly  how to structure the entries in theme.js
+    // XXX: Also a hack in the snackbar to force fontFamily - this may be a bug in material-ui
     return (
       <div style={styles.root}>
         <AppBar
@@ -143,7 +144,7 @@ const Master = React.createClass({
         {contentItems}
         </div>
         <Snackbar
-        style={{textAlign: "center"}}
+        style={{fontFamily: this.props.muiTheme.baseTheme.fontFamily, textAlign: "center"}}
             open={this.props.snackbar.open}
             message={this.props.snackbar.message}
             autoHideDuration={2500}

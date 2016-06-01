@@ -35,6 +35,7 @@ export function keywordSearch(query, reset_selected, offset, limit) {
                 }
             },
             error: (xhr, textStatus, errorThrown) => {
+              dispatch(showSnackbarMessage(xhr.responseText));
                 console.log(`search error: ${textStatus}`);
             }
         }).always(function() {

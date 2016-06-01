@@ -11,6 +11,8 @@ from rest_framework.response import Response
 from text.common import get_lda_data, tokenize_text_block, extract_words_from_content
 from text.summary import get_summary_sentences
 from core.api.v1.pagination import LargeResultsLimitOffsetPagination
+from elasticsearch import TransportError, RequestError
+from django.http import HttpResponse
 import numpy as np
 
 logger = logging.getLogger(__name__)
@@ -97,8 +99,19 @@ class SearchView(views.APIView):
         if 'limit' in query_params:
             param_dict['size'] = query_params['limit']
         param_dict['q'] = self.map_query_to_fields(param_dict['q'])
-        results = client.search(**param_dict)
-
+        try:
+            results = client.search(**param_dict)
+        except RequestError as req_err:
+            if (req_err.info):
+                message = req_err.info['error']['root_cause'][0]['reason']
+            else:
+                messge = str(req_err)
+            return HttpResponse(message, status=status.HTTP_400_BAD_REQUEST,
+                                content_type="text/plain")
+        except TransportError as req_err:
+            return HttpResponse("Unknown error with Elastic Search",
+                                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                                content_type="text/plain")
         return Response(results, status=status.HTTP_200_OK)
 
 

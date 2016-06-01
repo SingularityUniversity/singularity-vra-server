@@ -8,7 +8,7 @@ import muiThemeable from 'material-ui/styles/muiThemeable';
 import AppLeftNav from '../components/app-left-nav';
 import Clipboard from '../components/clipboard';
 import ClipboardVisibilityButton from '../components/clipboard-visibility-button';
-import SelectableContentDetail from '../containers/selectable-content-detail';
+import ContentDetail from '../components/content-detail';
 import { addSnippetToClipboard, toggleClipboard, 
          clearClipboard } from '../actions/clipboard-actions';
 import { connect } from 'react-redux';
@@ -91,7 +91,7 @@ const Master = React.createClass({
     let that = this;
     let contentItems = this.props.selectedData.map(function(content) {  
         return (
-                <SelectableContentDetail key={content.pk} style={styles.fullWidthSection} content={content} onAction={that.handleContentAction}/> 
+                <ContentDetail key={content.pk} style={styles.fullWidthSection} content={content} onAction={that.handleContentAction}/> 
                );
     });
     if (contentItems.length == 0) {

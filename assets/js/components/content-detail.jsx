@@ -9,6 +9,9 @@ import {List, ListItem} from 'material-ui/List';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import SelectionMenu from 'selection-menu';
 import TopicsList from './lda_topics';
+import { connect } from 'react-redux';
+import { keywordSearch } from '../actions/search-actions';
+import { addSnippetToClipboard } from '../actions/clipboard-actions';
 
 import Moment from 'moment';
 
@@ -165,5 +168,17 @@ const ContentDetail = React.createClass({
     }
 });
 
-export default  muiThemeable()(ContentDetail);
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onClip: (id, title, text) => {
+      dispatch(addSnippetToClipboard(id, title, text));
+    },
+    onSearch: (text) => {
+      dispatch(keywordSearch(text));
+    }
+  };
+}
+
+
+export default connect(null, mapDispatchToProps)(muiThemeable()(ContentDetail));
 

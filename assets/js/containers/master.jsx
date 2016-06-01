@@ -22,6 +22,8 @@ import ArrowForward from 'material-ui/svg-icons/navigation/arrow-forward';
 import IconButton from 'material-ui/IconButton';
 import { ActionCreators as UndoActionCreators } from 'redux-undo'
 
+import SearchHelpDialog from '../components/search-help-dialog';
+
 const Master = React.createClass({
   propTypes: {
     children: React.PropTypes.node,
@@ -118,6 +120,7 @@ const Master = React.createClass({
           </ToolbarGroup>
           <ToolbarGroup float='right'>
             <TextField value={this.state.enteredSearchText} hintText='Search' onChange={this.handleSearchChange} onKeyDown={this.handleSearchKeypress} />
+            <SearchHelpDialog /> 
             <ClipboardVisibilityButton
               onClick={this.props.onClipboardVisibilityClick}
               open={this.props.clipboardVisibility} />

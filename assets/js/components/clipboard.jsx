@@ -41,9 +41,19 @@ const Clipboard = React.createClass({
 
     let clipboardText = '';
     if (articleSnippetList.length > 0) {
-      clipboardText = articleSnippetList.reduce((previousValue, article) => {
-        return previousValue + article.content.fields.extract.title + '\n\n' + article.snippets.join('\n') + '\n\n';
-      }, '');
+        let clipboardItems= articleSnippetList.map((article) => {
+            let publishedDate = article.content.fields.published;
+            let published = "Unknown";
+            if (publishedDate) {
+                published = Moment(parseInt(publishedDate)).format('YYYY-MM-DD');
+            }
+            return article.content.fields.extract.title + '\n' +
+                article.content.fields.url+'\n'+
+                'Retrieved on: '+Moment(article.content.fields.created).format('YYYY-MM-DD')+'\n'+
+                'Published on: '+published+'\n\n'+
+                article.snippets.join('\n');
+        });
+        clipboardText=clipboardItems.join("\n\n---------------\n\n");
     } 
 
 	const style = this.props.muiTheme.leftNav;

@@ -22,6 +22,37 @@ class PublisherViewSet(viewsets.ModelViewSet):
 
 
 class SearchView(views.APIView):
+    query_fields = {
+        'url': 'fields.url',
+        'title': 'fields.extract.title',
+        'author': 'fields.extract.authors.name',
+        'language': 'fields.extract.language',
+        'content': 'fields.extract.content',
+        'keyword': 'fields.extract.keywords.name',
+        'publisher': 'fields.extract.provider_name',
+        'published': 'fields.extract.published'
+    }
+
+    def map_query_to_fields(self, query):
+        tokens = query.split()
+        in_quote = False
+        # walk through the tokens consuming anything inside of double quotes
+        for index, token in enumerate(tokens):
+            if in_quote == False and '"' in token:
+                in_quote == True
+                continue
+            elif in_quote == True and '"' not in token:
+                continue
+            elif in_quote == True and '"' in token:
+                in_quote == False
+                continue
+            # replace any fields with the underlying data model field name
+            for field in self.query_fields:
+                if field in token:
+                    tokens[index] = token.replace(field, self.query_fields[field])
+                    break
+        return ' '.join(tokens)
+
     def get(self, request, *args, **kwargs):
         query_params = request.query_params
         client = get_client()
@@ -45,6 +76,7 @@ class SearchView(views.APIView):
         param_dict['size'] = LargeResultsLimitOffsetPagination.default_limit
         if 'limit' in query_params:
             param_dict['size'] = query_params['limit']
+        param_dict['q'] = self.map_query_to_fields(param_dict['q'])
         results = client.search(**param_dict)
 
         return Response(results, status=status.HTTP_200_OK)

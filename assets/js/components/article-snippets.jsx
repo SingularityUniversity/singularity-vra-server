@@ -9,16 +9,15 @@ import muiThemeable from 'material-ui/styles/muiThemeable';
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onItemDeleted: (id, snippet_index) => {
-      dispatch(removeSnippetFromClipboard(id, snippet_index));
+    onItemDeleted: (content, snippet_index) => {
+      dispatch(removeSnippetFromClipboard(content, snippet_index));
     }
   };
 }
 
 
 const propTypes = {
-  id: React.PropTypes.number.isRequired,
-  title: React.PropTypes.string.isRequired,
+  content: React.PropTypes.object.isRequired,
   snippets: React.PropTypes.array.isRequired
 };
 
@@ -36,7 +35,7 @@ let ArticleSnippets = React.createClass({
   propTypes: propTypes,
 
   clickedRemove(index) {
-      this.props.onItemDeleted(this.props.id, index);
+      this.props.onItemDeleted(this.props.content, index);
   },
   snippets() {
     return this.props.snippets.map((snippet, index) => {
@@ -50,8 +49,8 @@ let ArticleSnippets = React.createClass({
 
   render() {
     return (
-      <ListItem key={this.props.id}>
-        <div key={this.props.id}><b>{this.props.title}</b></div><br />
+      <ListItem key={this.props.content.pk}>
+        <div key={this.props.content.pk}><b>{this.props.content.fields.extract.title}</b></div><br />
           <ul>
             { this.snippets() }
           </ul>

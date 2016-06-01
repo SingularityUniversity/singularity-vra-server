@@ -42,7 +42,7 @@ const Clipboard = React.createClass({
     let clipboardText = '';
     if (articleSnippetList.length > 0) {
       clipboardText = articleSnippetList.reduce((previousValue, article) => {
-        return previousValue + article.title + '\n\n' + article.snippets.join('\n') + '\n\n';
+        return previousValue + article.content.fields.extract.title + '\n\n' + article.snippets.join('\n') + '\n\n';
       }, '');
     } 
 

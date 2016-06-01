@@ -24,26 +24,25 @@ export function toggleClipboard() {
   return {type: TOGGLE_CLIPBOARD};
 }
 
-export function addSnippetToClipboard(id, title, snippet) {
+export function addSnippetToClipboard(content, snippet) {
     return function(dispatch) {
       dispatch(showSnackbarMessage('Content copied to clipboard'));
-      dispatch(putContentInClipboard(id, title, snippet));
+      dispatch(putContentInClipboard(content, snippet));
     }
 }
 
-function putContentInClipboard(id, title, snippet) {
+function putContentInClipboard(content, snippet) {
   return {
     type: ADD_SNIPPET_TO_CLIPBOARD, 
-    id: id,
-    title: title,
+    content: content,
     snippet: snippet
   };
 }
 
-export function removeSnippetFromClipboard(id, snippet_index) {
+export function removeSnippetFromClipboard(content, snippet_index) {
   return {
     type: REMOVE_SNIPPET_FROM_CLIPBOARD, 
-    id: id,
+    content: content,
     snippet_index: snippet_index
   };
 }

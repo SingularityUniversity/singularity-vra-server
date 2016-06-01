@@ -37,8 +37,7 @@ const ContentDetail = React.createClass({
     handleSelectionMenu(e, text) {
             if (e.target.id == 'clip-text') {
               this.props.onClip(
-                  this.props.content.pk,
-                  this.props.content.fields.extract.title,
+                  this.props.content,
                   text
               );
             } else if (e.target.id == 'search-text') {
@@ -170,8 +169,8 @@ const ContentDetail = React.createClass({
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onClip: (id, title, text) => {
-      dispatch(addSnippetToClipboard(id, title, text));
+    onClip: (content, text) => {
+      dispatch(addSnippetToClipboard(content, text));
     },
     onSearch: (text) => {
       dispatch(keywordSearch(text));

@@ -14,10 +14,9 @@ const ArticleSnippetList = React.createClass({
   articleSnippets() {
     return this.props.articleSnippets.map((article) => {
       return (
-       <div key={article.id}>
+       <div key={article.content.pk}>
           <ArticleSnippets 
-            id={article.id}
-            title={article.title} 
+            content={article.content}
             snippets={article.snippets} />
         </div>
       );

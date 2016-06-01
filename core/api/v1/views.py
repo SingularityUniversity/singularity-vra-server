@@ -39,7 +39,8 @@ class SearchView(views.APIView):
         in_quote_with_field = False
         # walk through the tokens consuming anything inside of double quotes
         for index, token in enumerate(tokens):
-            if in_quote == False and '"' in token and ':' in token:
+            if in_quote_with_field == False and in_quote == False and \
+                    '"' in token and ':' in token:
                 # we're looking at a field followed by a quoted string
                 in_quote_with_field = True
             elif in_quote == False and '"' in token:
@@ -57,6 +58,7 @@ class SearchView(views.APIView):
                 if field in token:
                     tokens[index] = token.replace(field, self.query_fields[field])
                     break
+            print('query={}'.format(' '.join(tokens)))
         return ' '.join(tokens)
 
     def get(self, request, *args, **kwargs):

@@ -101,12 +101,12 @@ const SearchHelpDialog = React.createClass({
           </TableRow>
           <TableRow selectable={false}>
             <TableRowColumn style={{width: columnOneWidth}}><b>_missing_</b><i>:field</i></TableRowColumn>
-            <TableRowColumn style={{width: columnTwoWidth}}>Match articles where the specified field has no value (or is missing).</TableRowColumn>
+            <TableRowColumn style={{width: columnTwoWidth}}>Match articles where the specified field has no value (or<br />is missing).</TableRowColumn>
             <TableRowColumn style={{width: columnThreeWidth}}>_missing_:author</TableRowColumn>
           </TableRow>
           <TableRow selectable={false}>
             <TableRowColumn style={{width: columnOneWidth}}><b>_exists_</b><i>:field</i></TableRowColumn>
-            <TableRowColumn style={{width: columnTwoWidth}}>Match articles where the specified field has any non-null value.</TableRowColumn>
+            <TableRowColumn style={{width: columnTwoWidth}}>Match articles where the specified field has any non-null<br /> value.</TableRowColumn>
             <TableRowColumn style={{width: columnThreeWidth}}>_exists_:title</TableRowColumn>
           </TableRow>
         </TableBody>

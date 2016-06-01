@@ -36,15 +36,21 @@ class SearchView(views.APIView):
     def map_query_to_fields(self, query):
         tokens = query.split()
         in_quote = False
+        in_quote_with_field = False
         # walk through the tokens consuming anything inside of double quotes
         for index, token in enumerate(tokens):
-            if in_quote == False and '"' in token:
+            if in_quote == False and '"' in token and ':' in token:
+                # we're looking at a field followed by a quoted string
+                in_quote_with_field = True
+            elif in_quote == False and '"' in token:
                 in_quote == True
                 continue
-            elif in_quote == True and '"' not in token:
+            elif (in_quote == True or in_quote_with_field == True) and \
+                    '"' not in token:
                 continue
-            elif in_quote == True and '"' in token:
-                in_quote == False
+            elif (in_quote == True or in_quote_with_field == True) \
+                    and '"' in token:
+                in_quote = in_quote_with_field = False
                 continue
             # replace any fields with the underlying data model field name
             for field in self.query_fields:

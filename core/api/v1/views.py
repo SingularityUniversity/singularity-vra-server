@@ -40,25 +40,37 @@ class SearchView(views.APIView):
         # walk through the tokens consuming anything inside of double quotes
         for index, token in enumerate(tokens):
             if in_quote_with_field == False and in_quote == False and \
+                    '"' in token and token.count('"') > 1:
+                # one messed up search token with multiple quotes and no spaces
+                # try to deal with it...
+                if ':' in token and token.find('"') < token.find(':'):
+                    # if there is a ':' inside the quoted string, just ignore it
+                    continue
+            elif in_quote_with_field == False and in_quote == False and \
                     '"' in token and ':' in token:
                 # we're looking at a field followed by a quoted string
                 in_quote_with_field = True
+            elif (in_quote == True or in_quote_with_field == True) \
+                    and '"' in token:
+                # matched closing quote
+                in_quote = False
+                in_quote_with_field = False
+                continue
             elif in_quote == False and '"' in token:
-                in_quote == True
+                # matched opening quote
+                in_quote = True
                 continue
             elif (in_quote == True or in_quote_with_field == True) and \
                     '"' not in token:
+                # gobble tokens inside of quotes
                 continue
-            elif (in_quote == True or in_quote_with_field == True) \
-                    and '"' in token:
-                in_quote = in_quote_with_field = False
-                continue
-            # replace any fields with the underlying data model field name
+            # replace any fields with the underlying data model field name (only
+            # the first instance though...)
             for field in self.query_fields:
                 if field in token:
-                    tokens[index] = token.replace(field, self.query_fields[field])
+                    tokens[index] = token.replace(field, self.query_fields[field], 1)
                     break
-            print('query={}'.format(' '.join(tokens)))
+        #print(' '.join(tokens))
         return ' '.join(tokens)
 
     def get(self, request, *args, **kwargs):

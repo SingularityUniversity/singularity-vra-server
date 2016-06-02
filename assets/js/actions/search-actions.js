@@ -10,7 +10,7 @@ export const SIMILARITY_SEARCH = 'SIMILARITY_SEARCH'
 
 let keywordSearchRequests = {};
 
-export function keywordSearch(query, reset_selected, offset, limit) {
+export function keywordSearch(query, offset, limit) {
    
     return function(dispatch) {
         if (!offset) {
@@ -30,9 +30,6 @@ export function keywordSearch(query, reset_selected, offset, limit) {
             success: (data, textStatus, xhr) => {
                 let entries = data.hits.hits.map(function(x) {return {score: x._score, ...x._source}});
                 dispatch(addSearchResults(entries, offset, data.hits.total));
-                if (reset_selected) {
-                    dispatch(clearSelected());
-                }
             },
             error: (xhr, textStatus, errorThrown) => {
               dispatch(showSnackbarMessage(xhr.responseText));
@@ -64,7 +61,6 @@ export function similaritySearch(contentIDs) {
     return function(dispatch) {
       dispatch(startSimilaritySearch(contentIDs));
       dispatch(showSnackbarMessage("Doing a similarity search")); 
-      dispatch(clearSelected());
       $.ajax({
         url: `/api/v1/similar`,
         method: 'POST',

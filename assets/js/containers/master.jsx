@@ -5,6 +5,7 @@ import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui
 import {Card, CardActions, CardHeader, CardText, CardTitle}  from 'material-ui/Card';
 import TextField from 'material-ui/TextField';
 import muiThemeable from 'material-ui/styles/muiThemeable';
+import {spacing, colors, typography, zIndex} from 'material-ui/styles';
 import AppLeftNav from '../components/app-left-nav';
 import Clipboard from '../components/clipboard';
 import ClipboardVisibilityButton from '../components/clipboard-visibility-button';
@@ -21,6 +22,7 @@ import ArrowBack from 'material-ui/svg-icons/navigation/arrow-back';
 import ArrowForward from 'material-ui/svg-icons/navigation/arrow-forward';
 import IconButton from 'material-ui/IconButton';
 import { ActionCreators as UndoActionCreators } from 'redux-undo'
+import RaisedButton from 'material-ui/RaisedButton';
 
 import SearchHelpDialog from '../components/search-help-dialog';
 
@@ -53,7 +55,7 @@ const Master = React.createClass({
 		return;
 	}
     this.props.onStartKeywordSearch(this.state.enteredSearchText);
-    this.props.onKeywordSearch(this.state.enteredSearchText, true, 0);
+    this.props.onKeywordSearch(this.state.enteredSearchText, 0);
   },
 
   handleSelectedContent(content, selected) {
@@ -74,6 +76,9 @@ const Master = React.createClass({
   clearSearch() {
       this.setState({enteredSearchText: ""});
       this.props.onClearSearch();
+  },
+  unSelectAll() {
+      this.props.onClearSelected();
   },
   render() {
     const {
@@ -96,11 +101,15 @@ const Master = React.createClass({
                 <ContentDetail key={content.pk} style={styles.fullWidthSection} content={content} onAction={that.handleContentAction}/> 
                );
     });
+    let disabled=false;
     if (contentItems.length == 0) {
         contentItems = [
             (<Card key={"empty"}><CardTitle title="Please select content"/></Card>)
         ];
+        disabled=true;
     }
+    let unSelectAllButton =  (<RaisedButton primary={true} onMouseUp={this.unSelectAll} label="Unselect All Content" disabled={disabled} />);
+    let similarSearchButton = (<RaisedButton primary={true} label="Find Similar Documents" onMouseUp={this.onFindSimilarMultiple} disabled={disabled}/> );
 	// XXX: This is really hacky - there are styles from the theme that we're setting in the theme.js
 	// but then we are extracting them from the theme and passing in the containerStyle and style, because
 	// I haven't figured out exactly  how to structure the entries in theme.js
@@ -128,7 +137,6 @@ const Master = React.createClass({
         </AppBar>
         <AppLeftNav
           onChangeSelected={this.handleSelectedContent}
-          onFindSimilar={this.onFindSimilarMultiple}
           displayedContent={this.props.searchData.searchResultData}
           selectedContent={this.props.selectedData}
           totalCount={this.props.searchData.searchResultTotalCount}
@@ -144,6 +152,16 @@ const Master = React.createClass({
           articleSnippetList={this.props.articleSnippetList}
           onClear={this.props.onClearClipboard} />
         <div style={styles.fullWidthSection.root}>
+        
+        <Toolbar> 
+            <ToolbarGroup>
+                <ToolbarTitle style={{color:colors.black, fontWeight: "bold", fontFamily:this.props.muiTheme.baseTheme.fontFamily}} text="Selected Items"/>
+            </ToolbarGroup>
+            <ToolbarGroup >
+                {unSelectAllButton}
+                {similarSearchButton}
+            </ToolbarGroup>
+        </Toolbar>
         {contentItems}
         </div>
         <Snackbar
@@ -157,7 +175,7 @@ const Master = React.createClass({
   },
   getItems({startIndex, stopIndex}) {
     // XXX: We are assuming we are getting more searchItems for paging, This is probably a bad assumption moving forward
-   let promise = this.props.onKeywordSearch(this.props.searchData.searchText, false, startIndex, stopIndex-startIndex);
+   let promise = this.props.onKeywordSearch(this.props.searchData.searchText, startIndex, stopIndex-startIndex);
   }
 });
 
@@ -189,7 +207,7 @@ const mapDispatchToProps = (dispatch) => {
           dispatch(startKeywordSearch(text));
       },
     onKeywordSearch: (text, reset, offset, limit) => {
-      dispatch(keywordSearch(text, reset, offset, limit));
+      dispatch(keywordSearch(text, offset, limit));
     },
     onSimilaritySearch: (content_ids) => {
         dispatch(similaritySearch(content_ids));

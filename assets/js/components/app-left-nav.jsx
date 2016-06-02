@@ -51,7 +51,6 @@ let propTypes = {
     totalCount: React.PropTypes.number.isRequired,
     onChangeSelected: React.PropTypes.func.isRequired, // function(content, isSelected)
     loadItems: React.PropTypes.func,
-    onFindSimilar: React.PropTypes.func.isRequired,
     searchType: React.PropTypes.string,
     searchText: React.PropTypes.string
   };
@@ -84,9 +83,6 @@ const AppLeftNav = React.createClass({
   propTypes: propTypes, 
   handleContentSelection(e,content) {
     this.props.onSelectedContent(content);
-  },
-  onClickedSimilar(e) {
-      this.props.onFindSimilar();
   },
   getSelectedIDS() {
     // XXX: Don't recalculate this every time, only should have to calculate once when mounted component
@@ -159,7 +155,6 @@ const AppLeftNav = React.createClass({
             <i>{totalCount} results</i><br/>
             <i>{selectedContent.length} selected</i><br/>
             </p>
-             <RaisedButton primary={true} label="Find Similar Documents" onMouseUp={this.onClickedSimilar} disabled={selectedContent.length == 0}/> 
         </div>
         <div style={{marginTop: style.headerHeight, height: "100%"}}>
             <InfiniteLoader

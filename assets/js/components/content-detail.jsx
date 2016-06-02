@@ -10,8 +10,12 @@ import muiThemeable from 'material-ui/styles/muiThemeable';
 import SelectionMenu from 'selection-menu';
 import TopicsList from './lda_topics';
 import { connect } from 'react-redux';
-import { keywordSearch } from '../actions/search-actions';
+import { startKeywordSearch, keywordSearch } from '../actions/search-actions';
 import { addSnippetToClipboard } from '../actions/clipboard-actions';
+import { setSelected } from '../actions/selected-actions';
+import IconButton from 'material-ui/IconButton';
+import ContentRemoveCircle from 'material-ui/svg-icons/content/remove-circle';
+import {colors} from 'material-ui/styles';
 
 import Moment from 'moment';
 
@@ -78,7 +82,9 @@ const ContentDetail = React.createClass({
             }
         });
     },
-
+    removeSelected() {
+       this.props.onSetSelected(this.props.content, false);
+    },
     render() {
         const {
             content
@@ -108,15 +114,21 @@ const ContentDetail = React.createClass({
 					</ListItem>
 				)
 			} 
+            let title= (
+                    <span>
+                    {extract.title}
+                    <IconButton onClick={this.removeSelected} ><ContentRemoveCircle color={colors.red500}/></IconButton>
+                    </span>);
+ 
             return (
                 <Card initiallyExpanded={true} containerStyle={this.props.muiTheme.fullWidthSection.item}>
                     <CardTitle 
-                        actAsExpander={true}
                         showExpandableButton={true}
-                        title={extract.title} 
+                        title={title} 
                         subtitle={"From: "+extract.provider_name}
                         titleStyle={{textAlign: 'center'}}
-                        subtitleStyle={{textAlign: 'center'}}/> 
+                        subtitleStyle={{textAlign: 'center'}}>
+                    </CardTitle>
                     <CardText expandable={true}>
                         <List>
                             <ListItem>Published on:  {`${publishedDate}`} </ListItem>
@@ -173,7 +185,11 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(addSnippetToClipboard(content, text));
     },
     onSearch: (text) => {
+        dispatch(startKeywordSearch(text));
       dispatch(keywordSearch(text));
+    },
+      onSetSelected: (content, selected) => {
+        dispatch(setSelected(content, selected)); 
     }
   };
 }

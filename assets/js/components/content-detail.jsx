@@ -3,7 +3,6 @@ import React from 'react';
 import {findDOMNode} from 'react-dom';
 import Divider from 'material-ui/Divider';
 import {Card, CardActions, CardHeader, CardText, CardTitle}  from 'material-ui/Card';
-import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import {List, ListItem} from 'material-ui/List';
 import muiThemeable from 'material-ui/styles/muiThemeable';
@@ -23,53 +22,53 @@ const ContentDetail = React.createClass({
 
     propTypes: {
         content: React.PropTypes.object,
-		muiTheme: React.PropTypes.object.isRequired,
-		onAction: React.PropTypes.func.isRequired  // onAction(content, action_id, params)
+        muiTheme: React.PropTypes.object.isRequired,
+        onAction: React.PropTypes.func.isRequired  // onAction(content, action_id, params)
     }, 
     getInitialState() {
         return {
-          summaries: [],
-          selectedText: null
+            summaries: [],
+            selectedText: null
         };
     },
-	clickedFindSimilar() {
-		if (this.props.onAction) {
-			this.props.onAction(this.props.content, 'similar');
-		}
-	},
+    clickedFindSimilar() {
+        if (this.props.onAction) {
+            this.props.onAction(this.props.content, 'similar');
+        }
+    },
 
     handleSelectionMenu(e, text) {
-            if (e.target.id == 'clip-text') {
-              this.props.onClip(
-                  this.props.content,
-                  text
-              );
-            } else if (e.target.id == 'search-text') {
-              this.props.onSearch(text);
-              
-            } else {
-              console.log(`SelectionMenu: unknown action (${e.target.id})`);
-            }
+        if (e.target.id == 'clip-text') {
+            this.props.onClip(
+                    this.props.content,
+                    text
+                    );
+        } else if (e.target.id == 'search-text') {
+            this.props.onSearch(text);
+
+        } else {
+            console.error(`SelectionMenu: unknown action (${e.target.id})`);
+        }
     },
 
     componentDidMount() {
-      let that=this;
+        let that=this;
         new SelectionMenu({
-          container: findDOMNode(this.refs.summary_section),
-          content: '<div  class="selection-menu"> <ul> <li id="clip-text" class="shortcut" style="padding-left: .5em; padding-right: .5em">Clip&nbsp;Text</li> <li id="search-text" class="shortcut">Search</li> </ul> </div>',
-          handler: function(e) {
-            that.handleSelectionMenu(e, this.selectedText);
-            this.hide(true);
-          }
+            container: findDOMNode(this.refs.summary_section),
+            content: '<div  class="selection-menu"> <ul> <li id="clip-text" class="shortcut" style="padding-left: .5em; padding-right: .5em">Clip&nbsp;Text</li> <li id="search-text" class="shortcut">Search</li> </ul> </div>',
+            handler: function(e) {
+                that.handleSelectionMenu(e, this.selectedText);
+                this.hide(true);
+            }
         });
 
         new SelectionMenu({
-          container: findDOMNode(this.refs.content_section),
-          content: '<div class="selection-menu"> <ul> <li id="clip-text" class="shortcut" style="padding-left: .5em; padding-right: .5em">Clip&nbsp;Text</li> <li id="search-text" class="shortcut">Search</li> </ul> </div>',
-          handler: function(e) {
-            that.handleSelectionMenu(e, this.selectedText);
-            this.hide(true);
-          }
+            container: findDOMNode(this.refs.content_section),
+            content: '<div class="selection-menu"> <ul> <li id="clip-text" class="shortcut" style="padding-left: .5em; padding-right: .5em">Clip&nbsp;Text</li> <li id="search-text" class="shortcut">Search</li> </ul> </div>',
+            handler: function(e) {
+                that.handleSelectionMenu(e, this.selectedText);
+                this.hide(true);
+            }
         });
 
         $.ajax({
@@ -77,19 +76,19 @@ const ContentDetail = React.createClass({
             success: (data) => {
                 this.setState({summaries: data.summary});
             },
-            error: (xhr, status, err) => {
-                console.log(xhr, status);
+            error: (xhr, status, err) => {  // eslint-disable-line no-unused-vars 
+                console.error(xhr, status);
             }
         });
     },
     removeSelected() {
-       this.props.onSetSelected(this.props.content, false);
+        this.props.onSetSelected(this.props.content, false);
     },
     render() {
         const {
             content
         } = this.props;
-         
+
         if (content ) {
             let fields = content.fields;
             let extract = fields.extract;
@@ -98,28 +97,28 @@ const ContentDetail = React.createClass({
                 publishedDate = Moment(parseInt(extract['published'])).
                     format('YYYY-MM-DD');
             }
-			var lda_stuff = null;
-	  	 	if (content.lda_similarity_topics) {
-				lda_stuff = (
-					<ListItem>	
-					LDA-Inferred Topics - Similarity to Query Candidate is {content.score.toFixed(3)}
-					<Card>
-                    <CardTitle 
-                        actAsExpander={true} showExpandableButton={true} 
-                        subtitleStyle={{textAlign: 'center'}}/> 
-					<CardText expandable={true}>
-						<TopicsList topics={content.lda_similarity_topics}/>
-					</CardText>
-					</Card>
-					</ListItem>
-				)
-			} 
+            var lda_stuff = null;
+            if (content.lda_similarity_topics) {
+                lda_stuff = (
+                    <ListItem>	
+                        LDA-Inferred Topics - Similarity to Query Candidate is {content.score.toFixed(3)}
+                        <Card>
+                            <CardTitle 
+                                actAsExpander={true} showExpandableButton={true} 
+                                subtitleStyle={{textAlign: 'center'}}/> 
+                            <CardText expandable={true}>
+                                <TopicsList topics={content.lda_similarity_topics}/>
+                            </CardText>
+                        </Card>
+                    </ListItem>
+                )
+            } 
             let title= (
-                    <span>
+                <span>
                     {extract.title}
                     <IconButton onClick={this.removeSelected} ><ContentRemoveCircle color={colors.red500}/></IconButton>
-                    </span>);
- 
+                </span>);
+
             return (
                 <Card initiallyExpanded={true} containerStyle={this.props.muiTheme.fullWidthSection.item}>
                     <CardTitle 
@@ -136,28 +135,27 @@ const ContentDetail = React.createClass({
                             <ListItem>
                                 Summary:
                                 <Card>
-                                <CardText ref='summary_section'>
+                                    <CardText ref='summary_section'>
                                     {
                                         (this.state.summaries.length ==0 ) ? "No content" :
                                             this.state.summaries.map(function(val) {
-                                            return (<li key={val}>{val}</li>);
+                                                return (<li key={val}>{val}</li>);
                                             })
                                     }
-                                </CardText>
+                                    </CardText>
                                 </Card>
                             </ListItem>
-						{lda_stuff}
-							<ListItem>
-							Content:
-							<Card ref='content_section'>
-							<CardTitle actAsExpander={true} showExpandableButton={true}/>
-								<CardText expandable={true}>
-									<div dangerouslySetInnerHTML= {{__html: extract.content}}>
-                                    </div>
-								</CardText>
-							</Card>
-
-							</ListItem>
+                            {lda_stuff}
+                            <ListItem>
+                                Content:
+                                <Card ref='content_section'>
+                                    <CardTitle actAsExpander={true} showExpandableButton={true}/>
+                                    <CardText expandable={true}>
+                                        <div dangerouslySetInnerHTML= {{__html: extract.content}}>
+                                        </div>
+                                    </CardText>
+                                </Card>
+                            </ListItem>
                         </List>
                     </CardText>
                     <CardActions expandable={true}>
@@ -165,33 +163,33 @@ const ContentDetail = React.createClass({
                         <RaisedButton primary={true} label="Action2"/>
                     </CardActions>
                 </Card>
-                );
+            );
         } else {
             return (
-                    <Card>
+                <Card>
                     <Divider/>
                     <CardHeader actAsExpander={true} showExpandableButton={true}/>
                     <CardTitle title="No content to show" subtitle="Select content"/>
-                    </Card>
-                   );
+                </Card>
+            );
         }
 
     }
 });
 
 const mapDispatchToProps = (dispatch) => {
-  return {
-    onClip: (content, text) => {
-      dispatch(addSnippetToClipboard(content, text));
-    },
-    onSearch: (text) => {
-        dispatch(startKeywordSearch(text));
-      dispatch(keywordSearch(text));
-    },
-      onSetSelected: (content, selected) => {
-        dispatch(setSelected(content, selected)); 
-    }
-  };
+    return {
+        onClip: (content, text) => {
+            dispatch(addSnippetToClipboard(content, text));
+        },
+        onSearch: (text) => {
+            dispatch(startKeywordSearch(text));
+            dispatch(keywordSearch(text));
+        },
+        onSetSelected: (content, selected) => {
+            dispatch(setSelected(content, selected)); 
+        }
+    };
 }
 
 

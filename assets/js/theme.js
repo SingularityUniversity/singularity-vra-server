@@ -8,7 +8,7 @@ import {spacing, colors, typography, zIndex} from 'material-ui/styles';
  */
 
 const {desktopGutter, desktopKeylineIncrement} = spacing;
-const {fontWeightLight, textFullWhite} = typography; 
+const {fontWeightLight} = typography; 
 
 export default {
   spacing: spacing,

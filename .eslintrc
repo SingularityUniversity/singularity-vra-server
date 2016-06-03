@@ -6,7 +6,7 @@
   "rules": {
     "react/prop-types": 0,
     "react/jsx-indent": 1,
-
+    "no-console": ["error", { "allow": ["warn", "error"] }]
   },
   "parserOptions": {
     "ecmaVersion": 7,
@@ -15,5 +15,8 @@
       "jsx": true,
       "modules": true
     }
+  },
+  "env": {
+      "browser": true
   }
 }

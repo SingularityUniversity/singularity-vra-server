@@ -13,19 +13,19 @@ const muiTheme = getMuiTheme(MyRawTheme);
 
 // MuiThemeProvider surrounds the very top level and provides a new theme to everything below it
 class App extends React.Component {
-  constructor(props, context) {
-    super(props, context);
-  }
+    constructor(props, context) {
+        super(props, context);
+    }
 
-  render() {
-    return (
-        <Provider store={store} >
-          <MuiThemeProvider muiTheme={muiTheme}>
-              <Master />
-          </MuiThemeProvider>
-        </Provider>
-    );
-  }
+    render() {
+        return (
+            <Provider store={store} >
+                <MuiThemeProvider muiTheme={muiTheme}>
+                    <Master />
+                </MuiThemeProvider>
+            </Provider>
+               );
+    }
 }
 
 export default App;

@@ -7,23 +7,17 @@ import {initialState as selectedInitialState} from './reducers/selected-reducer'
 import {initialState as snackbarInitiateState} from './reducers/snackbar-reducer';
 
 export const initialState = {
-  clipboardVisibility: false,
-  articleSnippetList: [],
-  searchData: searchInitialState,
-  selectedData: selectedInitialState,
-  articleCount: 0,
-  snackbar: snackbarInitiateState
+    clipboardVisibility: false,
+    articleSnippetList: [],
+    searchData: searchInitialState,
+    selectedData: selectedInitialState,
+    articleCount: 0,
+    snackbar: snackbarInitiateState
 };
 
 const loggerMiddleware = createLogger();
 
 export default function configureStore(initialState) {
-  return createStore(
-  rootReducer,
-  initialState,
-  applyMiddleware(
-    thunkMiddleware,
-    loggerMiddleware,
-  ),
-)};
-
+    return createStore(rootReducer, initialState, 
+        applyMiddleware(thunkMiddleware, loggerMiddleware));
+}

@@ -30,7 +30,7 @@ export default {
     disabledColor: fade(colors.darkBlack, 0.3),
     pickerHeaderColor: colors.blueGrey500,
     clockCircleColor: fade(colors.darkBlack, 0.07),
-    shadowColor: colors.fullBlack,
+    shadowColor: colors.fullBlack
   },
   logo: {
       cursor: 'pointer',
@@ -40,7 +40,7 @@ export default {
       fontWeight: fontWeightLight,
       backgroundColor: colors.cyan500,
       paddingLeft: desktopGutter,
-      marginBottom: 8,
+      marginBottom: 8
     },
   appBar: {
       position: 'fixed',
@@ -52,47 +52,47 @@ export default {
       paddingRight: desktopGutter,
     content: {
       a: {
-        color: colors.darkWhite,
+        color: colors.darkWhite
       },
       p: {
         margin: '0 auto',
         padding: 0,
         color: colors.lightWhite,
-        maxWidth: 335,
+        maxWidth: 335
       },
       iconButton: {
-        color: colors.darkWhite,
+        color: colors.darkWhite
       },
       content: {
-        margin: desktopGutter,
-      },
+        margin: desktopGutter
+      }
 }
   },
   leftNav: {
       zIndex: zIndex.appBar -1,
       paddingTop: desktopKeylineIncrement, 
-      headerHeight: desktopKeylineIncrement*2,
+      headerHeight: desktopKeylineIncrement*2
   },
   masterBar: {
     contentWhenMedium: {
-      margin: `${desktopGutter * 2}px ${desktopGutter * 3}px`,
+      margin: `${desktopGutter * 2}px ${desktopGutter * 3}px`
     },
     footer: {
       backgroundColor: colors.grey900,
-      textAlign: 'center',
+      textAlign: 'center'
     },
     a: {
-      color: colors.darkWhite,
+      color: colors.darkWhite
     },
     p: {
       margin: '0 auto',
       padding: 0,
       color: colors.lightWhite,
-      maxWidth: 335,
+      maxWidth: 335
     },
     iconButton: {
-      color: colors.darkWhite,
-    },
+      color: colors.darkWhite
+    }
   },
   fullWidthSection: {
     item: {
@@ -108,7 +108,7 @@ export default {
       marginTop: desktopKeylineIncrement * 2,
       marginRight: desktopKeylineIncrement,
       marginBottom: desktopKeylineIncrement,
-      marginLeft: desktopGutter + (desktopKeylineIncrement * 4),
-    },
+      marginLeft: desktopGutter + (desktopKeylineIncrement * 4)
+    }
   }
 };

@@ -19,46 +19,46 @@ export const initialHistory= {
 function _searchReducer(state=initialState, action) {
     let start, results, totalCount, resultData, resultTopics
     switch (action.type) {
-        case KEYWORD_SEARCH:
-            return Object.assign({}, state,
-                    {
-                        searchType:"Keyword Search",
-                        searchText: action.text,
-                        searchResultData: [],
-                        searchResultTopics: [],
-                        searchResultTotalCount: 0,
-                        searchContentIDs: []
-                    });
-        case SIMILARITY_SEARCH:
-            return Object.assign({}, state,
-                    {
-                        searchType:"Similarity Search",
-                        searchText: "",
-                        searchResultData: [],
-                        searchResultTopics: [],
-                        searchResultTotalCount: 0,
-                        searchContentIDs: action.contentIDs 
-                    });
+    case KEYWORD_SEARCH:
+        return Object.assign({}, state,
+            {
+                searchType:"Keyword Search",
+                searchText: action.text,
+                searchResultData: [],
+                searchResultTopics: [],
+                searchResultTotalCount: 0,
+                searchContentIDs: []
+            });
+    case SIMILARITY_SEARCH:
+        return Object.assign({}, state,
+            {
+                searchType:"Similarity Search",
+                searchText: "",
+                searchResultData: [],
+                searchResultTopics: [],
+                searchResultTotalCount: 0,
+                searchContentIDs: action.contentIDs 
+            });
 
-        case CLEAR_SEARCH:
-            return initialState; 
-        case ADD_SEARCH_RESULTS:
+    case CLEAR_SEARCH:
+        return initialState; 
+    case ADD_SEARCH_RESULTS:
             //XXX: for now, just adds to the end of the list, could be buggy if not
-            start = action.start;
-            results = action.results;
-            totalCount = action.totalCount;
-            resultData = state.searchResultData.slice();
-            resultTopics = action.resultTopics;
-            resultData.splice(start, 0, ...results);
-            return  Object.assign({}, state, 
-                    { 
+        start = action.start;
+        results = action.results;
+        totalCount = action.totalCount;
+        resultData = state.searchResultData.slice();
+        resultTopics = action.resultTopics;
+        resultData.splice(start, 0, ...results);
+        return  Object.assign({}, state, 
+            { 
                         //XXX: really we are adding at the start, but we assume this is the end
-                        searchResultData: resultData,
-                        searchResultTopics: resultTopics,
-                        searchResultTotalCount: totalCount
-                    });
-        default:
-            return state;
+                searchResultData: resultData,
+                searchResultTopics: resultTopics,
+                searchResultTotalCount: totalCount
+            });
+    default:
+        return state;
     }
 }
 

@@ -20,7 +20,7 @@ export function keywordSearch(query, offset, limit) {
         }
         let data = `q=${query}&offset=${offset}&limit=${limit}`;
         if (data in keywordSearchRequests) {
-          return;
+            return;
         }
         keywordSearchRequests[data]=1;
         let promise=$.ajax({
@@ -31,76 +31,76 @@ export function keywordSearch(query, offset, limit) {
                 dispatch(addSearchResults(entries, offset, data.hits.total));
             },
             error: (xhr, textStatus, errorThrown) => { // eslint-disable-line no-unused-vars
-              dispatch(showSnackbarMessage(xhr.responseText));
+                dispatch(showSnackbarMessage(xhr.responseText));
                 console.error(`search error: ${textStatus}`);
             }
         }).always(function() {
-          delete keywordSearchRequests[data];
+            delete keywordSearchRequests[data];
         });
         return promise;
     }
 }
 
 export function startKeywordSearch(text) {
-  return function(dispatch) {
-    let msg = ( <span> Doing a content search with <em>{text}</em> </span>);
-    dispatch(resetKeywordSearch(text));
-    dispatch(showSnackbarMessage(msg)); 
-  }
+    return function(dispatch) {
+        let msg = ( <span> Doing a content search with <em>{text}</em> </span>);
+        dispatch(resetKeywordSearch(text));
+        dispatch(showSnackbarMessage(msg)); 
+    }
 }
 
 function resetKeywordSearch(text) {
-  return {
-    type: KEYWORD_SEARCH,
-    text: text
-  }
+    return {
+        type: KEYWORD_SEARCH,
+        text: text
+    }
 }
 
 export function similaritySearch(contentIDs) {
     return function(dispatch) {
-      dispatch(startSimilaritySearch(contentIDs));
-      dispatch(showSnackbarMessage("Doing a similarity search")); 
-      $.ajax({
-        url: `/api/v1/similar`,
-        method: 'POST',
-        contentType: "application/json",
-        data: JSON.stringify({'ids': contentIDs}),
-        success: (data) => {
-          let annotated_results = data.results.map(function(item) {
-            var content = item.source;
-            content.lda_similarity_topics = item.topics;
-            content.score = item.weight;
-            return content;
-          });	
+        dispatch(startSimilaritySearch(contentIDs));
+        dispatch(showSnackbarMessage("Doing a similarity search")); 
+        $.ajax({
+            url: `/api/v1/similar`,
+            method: 'POST',
+            contentType: "application/json",
+            data: JSON.stringify({'ids': contentIDs}),
+            success: (data) => {
+                let annotated_results = data.results.map(function(item) {
+                    var content = item.source;
+                    content.lda_similarity_topics = item.topics;
+                    content.score = item.weight;
+                    return content;
+                });	
           // Only ever send one page of similarity search results for now
-          dispatch(addSearchResults(annotated_results, 0, annotated_results.length, data.query_topics));
-        },
-        error: (xhr, status, err) => { // eslint-disable-line no-unused-vars
-          console.error(xhr, status);
-        }
-      });
+                dispatch(addSearchResults(annotated_results, 0, annotated_results.length, data.query_topics));
+            },
+            error: (xhr, status, err) => { // eslint-disable-line no-unused-vars
+                console.error(xhr, status);
+            }
+        });
 
     }
 }
 
 export function startSimilaritySearch(contentIDs) {
-  return {
-    type: SIMILARITY_SEARCH,
-    contentIDs: contentIDs
-  }
+    return {
+        type: SIMILARITY_SEARCH,
+        contentIDs: contentIDs
+    }
 }
 
 export function clearSearch() {
-  return {type: CLEAR_SEARCH}
+    return {type: CLEAR_SEARCH}
 }
 
 export function addSearchResults(results, start, totalCount, result_topics=[]) {
-  return {
-    type: ADD_SEARCH_RESULTS,
-    results: results,
-    resultTopics: result_topics,
-    start: start,
-    totalCount: totalCount
-  }
+    return {
+        type: ADD_SEARCH_RESULTS,
+        results: results,
+        resultTopics: result_topics,
+        start: start,
+        totalCount: totalCount
+    }
 }
   

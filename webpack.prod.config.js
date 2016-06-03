@@ -31,7 +31,7 @@ config.module.loaders.push({
   test: /\.jsx?$/,
   include: ASSETS_DIR,
   exclude: /node_modules/,
-  loaders: ['babel?'+JSON.stringify({presets: ["es2016", "es2015", "stage-0", "react"]})]
+  loaders: ['babel?'+JSON.stringify({presets: ["es2016", "es2015", "stage-0", "react"], "plugins": ["transform-decorators-legacy"]})]
 })
 
 module.exports = config

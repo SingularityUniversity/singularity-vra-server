@@ -1,17 +1,16 @@
 import React from 'react';
 import {List, MakeSelectable} from 'material-ui/List';
 import Drawer from 'material-ui/Drawer';
-import Moment from 'moment';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import {Card, CardTitle} from 'material-ui/Card';
 import {spacing, colors} from 'material-ui/styles';
 import {AutoSizer,VirtualScroll, InfiniteLoader } from 'react-virtualized';
+import {SearchResult} from './search-result';
 
 let SelectableList = MakeSelectable(List);
 
 // XXX: This wrapState is confusing an obfuscates whats going on.
 // Propose we mergeis back into AppLeftNav
-
 function wrapState(ComposedComponent) {
     const StateWrapper = React.createClass({
         getInitialState() {
@@ -87,37 +86,9 @@ const AppLeftNav = React.createClass({
         this.props.onChangeSelected(content, selectedPKIDs.indexOf(content.pk) < 0);
     },
     _renderRow(index) {
-        let published = '';
-        let publisher = '';
-        let cardStyle ={whiteSpace: "inherit", cursor: "pointer", boxShadow: 0, backgroundColor:null, height:120} ;
-
         let content = this.props.displayedContent[index];
-        if (!content) {
-            return (<Card key={'empty-'+index} style={cardStyle}></Card> );
-
-        }
-        let that = this;
-        if (content.fields.extract['published']) {
-            published = Moment(parseInt(content.fields.extract['published'])).format('YYYY-MM-DD');
-        }
-        if (content.fields.extract['provider_name']) {
-            publisher = content.fields.extract['provider_name'];
-        }
-        let title = (<span style={{fontSize: "125%"}}>{content.fields.extract['title']}</span>);
-        let subtitle = (<span>{content.score.toFixed(3)}<br/> <a href="#">{publisher}</a>{published}</span>);
-        if (this.state.selectedPKIDs.indexOf(content.pk) >=0 ) {
-            cardStyle['backgroundColor'] = colors.grey300;
-        }
-        return (
-            <Card onClick={function() {that.onClickedItem(content)}} key={content.pk} style={cardStyle}> 
-                <CardTitle 
-                title={title} 
-                subtitle={subtitle}
-                titleStyle={{fontSize: '75%', lineHeight:null }}/>
-            </Card>
-            );
-
-
+        let selectedPKIDs = this.state.selectedPKIDs;
+        return (<SearchResult onClick={function() {console.log("Clicked here")}} content={content} selectedPKIDs={selectedPKIDs}/>);
     },
     render() {
         const {

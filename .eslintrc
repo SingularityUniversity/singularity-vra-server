@@ -1,22 +1,23 @@
 {
-  "plugins": [
-    "react"
-  ],
-  "extends": ["eslint:recommended", "plugin:react/recommended"],
-  "rules": {
-    "react/prop-types": 0,
-    "react/jsx-indent": 1,
-    "no-console": ["error", { "allow": ["warn", "error"] }]
-  },
-  "parserOptions": {
-    "ecmaVersion": 7,
-    "sourceType": "module",
-    "ecmaFeatures": {
-      "jsx": true,
-      "modules": true
+    "plugins": [
+        "react"
+    ],
+    "extends": ["eslint:recommended", "plugin:react/recommended"],
+    "rules": {
+        "react/prop-types": 0,
+        "react/jsx-indent": 1,
+        "no-console": ["error", { "allow": ["warn", "error"] }]
+    },
+    "parserOptions": {
+        "ecmaVersion": 7,
+        "sourceType": "module",
+        "ecmaFeatures": {
+            "jsx": true,
+            "modules": true,
+            "experimentalObjectRestSpread": true
+        }
+    },
+    "env": {
+        "browser": true
     }
-  },
-  "env": {
-      "browser": true
-  }
 }

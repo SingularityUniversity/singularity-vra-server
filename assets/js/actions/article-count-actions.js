@@ -15,8 +15,8 @@ export function getArticleCount() {
       success: (data) => {
         dispatch(receiveArticleCount(data.count));
       },
-      error: (xhr, status, err) => {
-        console.log(xhr, status);
+      error: (xhr, status, err) => {   // eslint-disable-line no-unused-vars
+        console.error(xhr, status);
       }
     });
 

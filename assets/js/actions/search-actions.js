@@ -1,5 +1,4 @@
 import React from 'react';
-import {clearSelected} from './selected-actions';
 import {showSnackbarMessage} from './snackbar-actions';
 import $ from 'jquery';
 export const KEYWORD_SEARCH = 'KEYWORD_SEARCH'
@@ -27,13 +26,13 @@ export function keywordSearch(query, offset, limit) {
         let promise=$.ajax({
             url: '/api/v1/search',
             data: data, 
-            success: (data, textStatus, xhr) => {
+            success: (data, textStatus, xhr) => { // eslint-disable-line no-unused-vars
                 let entries = data.hits.hits.map(function(x) {return {score: x._score, ...x._source}});
                 dispatch(addSearchResults(entries, offset, data.hits.total));
             },
-            error: (xhr, textStatus, errorThrown) => {
+            error: (xhr, textStatus, errorThrown) => { // eslint-disable-line no-unused-vars
               dispatch(showSnackbarMessage(xhr.responseText));
-                console.log(`search error: ${textStatus}`);
+                console.error(`search error: ${textStatus}`);
             }
         }).always(function() {
           delete keywordSearchRequests[data];
@@ -76,8 +75,8 @@ export function similaritySearch(contentIDs) {
           // Only ever send one page of similarity search results for now
           dispatch(addSearchResults(annotated_results, 0, annotated_results.length, data.query_topics));
         },
-        error: (xhr, status, err) => {
-          console.log(xhr, status);
+        error: (xhr, status, err) => { // eslint-disable-line no-unused-vars
+          console.error(xhr, status);
         }
       });
 
@@ -101,7 +100,7 @@ export function addSearchResults(results, start, totalCount, result_topics=[]) {
     results: results,
     resultTopics: result_topics,
     start: start,
-    totalCount: totalCount,
+    totalCount: totalCount
   }
 }
   

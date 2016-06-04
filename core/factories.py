@@ -1,6 +1,6 @@
 from core.models import *
 from django.contrib.auth import get_user_model
-from factory import DjangoModelFactory, Sequence, SubFactory, RelatedFactory, \
+from factory import DjangoModelFactory, Sequence, SubFactory, \
     PostGenerationMethodCall
 
 
@@ -16,6 +16,12 @@ class AdminUserFactory(UserFactory):
     is_superuser = True
     is_staff = True
     is_active = True
+
+
+class SequenceUserFactory(UserFactory):
+    username = Sequence(lambda n: 'user{}'.format(n))
+    password = PostGenerationMethodCall('set_password', 'abc123')
+    email = Sequence(lambda n: 'user{}@example.com'.format(n))
 
 
 class SequencePublisherFactory(DjangoModelFactory):
@@ -39,3 +45,10 @@ class SequenceEnteredSourceFactory(DjangoModelFactory):
 
     url = Sequence(lambda n: 'http://example.com/article/{}'.format(n))
     source_type = EnteredSource.TYPE_PAGE
+
+class SequenceWorkspaceFactory(DjangoModelFactory):
+    class Meta:
+        model = Workspace
+
+    user = SubFactory(SequenceUserFactory)
+

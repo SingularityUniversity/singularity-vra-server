@@ -1,5 +1,6 @@
 import json
 import logging
+import numpy as np
 from django.conf import settings
 from rest_framework import viewsets, status, views
 from core.models import *
@@ -13,7 +14,6 @@ from text.summary import get_summary_sentences
 from core.api.v1.pagination import LargeResultsLimitOffsetPagination
 from elasticsearch import TransportError, RequestError
 from django.http import HttpResponse
-import numpy as np
 
 logger = logging.getLogger(__name__)
 
@@ -283,3 +283,10 @@ class EnteredSourceNestedViewSet(viewsets.ModelViewSet):
 class EnteredSourceContentViewSet(EnteredSourceNestedViewSet):
     queryset = Content.objects.all()
     serializer_class = ContentSerializer
+
+
+class WorkspaceViewSet(viewsets.ModelViewSet):
+    serializer_class = WorkspaceSerializer
+
+    def get_queryset(self):
+        return Workspace.objects.filter(user=self.request.user)

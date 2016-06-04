@@ -1,6 +1,10 @@
+import json
 import logging
-from core.models import Publisher, EnteredSource, Content, PublisherURL
+from core.models import Publisher, EnteredSource, Content, PublisherURL, \
+    Workspace
 from rest_framework import serializers
+from django.forms.models import model_to_dict
+from rest_framework.fields import CurrentUserDefault
 
 logger = logging.getLogger(__name__)
 
@@ -46,4 +50,15 @@ class ContentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Content
         fields = '__all__'
-        read_only_fields = ('created', 'extract', 'summary')
+        read_only_fields = ('created', 'extract', 'summary', 'publisher')
+
+
+class WorkspaceSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(read_only=True,
+                                              default=serializers.CurrentUserDefault())
+    class Meta:
+        model = Workspace
+        fields = '__all__'
+        read_only_fields = ('created', 'user',)
+
+

@@ -7,6 +7,7 @@ router = routers.SimpleRouter(trailing_slash=False)
 router.register(r'publisher', views.PublisherViewSet)
 router.register(r'content', views.ContentViewSet)
 router.register(r'entered_source', views.EnteredSourceViewSet)
+router.register(r'workspace', views.WorkspaceViewSet, base_name='workspace')
 
 publisher_router = routers.NestedSimpleRouter(router, r'publisher',
                                               lookup='publisher',

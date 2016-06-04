@@ -1,5 +1,6 @@
 from django.contrib import admin
-from core.models import LDAConfiguration, Publisher, PublisherURL, EnteredSource, Content, Issue
+from core.models import LDAConfiguration, Publisher, PublisherURL, EnteredSource, \
+    Content, Issue, Workspace
 from solo.admin import SingletonModelAdmin
 
 
@@ -23,9 +24,13 @@ class IssueAdmin(admin.ModelAdmin):
     list_display = ('id', 'source', 'timestamp', 'error_code', 'object_type', 'object_id',
                     'summary', 'other')
 
+class WorkspaceAdmin(admin.ModelAdmin):
+    list_display = ('id', 'title', 'description', 'created', 'edited', 'published')
+
 admin.site.register(LDAConfiguration, SingletonModelAdmin)
 admin.site.register(Publisher, PublisherAdmin)
 admin.site.register(PublisherURL, PublisherURLAdmin)
 admin.site.register(EnteredSource, EnteredSourceAdmin)
 admin.site.register(Content, ContentAdmin)
 admin.site.register(Issue, IssueAdmin)
+admin.site.register(Workspace, WorkspaceAdmin)

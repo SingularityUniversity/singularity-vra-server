@@ -1,17 +1,17 @@
-export const CLEAR_SELECTED = 'CLEAR_SELECTION'
-export const SET_SELECTED = 'SET_SELECTED' 
+export const CLEAR_WORKSPACE = 'CLEAR_WORKSPACE'
+export const SET_IN_WORKSPACE = 'SET_IN_WORKSPACE' 
 
-export function clearSelected() {
+export function clearWorkspace() {
     return {
-        type: CLEAR_SELECTED
+        type: CLEAR_WORKSPACE
     }
 }
 
-export function setSelected(content, isSelected) {
+export function setInWorkspace(content, inWorkspace) {
     return {
-        type: SET_SELECTED,
+        type: SET_IN_WORKSPACE,
         content: content,
-        isSelected: isSelected
+        inWorkspace: inWorkspace 
     }
 }
 

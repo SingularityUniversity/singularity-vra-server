@@ -11,7 +11,7 @@ import TopicsList from './lda_topics';
 import { connect } from 'react-redux';
 import { startKeywordSearch, keywordSearch } from '../actions/search-actions';
 import { addSnippetToClipboard } from '../actions/clipboard-actions';
-import { setSelected } from '../actions/selected-actions';
+import { setInWorkspace } from '../actions/selected-actions';
 import IconButton from 'material-ui/IconButton';
 import ContentRemoveCircle from 'material-ui/svg-icons/content/remove-circle';
 import {colors} from 'material-ui/styles';
@@ -81,8 +81,8 @@ const ContentDetail = React.createClass({
             }
         });
     },
-    removeSelected() {
-        this.props.onSetSelected(this.props.content, false);
+    removeFromWorkspace() {
+        this.props.onSetInWorkspace(this.props.content, false);
     },
     render() {
         const {
@@ -116,7 +116,7 @@ const ContentDetail = React.createClass({
             let title= (
                 <span>
                     {extract.title}
-                    <IconButton onClick={this.removeSelected} ><ContentRemoveCircle color={colors.red500}/></IconButton>
+                    <IconButton onClick={this.removeFromWorkspace} ><ContentRemoveCircle color={colors.red500}/></IconButton>
                 </span>);
 
             return (
@@ -186,8 +186,8 @@ const mapDispatchToProps = (dispatch) => {
             dispatch(startKeywordSearch(text));
             dispatch(keywordSearch(text));
         },
-        onSetSelected: (content, selected) => {
-            dispatch(setSelected(content, selected)); 
+        onSetInWorkspace: (content, inWorkspace) => {
+            dispatch(setInWorkspace(content, inWorkspace)); 
         }
     };
 }

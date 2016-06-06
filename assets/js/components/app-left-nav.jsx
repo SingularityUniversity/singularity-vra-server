@@ -47,7 +47,7 @@ SelectableList = wrapState(SelectableList);
 let propTypes = {
     muiTheme: React.PropTypes.object.isRequired,
     displayedContent: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
-    selectedContent: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
+    workspaceContent: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
     totalCount: React.PropTypes.number.isRequired,
     onChangeSelected: React.PropTypes.func.isRequired, // function(content, isSelected)
     loadItems: React.PropTypes.func,
@@ -67,8 +67,8 @@ const AppLeftNav = React.createClass({
         this.setState({selectedPKIDs: this.getSelectedIDS()});
     },
     componentWillReceiveProps: function(nextProps) {
-        if (nextProps.selectedContent) {
-            this.setState({selectedPKIDs: nextProps.selectedContent.map((content) => content.pk)});
+        if (nextProps.workspaceContent) {
+            this.setState({selectedPKIDs: nextProps.workspaceContent.map((content) => content.pk)});
         }
     },
     componentDidMount: function() {
@@ -82,7 +82,7 @@ const AppLeftNav = React.createClass({
     propTypes: propTypes, 
     getSelectedIDS() {
         // XXX: Don't recalculate this every time, only should have to calculate once when mounted component
-        return this.props.selectedContent.map((content) => {
+        return this.props.workspaceContent.map((content) => {
             return content.pk;
         });
     },
@@ -135,7 +135,7 @@ const AppLeftNav = React.createClass({
     },
     render() {
         const {
-            selectedContent,
+            workspaceContent,
             searchType,
             searchText,
             muiTheme,
@@ -153,7 +153,7 @@ const AppLeftNav = React.createClass({
                     <p><strong>{searchType}</strong><br/>
                         {searchText ? (<span><i>'{searchText}'</i><br/></span>) : ''}
                         <i>{totalCount} results</i><br/>
-                        <i>{selectedContent.length} selected</i><br/>
+                        <i>{workspaceContent.length} in workspace</i><br/>
                     </p>
                 </div>
                 <div style={{marginTop: style.headerHeight, height: "100%"}}>

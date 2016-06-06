@@ -1,38 +1,38 @@
-import {CLEAR_SELECTED, SET_SELECTED} from '../actions/selected-actions'
+import {CLEAR_WORKSPACE, SET_IN_WORKSPACE} from '../actions/selected-actions'
 
 export const initialState = [];
 
 export function selectedReducer(state=initialState, action) {
-    let content, isSelected, alreadySelected;
+    let content, inWorkspace, alreadyInWorkspace;
     switch (action.type) {
-    case CLEAR_SELECTED:
+    case CLEAR_WORKSPACE:
         return [];
-    case SET_SELECTED:
+    case SET_IN_WORKSPACE:
         content = action.content;
-        isSelected = action.isSelected;
-        if (!isSelected) { 
-                // Turn off membership in selected - filter out if it somehow exists in the selected list
-            let filtered_selected = state.filter(function(selected_content) {
-                return (content.pk != selected_content.pk)
+        inWorkspace = action.inWorkspace;
+        if (!inWorkspace) { 
+                // Turn off membership in workspace - filter out if it somehow exists in the workspace 
+            let filteredInWorkspace = state.filter(function(workspaceContent) {
+                return (content.pk != workspaceContent.pk)
             });
-            if (filtered_selected.length != state.length) {
-                return (filtered_selected);
+            if (filteredInWorkspace.length != state.length) {
+                return (filteredInWorkspace);
             } else {
                 return state;
             }
         }
-            // isSelected is true
-        alreadySelected = false;
-        state.forEach(function(selected_content) {
-            if (selected_content.pk == content.pk) {
-                alreadySelected = true;
+            // inWorkspace is true
+        alreadyInWorkspace = false;
+        state.forEach(function(workspaceContent) {
+            if (workspaceContent.pk == content.pk) {
+                alreadyInWorkspace = true;
             }
         });
 
-        if (!alreadySelected) {
-            let newSelected = state.slice();
-            newSelected.push(content);
-            return newSelected;
+        if (!alreadyInWorkspace) {
+            let newInWorkspace = state.slice();
+            newInWorkspace.push(content);
+            return newInWorkspace;
         } else {
             return state;
         }

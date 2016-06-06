@@ -13,7 +13,7 @@ import { addSnippetToClipboard, toggleClipboard, clearClipboard } from '../actio
 import { connect } from 'react-redux';
 import Snackbar from 'material-ui/Snackbar';
 import { similaritySearch, startKeywordSearch, keywordSearch, clearSearch, addSearchResults } from '../actions/search-actions';
-import { clearSelected, setSelected} from '../actions/selected-actions';
+import { clearWorkspace, setInWorkspace} from '../actions/selected-actions';
 import { getArticleCount } from '../actions/article-count-actions';
 import { showSnackbarMessage, closeSnackbar} from '../actions/snackbar-actions';
 import ArrowBack from 'material-ui/svg-icons/navigation/arrow-back';
@@ -56,8 +56,8 @@ const Master = React.createClass({
         this.props.onKeywordSearch(this.state.enteredSearchText, 0);
     },
 
-    handleSelectedContent(content, selected) {
-        this.props.onSetSelected(content, selected);
+    handleSelectedForWorkspace(content, inWorkspace) {
+        this.props.onSetInWorkspace(content, inWorkspace);
     },
     handleContentAction(content, action, params) {  // eslint-disable-line no-unused-vars
         if (action=="similar") {
@@ -76,7 +76,7 @@ const Master = React.createClass({
         this.props.onClearSearch();
     },
     unSelectAll() {
-        this.props.onClearSelected();
+        this.props.onClearWorkspace();
     },
     render() {
         let styles = this.props.muiTheme;
@@ -127,9 +127,9 @@ const Master = React.createClass({
                     </ToolbarGroup>
                 </AppBar>
                 <AppLeftNav
-                    onChangeSelected={this.handleSelectedContent}
+                    onChangeSelected={this.handleSelectedForWorkspace}
                     displayedContent={this.props.searchData.searchResultData}
-                    selectedContent={this.props.selectedData}
+                    workspaceContent={this.props.selectedData}
                     totalCount={this.props.searchData.searchResultTotalCount}
                     searchType={this.props.searchData.searchType}
                     searchText={this.props.searchData.searchText}
@@ -208,11 +208,11 @@ const mapDispatchToProps = (dispatch) => {
         onAddSearchResults: (results, start, totalCount) => {
             dispatch(addSearchResults(results, start, totalCount));
         },
-        onClearSelected: () => {
-            dispatch(clearSelected());
+        onClearWorkspace: () => {
+            dispatch(clearWorkspace());
         },
-        onSetSelected: (content, isSelected) => {
-            dispatch(setSelected(content, isSelected));
+        onSetInWorkspace: (content, inWorkspace) => {
+            dispatch(setInWorkspace(content, inWorkspace));
         },
         onGetArticleCount: () => {
             dispatch(getArticleCount());

@@ -13,7 +13,7 @@ import { addSnippetToClipboard, toggleClipboard, clearClipboard } from '../actio
 import { connect } from 'react-redux';
 import Snackbar from 'material-ui/Snackbar';
 import { similaritySearch, startKeywordSearch, keywordSearch, clearSearch, addSearchResults } from '../actions/search-actions';
-import { clearWorkspace, setInWorkspace} from '../actions/selected-actions';
+import { clearWorkspace, setInWorkspace} from '../actions/workspace-actions';
 import { getArticleCount } from '../actions/article-count-actions';
 import { showSnackbarMessage, closeSnackbar} from '../actions/snackbar-actions';
 import ArrowBack from 'material-ui/svg-icons/navigation/arrow-back';
@@ -67,7 +67,7 @@ const Master = React.createClass({
     },
     onFindSimilarMultiple() {
         this.clearSearch();
-        this.props.onSimilaritySearch(this.props.selectedData.map((content) => {
+        this.props.onSimilaritySearch(this.props.workspaceData.map((content) => {
             return content.pk; 
         }));
     },
@@ -87,7 +87,7 @@ const Master = React.createClass({
         let clipboardWidth = 450;
 
         let that = this;
-        let contentItems = this.props.selectedData.map(function(content) {  
+        let contentItems = this.props.workspaceData.map(function(content) {  
             return (
                 <ContentDetail key={content.pk} style={styles.fullWidthSection} content={content} onAction={that.handleContentAction}/> 
             );
@@ -129,7 +129,7 @@ const Master = React.createClass({
                 <AppLeftNav
                     onChangeSelected={this.handleSelectedForWorkspace}
                     displayedContent={this.props.searchData.searchResultData}
-                    workspaceContent={this.props.selectedData}
+                    workspaceContent={this.props.workspaceData}
                     totalCount={this.props.searchData.searchResultTotalCount}
                     searchType={this.props.searchData.searchType}
                     searchText={this.props.searchData.searchText}
@@ -174,7 +174,7 @@ const mapStateToProps = (state) => {
         clipboardVisibility: state.clipboardVisibility,
         articleSnippetList: state.articleSnippetList,
         searchData: state.searchData.present,
-        selectedData: state.selectedData,
+        workspaceData: state.workspaceData,
         articleCount: state.articleCount,
         snackbar: state.snackbar,
         canUndoSearch: state.searchData.past.length > 0,

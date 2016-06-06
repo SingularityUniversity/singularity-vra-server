@@ -1,8 +1,8 @@
-import {CLEAR_WORKSPACE, SET_IN_WORKSPACE} from '../actions/selected-actions'
+import {CLEAR_WORKSPACE, SET_IN_WORKSPACE} from '../actions/workspace-actions'
 
 export const initialState = [];
 
-export function selectedReducer(state=initialState, action) {
+export function workspaceReducer(state=initialState, action) {
     let content, inWorkspace, alreadyInWorkspace;
     switch (action.type) {
     case CLEAR_WORKSPACE:

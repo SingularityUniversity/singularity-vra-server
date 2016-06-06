@@ -11,7 +11,7 @@ import TopicsList from './lda_topics';
 import { connect } from 'react-redux';
 import { startKeywordSearch, keywordSearch } from '../actions/search-actions';
 import { addSnippetToClipboard } from '../actions/clipboard-actions';
-import { setInWorkspace } from '../actions/selected-actions';
+import { setInWorkspace } from '../actions/workspace-actions';
 import IconButton from 'material-ui/IconButton';
 import ContentRemoveCircle from 'material-ui/svg-icons/content/remove-circle';
 import {colors} from 'material-ui/styles';

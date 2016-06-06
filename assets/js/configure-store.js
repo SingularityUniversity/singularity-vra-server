@@ -3,14 +3,14 @@ import createLogger from 'redux-logger';
 import thunkMiddleware from 'redux-thunk';
 import rootReducer from './reducers/root-reducer';
 import {initialHistory as searchInitialState} from './reducers/search-reducer';
-import {initialState as selectedInitialState} from './reducers/selected-reducer';
+import {initialState as workspaceInitialState} from './reducers/workspace-reducer';
 import {initialState as snackbarInitiateState} from './reducers/snackbar-reducer';
 
 export const initialState = {
     clipboardVisibility: false,
     articleSnippetList: [],
     searchData: searchInitialState,
-    selectedData: selectedInitialState,
+    workspaceData: workspaceInitialState,
     articleCount: 0,
     snackbar: snackbarInitiateState
 };

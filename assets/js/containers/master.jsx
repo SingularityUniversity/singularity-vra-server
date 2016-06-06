@@ -145,7 +145,7 @@ const Master = React.createClass({
                 <div style={styles.fullWidthSection.root}>
                     <Toolbar> 
                         <ToolbarGroup>
-                            <ToolbarTitle style={{color:colors.black, fontWeight: "bold", fontFamily:this.props.muiTheme.baseTheme.fontFamily}} text="Selected Items"/>
+                            <ToolbarTitle style={{color:colors.black, fontWeight: "bold", fontFamily:this.props.muiTheme.baseTheme.fontFamily}} text="Workspace"/>
                         </ToolbarGroup>
                         <ToolbarGroup >
                             {unSelectAllButton}

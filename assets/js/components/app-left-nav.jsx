@@ -6,6 +6,10 @@ import muiThemeable from 'material-ui/styles/muiThemeable';
 import {Card, CardTitle} from 'material-ui/Card';
 import {spacing, colors} from 'material-ui/styles';
 import {AutoSizer,VirtualScroll, InfiniteLoader } from 'react-virtualized';
+import IconButton from 'material-ui/IconButton';
+import ChevronRight from 'material-ui/svg-icons/navigation/chevron-right';
+import { showSnackbarMessage} from '../actions/snackbar-actions';
+import { connect } from 'react-redux';
 
 let SelectableList = MakeSelectable(List);
 
@@ -83,13 +87,15 @@ const AppLeftNav = React.createClass({
         });
     },
     onClickedItem(content) {
-        let selectedPKIDs = this.getSelectedIDS();
-        this.props.onChangeSelected(content, selectedPKIDs.indexOf(content.pk) < 0);
+        if (this.state.selectedPKIDs.indexOf(content.pk) < 0 ) {
+            this.props.onShowSnackbarMessage("Added content to the workspace");
+            this.props.onChangeSelected(content, true);
+        }
     },
     _renderRow(index) {
         let published = '';
         let publisher = '';
-        let cardStyle ={whiteSpace: "inherit", cursor: "pointer", boxShadow: 0, backgroundColor:null, height:120} ;
+        let cardStyle ={whiteSpace: "inherit", boxShadow: 0, backgroundColor:null, height:120} ;
 
         let content = this.props.displayedContent[index];
         if (!content) {
@@ -105,19 +111,27 @@ const AppLeftNav = React.createClass({
         }
         let title = (<span style={{fontSize: "125%"}}>{content.fields.extract['title']}</span>);
         let subtitle = (<span>{content.score.toFixed(3)}<br/> <a href="#">{publisher}</a>{published}</span>);
+        let addIcon="";
         if (this.state.selectedPKIDs.indexOf(content.pk) >=0 ) {
             cardStyle['backgroundColor'] = colors.grey300;
+        } else {
+            cardStyle['cursor'] = 'pointer';
+            addIcon=(
+                <IconButton style={{float: "right"}}>
+                    <ChevronRight/>
+                </IconButton>
+            );
         }
         return (
             <Card onClick={function() {that.onClickedItem(content)}} key={content.pk} style={cardStyle}> 
+                {addIcon}
                 <CardTitle 
-                title={title} 
-                subtitle={subtitle}
-                titleStyle={{fontSize: '75%', lineHeight:null }}/>
+                    title={title} 
+                    subtitle={subtitle}
+                    titleStyle={{fontSize: '75%', lineHeight:null }}>
+                </CardTitle>
             </Card>
             );
-
-
     },
     render() {
         const {
@@ -174,4 +188,12 @@ const AppLeftNav = React.createClass({
     }
 });
 
-export default muiThemeable()(AppLeftNav);
+const mapDispatchToProps = (dispatch) => {
+    return {
+        onShowSnackbarMessage: (message) => {
+            dispatch(showSnackbarMessage(message));
+        }
+    }
+}
+
+export default connect(null, mapDispatchToProps)(muiThemeable()(AppLeftNav));

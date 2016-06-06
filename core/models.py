@@ -67,30 +67,6 @@ class EnteredSource(models.Model):
     )
 
 
-class Workspace(models.Model):
-    def get_default_title():
-        return 'Workspace {}'.format(arrow.utcnow().format('YYYY-MM-DDTHH:mm:ss'))
-
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
-    title = models.CharField(
-        max_length=256,
-        default=get_default_title
-    )
-    description = models.CharField(
-        max_length=2048,
-        null=True
-    )
-    created = DateTimeUTCField(
-        auto_now_add=True
-    )
-    edited = DateTimeUTCField(
-        auto_now_add=True
-    )
-    published = models.BooleanField(
-        default=False
-    )
-
-
 class Content(models.Model):
     entered_source = models.ForeignKey(
         'EnteredSource',
@@ -117,7 +93,6 @@ class Content(models.Model):
         null=True,
         on_delete=models.CASCADE
     )
-    workspace = models.ManyToManyField(Workspace)
 
     def as_json_serializable(self):
         return json.loads(serializers.serialize('json', [self]))[0]
@@ -182,3 +157,29 @@ class Issue(models.Model):
     other = JSONField(
         null=True
     )
+
+
+class Workspace(models.Model):
+    def get_default_title():
+        return 'Workspace {}'.format(arrow.utcnow().format('YYYY-MM-DDTHH:mm:ss'))
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    title = models.CharField(
+        max_length=256,
+        default=get_default_title
+    )
+    description = models.CharField(
+        max_length=2048,
+        null=True,
+        blank=True
+    )
+    created = DateTimeUTCField(
+        auto_now_add=True
+    )
+    edited = DateTimeUTCField(
+        auto_now_add=True
+    )
+    published = models.BooleanField(
+        default=False
+    )
+    articles = models.ManyToManyField(Content)

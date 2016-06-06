@@ -46,9 +46,21 @@ class SequenceEnteredSourceFactory(DjangoModelFactory):
     url = Sequence(lambda n: 'http://example.com/article/{}'.format(n))
     source_type = EnteredSource.TYPE_PAGE
 
+
 class SequenceWorkspaceFactory(DjangoModelFactory):
     class Meta:
         model = Workspace
 
     user = SubFactory(SequenceUserFactory)
 
+
+class SequenceContentFactory(DjangoModelFactory):
+    class Meta:
+        model = Content
+
+    entered_source = SubFactory(SequenceEnteredSourceFactory)
+    url = 'http://example.com'
+    guid = Sequence(lambda n: 'guid:{}'.format(n))
+    extract = Sequence(lambda n: {'title': 'Title {}'.format(n),
+                                  'content': 'Article content {}'.format(n)})
+    publisher = SubFactory(SequencePublisherFactory)

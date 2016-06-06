@@ -56,9 +56,9 @@ class ContentSerializer(serializers.ModelSerializer):
 class WorkspaceSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(read_only=True,
                                               default=serializers.CurrentUserDefault())
+    articles = ContentSerializer(many=True, read_only=True)
+
     class Meta:
         model = Workspace
         fields = '__all__'
-        read_only_fields = ('created', 'user',)
-
-
+        read_only_fields = ('created', 'user', 'articles')

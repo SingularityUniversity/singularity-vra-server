@@ -290,3 +290,35 @@ class WorkspaceViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Workspace.objects.filter(user=self.request.user)
+
+    @detail_route(methods=['POST'])
+    def add(self, request, pk=None):
+        workspace = get_object_or_404(Workspace, pk=int(pk))
+        if workspace.user.id != self.request.user.id:
+            return Response('Not authorized.', status=status.HTTP_403_FORBIDDEN)
+        if 'id' in request.data:
+            # XXX: check for correct type -- int
+            article = get_object_or_404(Content, pk=request.data['id'])
+            workspace.articles.add(article)
+        elif 'ids' in request.data:
+            # XXX: check for correct type -- list
+            articles = [get_object_or_404(Content, pk=id) for id in request.data['ids']]
+            workspace.articles.add(*articles)
+        workspace.save()
+        return Response('Success', status=status.HTTP_204_NO_CONTENT)
+
+    @detail_route(methods=['POST'])
+    def remove(self, request, pk=None):
+        workspace = get_object_or_404(Workspace, pk=int(pk))
+        if workspace.user.id != self.request.user.id:
+            return Response('Not authorized.', status=status.HTTP_403_FORBIDDEN)
+        if 'id' in request.data:
+            # XXX: check for correct type -- int
+            article = get_object_or_404(Content, pk=request.data['id'])
+            workspace.articles.remove(article)
+        elif 'ids' in request.data:
+            # XXX: check for correct type -- list
+            articles = [get_object_or_404(Content, pk=id) for id in request.data['ids']]
+            workspace.articles.remove(*articles)
+        workspace.save()
+        return Response('Success', status=status.HTTP_204_NO_CONTENT)

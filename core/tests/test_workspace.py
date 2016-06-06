@@ -24,6 +24,22 @@ class WorkspaceTests(APITestCase):
         self.assertEqual(Workspace.objects.all().first().description, data['description'])
         self.assertEqual(Workspace.objects.all().first().user.id, self.user1.id)
 
+    def test_create_workspace_other_user_ignored(self):
+        '''
+        If the user attribute is passed into the request data, it is ignored
+        and the user info from request.user is actually used.
+        '''
+        url = reverse('workspace-list')
+        data = {'title': 'Test Workspace', 'description': 'Test workspace description.',
+                'user': self.user2.id}
+        self.client.force_authenticate(user=self.user1)
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Workspace.objects.all().count(), 1)
+        self.assertEqual(Workspace.objects.all().first().title, data['title'])
+        self.assertEqual(Workspace.objects.all().first().description, data['description'])
+        self.assertEqual(Workspace.objects.all().first().user.id, self.user1.id)
+
     def test_list_workspaces(self):
         # create some workspaces for 2 users
         workspace_ids = []
@@ -97,3 +113,194 @@ class WorkspaceTests(APITestCase):
         response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(response.json()['detail'], 'Not found.')
+
+    def test_add_article(self):
+        '''
+        Create an article and a workspace then add the article to the
+        workspace.
+        '''
+        article = SequenceContentFactory.create()
+        workspace = SequenceWorkspaceFactory.create(user=self.user1)
+        url = reverse('workspace-add', kwargs={'pk': workspace.id})
+        self.client.force_authenticate(user=self.user1)
+        data = {'id': article.id}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertTrue(article.id in
+                        [article.id for article in
+                         Workspace.objects.get(pk=workspace.id).articles.all()])
+
+    def test_add_duplicate_article(self):
+        article = SequenceContentFactory.create()
+        workspace = SequenceWorkspaceFactory.create(user=self.user1)
+        url = reverse('workspace-add', kwargs={'pk': workspace.id})
+        self.client.force_authenticate(user=self.user1)
+        data = {'id': article.id}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertTrue(article.id in
+                        [article.id for article in
+                         Workspace.objects.get(pk=workspace.id).articles.all()])
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(Workspace.objects.get(pk=workspace.id).articles.all().count(),
+                         1)
+        self.assertTrue(article.id in
+                        [article.id for article in
+                         Workspace.objects.get(pk=workspace.id).articles.all()])
+
+    def test_add_article_non_existant_workspace_fail(self):
+        article = SequenceContentFactory.create()
+        workspace = SequenceWorkspaceFactory.create(user=self.user1)
+        bad_workspace_id = 987654321
+        self.assertTrue(bad_workspace_id != workspace.id)
+        url = reverse('workspace-add', kwargs={'pk': bad_workspace_id})
+        self.client.force_authenticate(user=self.user1)
+        data = {'id': article.id}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_add_article_other_user_workspace_fail(self):
+        article = SequenceContentFactory.create()
+        workspace1= SequenceWorkspaceFactory.create(user=self.user1)
+        workspace2= SequenceWorkspaceFactory.create(user=self.user2)
+        url = reverse('workspace-add', kwargs={'pk': workspace2.id})
+        self.client.force_authenticate(user=self.user1)
+        data = {'id': article.id}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(Workspace.objects.get(pk=workspace1.id).articles.all().count(),
+                         0)
+        self.assertEqual(Workspace.objects.get(pk=workspace2.id).articles.all().count(),
+                         0)
+
+    def test_add_non_existant_article_fail(self):
+        article = SequenceContentFactory.create()
+        bad_article_id = 987654321
+        self.assertTrue(bad_article_id != article.id)
+        workspace = SequenceWorkspaceFactory.create(user=self.user1)
+        url = reverse('workspace-add', kwargs={'pk': workspace.id})
+        self.client.force_authenticate(user=self.user1)
+        data = {'id': bad_article_id}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_add_multiple_articles(self):
+        article1 = SequenceContentFactory.create()
+        article2 = SequenceContentFactory.create()
+        workspace = SequenceWorkspaceFactory.create(user=self.user1)
+        url = reverse('workspace-add', kwargs={'pk': workspace.id})
+        self.client.force_authenticate(user=self.user1)
+        data = {'ids': [article1.id, article2.id]}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(Workspace.objects.get(pk=workspace.id).articles.all().count(),
+                         2)
+        self.assertTrue(article1.id in
+                        [article.id for article in
+                         Workspace.objects.get(pk=workspace.id).articles.all()])
+        self.assertTrue(article2.id in
+                        [article.id for article in
+                         Workspace.objects.get(pk=workspace.id).articles.all()])
+
+    def add_articles_to_workspace(self, workspace, count):
+        article_ids = []
+        articles = []
+        for i in range(count):
+            article = SequenceContentFactory.create()
+            articles.append(article)
+            article_ids.append(article.id)
+        url = reverse('workspace-add', kwargs={'pk': workspace.id})
+        self.client.force_authenticate(user=workspace.user)
+        data = {'ids': article_ids}
+        self.client.post(url, data, format='json')
+        return articles
+
+    def test_remove_article(self):
+        workspace = SequenceWorkspaceFactory.create(user=self.user1)
+        articles = self.add_articles_to_workspace(workspace, 1)
+        self.assertTrue(Workspace.objects.get(pk=workspace.id).articles.all().count(),
+                        1)
+        url = reverse('workspace-remove', kwargs={'pk': workspace.id})
+        self.client.force_authenticate(user=self.user1)
+        data = {'id': articles[0].id}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(Workspace.objects.get(pk=workspace.id).articles.all().count(),
+                        0)
+
+    def test_remove_article_not_in_workspace(self):
+        workspace = SequenceWorkspaceFactory.create(user=self.user1)
+        article = SequenceContentFactory.create()
+        articles = self.add_articles_to_workspace(workspace, 1)
+        self.assertTrue(Workspace.objects.get(pk=workspace.id).articles.all().count(),
+                        1)
+        url = reverse('workspace-remove', kwargs={'pk': workspace.id})
+        self.client.force_authenticate(user=self.user1)
+        data = {'id': article.id}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(Workspace.objects.get(pk=workspace.id).articles.all().count(),
+                         1)
+
+    def test_remove_article_non_existant_workspace_fail(self):
+        article = SequenceContentFactory.create()
+        workspace = SequenceWorkspaceFactory.create(user=self.user1)
+        bad_workspace_id = 987654321
+        self.assertTrue(bad_workspace_id != workspace.id)
+        url = reverse('workspace-remove', kwargs={'pk': bad_workspace_id})
+        self.client.force_authenticate(user=self.user1)
+        data = {'id': article.id}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_remove_article_other_user_workspace(self):
+        article = SequenceContentFactory.create()
+        workspace1= SequenceWorkspaceFactory.create(user=self.user1)
+        articles1 = self.add_articles_to_workspace(workspace1, 1)
+        self.assertTrue(Workspace.objects.get(pk=workspace1.id).articles.all().count(),
+                        1)
+        workspace2= SequenceWorkspaceFactory.create(user=self.user2)
+        articles2 = self.add_articles_to_workspace(workspace2, 1)
+        self.assertTrue(Workspace.objects.get(pk=workspace2.id).articles.all().count(),
+                        1)
+        url = reverse('workspace-remove', kwargs={'pk': workspace2.id})
+        self.client.force_authenticate(user=self.user1)
+        data = {'id': articles2[0].id}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(Workspace.objects.get(pk=workspace1.id).articles.all().count(),
+                         1)
+        self.assertEqual(Workspace.objects.get(pk=workspace2.id).articles.all().count(),
+                         1)
+
+    def test_remove_non_existant_article_fail(self):
+        workspace = SequenceWorkspaceFactory.create(user=self.user1)
+        articles = self.add_articles_to_workspace(workspace, 1)
+        bad_article_id = 987654321
+        self.assertTrue(bad_article_id not in [article.id for article in articles])
+        self.assertTrue(Workspace.objects.get(pk=workspace.id).articles.all().count(),
+                        1)
+        url = reverse('workspace-remove', kwargs={'pk': workspace.id})
+        self.client.force_authenticate(user=self.user1)
+        data = {'id': bad_article_id}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(Workspace.objects.get(pk=workspace.id).articles.all().count(),
+                        1)
+
+    def test_remove_multiple_articles(self):
+        workspace = SequenceWorkspaceFactory.create(user=self.user1)
+        articles = self.add_articles_to_workspace(workspace, 3)
+        self.assertTrue(Workspace.objects.get(pk=workspace.id).articles.all().count(),
+                        3)
+        url = reverse('workspace-remove', kwargs={'pk': workspace.id})
+        self.client.force_authenticate(user=self.user1)
+        data = {'ids': [articles[0].id, articles[1].id]}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(Workspace.objects.get(pk=workspace.id).articles.all().count(),
+                        1)
+        self.assertEqual(Workspace.objects.get(pk=workspace.id).articles.all()[0].id,
+                         articles[2].id)
+

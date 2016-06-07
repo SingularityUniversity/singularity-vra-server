@@ -182,4 +182,7 @@ class Workspace(models.Model):
     published = models.BooleanField(
         default=False
     )
-    articles = models.ManyToManyField(Content)
+    articles = models.ManyToManyField(
+        Content,
+        blank=True
+    )

@@ -18,6 +18,6 @@ export const initialState = {
 const loggerMiddleware = createLogger();
 
 export default function configureStore(initialState) {
-    return createStore(rootReducer, initialState, 
+    return createStore(rootReducer, initialState,
         applyMiddleware(thunkMiddleware, loggerMiddleware));
 }

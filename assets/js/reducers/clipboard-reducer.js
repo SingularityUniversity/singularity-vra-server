@@ -1,4 +1,4 @@
-import {CLOSE_CLIPBOARD, OPEN_CLIPBOARD, 
+import {CLOSE_CLIPBOARD, OPEN_CLIPBOARD,
     TOGGLE_CLIPBOARD, ADD_SNIPPET_TO_CLIPBOARD,
     REMOVE_SNIPPET_FROM_CLIPBOARD,
     CLEAR_CLIPBOARD} from '../actions/clipboard-actions';
@@ -28,7 +28,7 @@ export function clipboardReducer(state=[], action) {
                     snippets = clipboard_item.snippets.slice();
                     snippets.push(action.snippet);
                     return {
-                        content: action.content, 
+                        content: action.content,
                         snippets: snippets
                     };
                 } else {

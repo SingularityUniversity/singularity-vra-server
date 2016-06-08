@@ -8,7 +8,7 @@ import {spacing, colors, typography, zIndex} from 'material-ui/styles';
  */
 
 const {desktopGutter, desktopKeylineIncrement} = spacing;
-const {fontWeightLight} = typography; 
+const {fontWeightLight} = typography;
 
 export default {
     spacing: spacing,
@@ -70,7 +70,7 @@ export default {
     },
     leftNav: {
         zIndex: zIndex.appBar -1,
-        paddingTop: desktopKeylineIncrement, 
+        paddingTop: desktopKeylineIncrement,
         headerHeight: desktopKeylineIncrement*2
     },
     masterBar: {

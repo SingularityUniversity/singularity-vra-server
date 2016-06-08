@@ -6,7 +6,7 @@ export function receiveArticleCount(count) {
         type: RECEIVE_ARTICLE_COUNT,
         count: count
     }
-  
+
 }
 export function getArticleCount() {
     return function(dispatch) {

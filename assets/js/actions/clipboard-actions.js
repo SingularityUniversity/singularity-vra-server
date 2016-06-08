@@ -33,7 +33,7 @@ export function addSnippetToClipboard(content, snippet) {
 
 function putContentInClipboard(content, snippet) {
     return {
-        type: ADD_SNIPPET_TO_CLIPBOARD, 
+        type: ADD_SNIPPET_TO_CLIPBOARD,
         content: content,
         snippet: snippet
     };
@@ -41,7 +41,7 @@ function putContentInClipboard(content, snippet) {
 
 export function removeSnippetFromClipboard(content, snippet_index) {
     return {
-        type: REMOVE_SNIPPET_FROM_CLIPBOARD, 
+        type: REMOVE_SNIPPET_FROM_CLIPBOARD,
         content: content,
         snippet_index: snippet_index
     };

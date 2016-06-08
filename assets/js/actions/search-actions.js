@@ -10,7 +10,7 @@ export const SIMILARITY_SEARCH = 'SIMILARITY_SEARCH'
 let keywordSearchRequests = {};
 
 export function keywordSearch(query, offset, limit) {
-   
+
     return function(dispatch) {
         if (!offset) {
             offset=0;
@@ -25,7 +25,7 @@ export function keywordSearch(query, offset, limit) {
         keywordSearchRequests[data]=1;
         let promise=$.ajax({
             url: '/api/v1/search',
-            data: data, 
+            data: data,
             success: (data, textStatus, xhr) => { // eslint-disable-line no-unused-vars
                 let entries = data.hits.hits.map(function(x) {return {score: x._score, ...x._source}});
                 dispatch(addSearchResults(entries, offset, data.hits.total));
@@ -45,7 +45,7 @@ export function startKeywordSearch(text) {
     return function(dispatch) {
         let msg = ( <span> Doing a content search with <em>{text}</em> </span>);
         dispatch(resetKeywordSearch(text));
-        dispatch(showSnackbarMessage(msg)); 
+        dispatch(showSnackbarMessage(msg));
     }
 }
 
@@ -59,7 +59,7 @@ function resetKeywordSearch(text) {
 export function similaritySearch(contentIDs) {
     return function(dispatch) {
         dispatch(startSimilaritySearch(contentIDs));
-        dispatch(showSnackbarMessage("Doing a similarity search")); 
+        dispatch(showSnackbarMessage("Doing a similarity search"));
         $.ajax({
             url: `/api/v1/similar`,
             method: 'POST',
@@ -71,7 +71,7 @@ export function similaritySearch(contentIDs) {
                     content.lda_similarity_topics = item.topics;
                     content.score = item.weight;
                     return content;
-                });	
+                });
           // Only ever send one page of similarity search results for now
                 dispatch(addSearchResults(annotated_results, 0, annotated_results.length, data.query_topics));
             },
@@ -103,4 +103,4 @@ export function addSearchResults(results, start, totalCount, result_topics=[]) {
         totalCount: totalCount
     }
 }
-  
+

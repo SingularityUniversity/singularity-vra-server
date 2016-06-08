@@ -132,7 +132,7 @@ const SearchHelpDialog = React.createClass({
                     actions={actions}
                     modal={false}
                     open={this.state.open}
-                    onRequestClose={this.toggleState} 
+                    onRequestClose={this.toggleState}
                     autoScrollBodyContent={true} >
                     {this.helpText()}
                 </Dialog>

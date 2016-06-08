@@ -9,6 +9,7 @@
         "react/prop-types": 0,
         "react/no-danger": 0,
         "react/jsx-indent": 1,
+        "no-trailing-spaces": 1,
         "no-console": ["error", { "allow": ["warn", "error"] }]
     },
     "parserOptions": {

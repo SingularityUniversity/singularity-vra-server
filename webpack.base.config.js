@@ -7,7 +7,7 @@ var ASSETS_DIR = path.resolve(__dirname, 'assets/');
 var BUNDLE_DIR = ASSETS_DIR + '/bundles/';
 
 var config = {
-  entry: './assets/js/index',
+  entry: ['babel-polyfill', './assets/js/index'],
   output: {
     path: BUNDLE_DIR,
     filename: '[name]-[hash].js',

@@ -92,6 +92,39 @@ class WorkspaceTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json()['title'], data['title'])
 
+    def test_update_workspace_one_article(self):
+        article = SequenceContentFactory.create()
+        workspace1 = SequenceWorkspaceFactory.create(user=self.user1)
+        self.assertEqual(Workspace.objects.all().count(), 1)
+        url = reverse('workspace-detail', kwargs={'pk': workspace1.id})
+        self.client.force_authenticate(user=self.user1)
+        data = {'title': 'New Title', 'id': article.id}
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json()['title'], data['title'])
+        workspace_obj = Workspace.objects.get(pk=workspace1.id)
+        article_list = workspace_obj.articles.all()
+        self.assertIn(article.id, [article.id for article in article_list]) 
+        self.assertEqual(1, len(article_list))
+
+    def test_update_workspace_many_articles(self):
+        article1 = SequenceContentFactory.create()
+        article2 = SequenceContentFactory.create()
+        workspace1 = SequenceWorkspaceFactory.create(user=self.user1)
+        self.assertEqual(Workspace.objects.all().count(), 1)
+        url = reverse('workspace-detail', kwargs={'pk': workspace1.id})
+        self.client.force_authenticate(user=self.user1)
+        data = {'title': 'New Title', 
+                'ids': [article1.id, article2.id]}
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json()['title'], data['title'])
+        workspace_obj = Workspace.objects.get(pk=workspace1.id)
+        article_list = workspace_obj.articles.all()
+        self.assertIn(article1.id, [article.id for article in article_list]) 
+        self.assertIn(article2.id, [article.id for article in article_list]) 
+        self.assertEqual(2, len(article_list))
+
     def test_update_workspace_user_field_not_updated(self):
         # instead of returning an error, DRF just seems to ignore the request
         # to update a read-only field

@@ -1,4 +1,4 @@
-import {CLEAR_WORKSPACE, SET_IN_WORKSPACE} from '../actions/workspace-actions'
+import {REPLACE_WORKSPACE, CLEAR_WORKSPACE, SET_IN_WORKSPACE} from '../actions/workspace-actions'
 
 export const initialState = [];
 
@@ -10,8 +10,8 @@ export function workspaceReducer(state=initialState, action) {
     case SET_IN_WORKSPACE:
         content = action.content;
         inWorkspace = action.inWorkspace;
-        if (!inWorkspace) { 
-                // Turn off membership in workspace - filter out if it somehow exists in the workspace 
+        if (!inWorkspace) {
+                // Turn off membership in workspace - filter out if it somehow exists in the workspace
             let filteredInWorkspace = state.filter(function(workspaceContent) {
                 return (content.pk != workspaceContent.pk)
             });
@@ -36,6 +36,8 @@ export function workspaceReducer(state=initialState, action) {
         } else {
             return state;
         }
+    case REPLACE_WORKSPACE:
+        return action.contentList.slice();
     default:
         return state;
     }

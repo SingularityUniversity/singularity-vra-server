@@ -291,6 +291,23 @@ class WorkspaceViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return Workspace.objects.filter(user=self.request.user)
 
+    def partial_update(self, request, pk=None):
+        instance = self.get_object()
+        if 'id' in request.data:
+            # XXX: check for correct type -- int
+            article = get_object_or_404(Content, pk=request.data['id'])
+            instance.articles = [article]
+            request.data.pop('id')
+        elif 'ids' in request.data:
+            # XXX: check for correct type -- list
+            articles = [get_object_or_404(Content, pk=id) for id in request.data['ids']]
+            instance.articles = articles
+            request.data.pop('ids')
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)
+
     @detail_route(methods=['POST'])
     def add(self, request, pk=None):
         workspace = get_object_or_404(Workspace, pk=int(pk))

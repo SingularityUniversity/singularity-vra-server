@@ -13,7 +13,7 @@ import { addSnippetToClipboard, toggleClipboard, clearClipboard } from '../actio
 import { connect } from 'react-redux';
 import Snackbar from 'material-ui/Snackbar';
 import { similaritySearch, startKeywordSearch, keywordSearch, clearSearch, addSearchResults } from '../actions/search-actions';
-import { clearWorkspace, setInWorkspace} from '../actions/workspace-actions';
+import { loadWorkspace, saveWorkspace, clearWorkspace, setInWorkspace} from '../actions/workspace-actions';
 import { getArticleCount } from '../actions/article-count-actions';
 import { showSnackbarMessage, closeSnackbar} from '../actions/snackbar-actions';
 import ArrowBack from 'material-ui/svg-icons/navigation/arrow-back';
@@ -77,6 +77,12 @@ const Master = React.createClass({
     },
     unSelectAll() {
         this.props.onClearWorkspace();
+    },
+    loadWorkspace() {
+        this.props.onLoadWorkspace();
+    },
+    saveWorkspace() {
+        this.props.onSaveWorkspace(this.props.workspaceData);
     },
     render() {
         let styles = this.props.muiTheme;
@@ -146,6 +152,8 @@ const Master = React.createClass({
                     <Toolbar> 
                         <ToolbarGroup>
                             <ToolbarTitle style={{color:colors.black, fontWeight: "bold", fontFamily:this.props.muiTheme.baseTheme.fontFamily}} text="Workspace"/>
+                            <RaisedButton primary={true} onMouseUp={this.loadWorkspace} label="Load Workspace"/>
+                            <RaisedButton primary={true} onMouseUp={this.saveWorkspace} label="Save Workspace"/>
                         </ToolbarGroup>
                         <ToolbarGroup >
                             {unSelectAllButton}
@@ -224,7 +232,10 @@ const mapDispatchToProps = (dispatch) => {
             dispatch(showSnackbarMessage(message));
         },
         onUndo: () => dispatch(UndoActionCreators.undo()),
-        onRedo: () => dispatch(UndoActionCreators.redo())
+        onRedo: () => dispatch(UndoActionCreators.redo()),
+        onSaveWorkspace: (content_list) => dispatch(saveWorkspace(content_list)),
+        onLoadWorkspace: () =>  dispatch(loadWorkspace()),
+
     }
 }
 

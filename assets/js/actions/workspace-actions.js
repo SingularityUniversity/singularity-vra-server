@@ -32,7 +32,7 @@ export function loadWorkspace() {
             .then( workspaceId => {
                 return fetch('/api/v1/workspace/'+workspaceId, {
                     credentials: 'include',
-                    headers: {'Accept': 'application/json'},
+                    headers: {'Accept': 'application/json'}
                 })
             })
             .then(checkResponseAndExtractJSON)
@@ -42,13 +42,13 @@ export function loadWorkspace() {
                     // layer that can contain metadata about search results, etc
                     json.articles.map((raw_article) =>
                         {
-                            return {
-                                fields: raw_article,
-                                pk: raw_article.id,
-                                model: "core.content",
-                                score: 1
-                            }
+                        return {
+                            fields: raw_article,
+                            pk: raw_article.id,
+                            model: "core.content",
+                            score: 1
                         }
+                    }
                     )
                 ));
                 dispatch(showSnackbarMessage("Loaded workspace"));
@@ -67,11 +67,10 @@ function getOrCreateDefaultWorkspace() {
 
     return fetch('/api/v1/workspace', {
         credentials: 'include',
-        headers: {'Accept': 'application/json'},
+        headers: {'Accept': 'application/json'}
     })
     .then(checkResponseAndExtractJSON)
     .then(json =>  {
-        console.log("Got result ", json);
         if (json.count > 0) {
             let resultPromise = new Promise(resolve => {
                 resolve(json.results[0].id);
@@ -109,7 +108,7 @@ function getOrCreateDefaultWorkspace() {
         throw error;
     });
 }
-    
+
 
 export function saveWorkspace(content_list) {
     return function(dispatch) {
@@ -132,7 +131,7 @@ export function saveWorkspace(content_list) {
                     body: JSON.stringify(updateData)
                 })
                 .then(checkResponse)
-                .then(() => 
+                .then(() =>
                     dispatch(showSnackbarMessage("Saved workspace"))
                 )
             })
@@ -141,7 +140,7 @@ export function saveWorkspace(content_list) {
                 dispatch(showSnackbarMessage("Failed saving workspace: "+explanation));
             } else {
                 dispatch(showSnackbarMessage("Failed saving workspace"));
-            } 
+            }
         })
     }
 }

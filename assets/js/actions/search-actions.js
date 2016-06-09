@@ -34,7 +34,7 @@ export function keywordSearch(query, offset, limit) {
         fetch(`/api/v1/search?${params.toString()}`, {
             credentials: 'include',
             headers: {
-                'Accept': 'application/json',
+                'Accept': 'application/json'
             }
         })
         .then(checkResponseAndExtractJSON)
@@ -43,13 +43,13 @@ export function keywordSearch(query, offset, limit) {
             delete keywordSearchRequests[data];
             let msg = ( <span> Did a content search with <em>{query}</em> </span>);
             dispatch(showSnackbarMessage(msg));
-            
+
             dispatch(addSearchResults(entries, offset, json.hits.total));
         })
         .catch(error => {
             delete keywordSearchRequests[data];
             dispatch(showSnackbarMessage(error));
-            console.error(`search error: ${textStatus}`);
+            console.error(`search error: ${error}`);
         })
     }
 }
@@ -75,12 +75,12 @@ export function similaritySearch(contentIDs) {
         dispatch(showSnackbarMessage("Doing a similarity search"));
         fetch('/api/v1/similar', {
             credentials: 'include',
-            method: 'POST', 
+            method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({'ids': contentIDs}),
+            body: JSON.stringify({'ids': contentIDs})
         })
         .then(checkResponseAndExtractJSON)
         .then(json => {

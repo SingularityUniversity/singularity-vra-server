@@ -19,7 +19,7 @@ export function getArticleCount() {
                 let error = new Error(response.statusText)
                 error.response = response;
                 throw error
-            };
+            }
         })
         .then(response => response.json())
         .then(json => dispatch(receiveArticleCount(json.count)))

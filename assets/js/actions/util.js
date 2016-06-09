@@ -5,7 +5,7 @@ let checkResponseAndExtractJSON = (response) => {
         let error = new Error(response.statusText)
         error.response = response;
         throw error
-    };
+    }
 }
 
 let checkResponse = (response) => {
@@ -15,7 +15,7 @@ let checkResponse = (response) => {
         let error = new Error(response.statusText)
         error.response = response;
         throw error
-    };
+    }
 }
 export {checkResponseAndExtractJSON, checkResponse};
 

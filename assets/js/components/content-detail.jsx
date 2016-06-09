@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import React from 'react';
 import {findDOMNode} from 'react-dom';
 import Divider from 'material-ui/Divider';
@@ -15,6 +14,7 @@ import { setInWorkspace } from '../actions/workspace-actions';
 import IconButton from 'material-ui/IconButton';
 import ContentRemoveCircle from 'material-ui/svg-icons/content/remove-circle';
 import {colors} from 'material-ui/styles';
+import {checkResponseAndExtractJSON} from '../actions/util';
 
 import Moment from 'moment';
 
@@ -71,15 +71,16 @@ const ContentDetail = React.createClass({
             }
         });
 
-        $.ajax({
-            url: `/api/v1/content/${this.props.content.pk}/summary`,
-            success: (data) => {
-                this.setState({summaries: data.summary});
-            },
-            error: (xhr, status, err) => {  // eslint-disable-line no-unused-vars 
-                console.error(xhr, status);
+        // XXX: Refactor me into an async action 
+        fetch(`/api/v1/content/${this.props.content.pk}/summary`,  {
+            credentials: 'include',
+            headers: {
+                'Accept': 'application/json',
             }
-        });
+        })
+        .then(checkResponseAndExtractJSON)
+        .then(json => this.setState({summaries: json.summary}))
+        .catch(explanation => console.error("Error getting summary for "+this.props.content.pk+": "+explanation));
     },
     removeFromWorkspace() {
         this.props.onSetInWorkspace(this.props.content, false);

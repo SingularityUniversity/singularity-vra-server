@@ -11,6 +11,8 @@ config.devtool = 'source-map'
 
 config.entry = [
     'babel-polyfill',
+    'whatwg-fetch',
+    'url-search-params',
   'webpack-dev-server/client?http://localhost:3000',
   'webpack/hot/only-dev-server',
   ASSETS_DIR + '/js/index',

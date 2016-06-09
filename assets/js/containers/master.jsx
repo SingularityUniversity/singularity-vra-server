@@ -166,6 +166,7 @@ const Master = React.createClass({
                     style={{fontFamily: this.props.muiTheme.baseTheme.fontFamily, textAlign: "center"}}
                     open={this.props.snackbar.open}
                     message={this.props.snackbar.message}
+                    autoHideDuration={2000}
                     onRequestClose={() => this.props.onCloseSnackbar()}
                 />
             </div>

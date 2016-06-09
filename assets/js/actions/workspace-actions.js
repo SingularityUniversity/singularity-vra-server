@@ -1,5 +1,5 @@
 import {showSnackbarMessage} from './snackbar-actions';
-import $ from 'jquery';
+import {checkResponse, checkResponseAndExtractJSON} from './util';
 export const CLEAR_WORKSPACE = 'CLEAR_WORKSPACE'
 export const SET_IN_WORKSPACE = 'SET_IN_WORKSPACE'
 export const REPLACE_WORKSPACE = 'REPLACE_WORKSPACE'
@@ -28,19 +28,20 @@ function replaceWorkspace(contentList) {
 export function loadWorkspace() {
     return function(dispatch) {
         dispatch(showSnackbarMessage("Loading workspace"));
-        let defaultWorkspacePromise =  getOrCreateDefaultWorkspace();
-        defaultWorkspacePromise.then(
-            (workspaceId) => {
-                $.ajax({
-                    url: '/api/v1/workspace/'+workspaceId,
-                    contentType: 'application/json'
+        getOrCreateDefaultWorkspace()
+            .then( workspaceId => {
+                return fetch('/api/v1/workspace/'+workspaceId, {
+                    credentials: 'include',
+                    headers: {'Accept': 'application/json'},
                 })
-                .done((data) => {
-                    dispatch(replaceWorkspace(
-                        // We don't use the raw representations - we actually wrap them in a thin
-                        // layer that can contain metadata about search results, etc
-                        data.articles.map((raw_article) =>
-                            {
+            })
+            .then(checkResponseAndExtractJSON)
+            .then(json => {
+                dispatch(replaceWorkspace(
+                    // We don't use the raw representations - we actually wrap them in a thin
+                    // layer that can contain metadata about search results, etc
+                    json.articles.map((raw_article) =>
+                        {
                             return {
                                 fields: raw_article,
                                 pk: raw_article.id,
@@ -48,82 +49,99 @@ export function loadWorkspace() {
                                 score: 1
                             }
                         }
-                        )
-                    ));
-                    dispatch(showSnackbarMessage("Loaded workspace"));
-                })
-                .fail(() => {
-                    dispatch(showSnackbarMessage("Failed loading workspace"));
-                });
-            },
-            (explanation) => {
-                dispatch(showSnackbarMessage("Failed loading workspace: "+explanation));
-            }
-        )
+                    )
+                ));
+                dispatch(showSnackbarMessage("Loaded workspace"));
+            })
+            .catch(
+                (explanation) => {
+                    dispatch(showSnackbarMessage("Failed loading workspace: "+explanation));
+                }
+            );
     }
 }
 
 function getOrCreateDefaultWorkspace() {
     // Get a workspace
+    // Returns a promise that resolves with the id of current workspace
 
-    let resultPromise = new Promise((resolve, reject) => {
-        $.ajax({
-            url: '/api/v1/workspace'
-        })
-        .done((data) => {
-            if (data.count > 0) {
-                resolve(data.results[0].id);
-            } else {
-                let data = {
-                    title: "Default workspace"
-                }
-                $.ajax({
-                    url: '/api/v1/workspace',
-                    method: 'POST',
-                    data: JSON.stringify(data),
-                    contentType: 'application/json'
-                })
-                .done((data) => {
-                    resolve(data.id);
-                })
-                .fail(() => {
-                    reject("Failed to get default workspace");
-                })
+    return fetch('/api/v1/workspace', {
+        credentials: 'include',
+        headers: {'Accept': 'application/json'},
+    })
+    .then(checkResponseAndExtractJSON)
+    .then(json =>  {
+        console.log("Got result ", json);
+        if (json.count > 0) {
+            let resultPromise = new Promise(resolve => {
+                resolve(json.results[0].id);
+            });
+            return resultPromise;
+        } else {
+            let data = {
+                title: "Default workspace"
             }
-        })
-        .fail(() => {
-            reject("Failed to get list of workspaces");
-        });
+
+            return fetch('/api/v1/workspace', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(checkResponseAndExtractJSON)
+            .then(json => {
+                return json.id;
+            })
+            .catch(() => {
+                let error = new Error("Failed to create default workspace")
+                throw error;
+            });
+
+        }
+    })
+    .catch((explanation) =>  {
+        if (!explanation) {
+            explanation = "Failed to get list of workspaces";
+        }
+        let error = new Error(explanation);
+        throw error;
     });
-    return resultPromise;
 }
+    
+
 export function saveWorkspace(content_list) {
     return function(dispatch) {
         dispatch(showSnackbarMessage("Saving workspace"));
         const title = "Saved Workspace";
-        let defaultWorkspacePromise =  getOrCreateDefaultWorkspace();
-        defaultWorkspacePromise.then(
+        getOrCreateDefaultWorkspace()
+        .then(
             (workspaceId) => {
-                let update_data = {
+                let updateData = {
                     ids: content_list.map((content) => content.pk),
                     title: title
                 }
-                $.ajax({
-                    url: '/api/v1/workspace/'+workspaceId,
-                    contentType: 'application/json',
+                return fetch('/api/v1/workspace/'+workspaceId, {
+                    credentials: 'include',
                     method: 'PATCH',
-                    data: JSON.stringify(update_data)
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updateData)
                 })
-                .done(() => {
-                    dispatch(showSnackbarMessage("Saved workspace"));
-                })
-                .fail(() => {
-                    dispatch(showSnackbarMessage("Failed saving workspace"));
-                })
-            },
-            (explanation) => {
+                .then(checkResponse)
+                .then(() => 
+                    dispatch(showSnackbarMessage("Saved workspace"))
+                )
+            })
+        .catch(explanation => {
+            if (explanation) {
                 dispatch(showSnackbarMessage("Failed saving workspace: "+explanation));
-            }
-        );
+            } else {
+                dispatch(showSnackbarMessage("Failed saving workspace"));
+            } 
+        })
     }
 }

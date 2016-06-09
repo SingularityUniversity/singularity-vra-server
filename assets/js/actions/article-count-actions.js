@@ -1,4 +1,3 @@
-import $ from 'jquery';
 export const RECEIVE_ARTICLE_COUNT = 'RECEIVE_ARTICLE_COUNT'
 
 export function receiveArticleCount(count) {
@@ -10,16 +9,21 @@ export function receiveArticleCount(count) {
 }
 export function getArticleCount() {
     return function(dispatch) {
-        $.ajax({
-            url: '/api/v1/content/count',
-            success: (data) => {
-                dispatch(receiveArticleCount(data.count));
-            },
-            error: (xhr, status, err) => {   // eslint-disable-line no-unused-vars
-                console.error(xhr, status);
-            }
-        });
-
+        fetch('/api/v1/content/count', {
+            credentials: 'include'
+        })
+        .then(response => {
+            if (response.status <= 299) {
+                return response;
+            } else {
+                let error = new Error(response.statusText)
+                error.response = response;
+                throw error
+            };
+        })
+        .then(response => response.json())
+        .then(json => dispatch(receiveArticleCount(json.count)))
+        .catch((error) => console.error(error));
     }
 }
 

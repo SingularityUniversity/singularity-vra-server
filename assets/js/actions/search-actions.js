@@ -1,6 +1,7 @@
 import React from 'react';
 import {showSnackbarMessage} from './snackbar-actions';
-import $ from 'jquery';
+import URLSearchParams from 'url-search-params';
+import {checkResponseAndExtractJSON} from './util';
 export const KEYWORD_SEARCH = 'KEYWORD_SEARCH'
 export const CLEAR_SEARCH = 'CLEAR_SEARCH'
 export const ADD_SEARCH_RESULTS = 'ADD_SEARCH_RESULTS'
@@ -18,26 +19,38 @@ export function keywordSearch(query, offset, limit) {
         if (!limit) {
             limit=50;
         }
+
+        // 'data' is *just* a key to keep us from doing multiple requests at the same time
         let data = `q=${query}&offset=${offset}&limit=${limit}`;
         if (data in keywordSearchRequests) {
             return;
         }
         keywordSearchRequests[data]=1;
-        let promise=$.ajax({
-            url: '/api/v1/search',
-            data: data,
-            success: (data, textStatus, xhr) => { // eslint-disable-line no-unused-vars
-                let entries = data.hits.hits.map(function(x) {return {score: x._score, ...x._source}});
-                dispatch(addSearchResults(entries, offset, data.hits.total));
-            },
-            error: (xhr, textStatus, errorThrown) => { // eslint-disable-line no-unused-vars
-                dispatch(showSnackbarMessage(xhr.responseText));
-                console.error(`search error: ${textStatus}`);
+        let params = new URLSearchParams();
+        params.set('q', query);
+        params.set('offset', offset);
+        params.set('limit', limit);
+
+        fetch(`/api/v1/search?${params.toString()}`, {
+            credentials: 'include',
+            headers: {
+                'Accept': 'application/json',
             }
-        }).always(function() {
+        })
+        .then(checkResponseAndExtractJSON)
+        .then(json => {
+            let entries = json.hits.hits.map(function(x) {return {score: x._score, ...x._source}});
             delete keywordSearchRequests[data];
-        });
-        return promise;
+            let msg = ( <span> Did a content search with <em>{query}</em> </span>);
+            dispatch(showSnackbarMessage(msg));
+            
+            dispatch(addSearchResults(entries, offset, json.hits.total));
+        })
+        .catch(error => {
+            delete keywordSearchRequests[data];
+            dispatch(showSnackbarMessage(error));
+            console.error(`search error: ${textStatus}`);
+        })
     }
 }
 
@@ -60,26 +73,31 @@ export function similaritySearch(contentIDs) {
     return function(dispatch) {
         dispatch(startSimilaritySearch(contentIDs));
         dispatch(showSnackbarMessage("Doing a similarity search"));
-        $.ajax({
-            url: `/api/v1/similar`,
-            method: 'POST',
-            contentType: "application/json",
-            data: JSON.stringify({'ids': contentIDs}),
-            success: (data) => {
-                let annotated_results = data.results.map(function(item) {
-                    var content = item.source;
-                    content.lda_similarity_topics = item.topics;
-                    content.score = item.weight;
-                    return content;
-                });
-          // Only ever send one page of similarity search results for now
-                dispatch(addSearchResults(annotated_results, 0, annotated_results.length, data.query_topics));
+        fetch('/api/v1/similar', {
+            credentials: 'include',
+            method: 'POST', 
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
             },
-            error: (xhr, status, err) => { // eslint-disable-line no-unused-vars
-                console.error(xhr, status);
-            }
+            body: JSON.stringify({'ids': contentIDs}),
+        })
+        .then(checkResponseAndExtractJSON)
+        .then(json => {
+            let annotated_results = json.results.map(item => {
+                var content = item.source;
+                content.lda_similarity_topics = item.topics;
+                content.score = item.weight;
+                return content;
+            });
+            dispatch(showSnackbarMessage("Did a similarity search"));
+            // Only ever send one page of similarity search results for now
+            dispatch(addSearchResults(annotated_results, 0, annotated_results.length, json.query_topics));
+        })
+        .catch(error => {
+            dispatch(showSnackbarMessage("Error doing a similarity search"));
+            console.error(error);
         });
-
     }
 }
 

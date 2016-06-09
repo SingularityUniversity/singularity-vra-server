@@ -13,44 +13,49 @@ let keywordSearchRequests = {};
 export function keywordSearch(query, offset, limit) {
 
     return function(dispatch) {
-        if (!offset) {
-            offset=0;
-        }
-        if (!limit) {
-            limit=50;
-        }
-
-        // 'data' is *just* a key to keep us from doing multiple requests at the same time
-        let data = `q=${query}&offset=${offset}&limit=${limit}`;
-        if (data in keywordSearchRequests) {
-            return;
-        }
-        keywordSearchRequests[data]=1;
-        let params = new URLSearchParams();
-        params.set('q', query);
-        params.set('offset', offset);
-        params.set('limit', limit);
-
-        fetch(`/api/v1/search?${params.toString()}`, {
-            credentials: 'include',
-            headers: {
-                'Accept': 'application/json'
+        let promise = new Promise((resolve, reject) => {
+            if (!offset) {
+                offset=0;
             }
-        })
-        .then(checkResponseAndExtractJSON)
-        .then(json => {
-            let entries = json.hits.hits.map(function(x) {return {score: x._score, ...x._source}});
-            delete keywordSearchRequests[data];
-            let msg = ( <span> Did a content search with <em>{query}</em> </span>);
-            dispatch(showSnackbarMessage(msg));
+            if (!limit) {
+                limit=50;
+            }
 
-            dispatch(addSearchResults(entries, offset, json.hits.total));
+            // 'data' is *just* a key to keep us from doing multiple requests at the same time
+            let data = `q=${query}&offset=${offset}&limit=${limit}`;
+            if (data in keywordSearchRequests) {
+                return;
+            }
+            keywordSearchRequests[data]=1;
+            let params = new URLSearchParams();
+            params.set('q', query);
+            params.set('offset', offset);
+            params.set('limit', limit);
+
+            fetch(`/api/v1/search?${params.toString()}`, {
+                credentials: 'include',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            })
+            .then(checkResponseAndExtractJSON)
+            .then(json => {
+                let entries = json.hits.hits.map(function(x) {return {score: x._score, ...x._source}});
+                delete keywordSearchRequests[data];
+                let msg = ( <span> Did a content search with <em>{query}</em> </span>);
+                dispatch(showSnackbarMessage(msg));
+
+                dispatch(addSearchResults(entries, offset, json.hits.total));
+                resolve();
+            })
+            .catch(error => {
+                delete keywordSearchRequests[data];
+                dispatch(showSnackbarMessage(error));
+                console.error(`search error: ${error}`);
+                reject(error);
+            })
         })
-        .catch(error => {
-            delete keywordSearchRequests[data];
-            dispatch(showSnackbarMessage(error));
-            console.error(`search error: ${error}`);
-        })
+        return promise ;
     }
 }
 

@@ -25,23 +25,19 @@ function replaceWorkspace(contentList) {
     }
 }
 
-export function loadWorkspace() {
-    return function(dispatch) {
-        dispatch(showSnackbarMessage("Loading workspace"));
-        getOrCreateDefaultWorkspace()
-            .then( workspaceId => {
-                return fetch('/api/v1/workspace/'+workspaceId, {
-                    credentials: 'include',
-                    headers: {'Accept': 'application/json'}
-                })
-            })
-            .then(checkResponseAndExtractJSON)
-            .then(json => {
-                dispatch(replaceWorkspace(
-                    // We don't use the raw representations - we actually wrap them in a thin
-                    // layer that can contain metadata about search results, etc
-                    json.articles.map((raw_article) =>
-                        {
+export function loadWorkspace(workspaceId) {
+    return (dispatch => {
+        return fetch('/api/v1/workspace/'+workspaceId, {
+            credentials: 'include',
+            headers: {'Accept': 'application/json'}
+        })
+        .then(checkResponseAndExtractJSON)
+        .then(json => {
+            dispatch(replaceWorkspace(
+                // We don't use the raw representations - we actually wrap them in a thin
+                // layer that can contain metadata about search results, etc
+                json.articles.map((raw_article) =>
+                    {
                         return {
                             fields: raw_article,
                             pk: raw_article.id,
@@ -49,15 +45,39 @@ export function loadWorkspace() {
                             score: 1
                         }
                     }
-                    )
-                ));
-                dispatch(showSnackbarMessage("Loaded workspace"));
-            })
+                )
+            ))}
+        ).
+        then(()=>{
+            dispatch(showSnackbarMessage("Loaded workspace"));
+        })
+    });
+}
+
+export function loadDefaultWorkspace() {
+    return function(dispatch) {
+        dispatch(showSnackbarMessage("Loading workspace"));
+        getOrCreateDefaultWorkspace()
+            .then(workspaceId => dispatch(loadWorkspace(workspaceId)))
             .catch(
                 (explanation) => {
                     dispatch(showSnackbarMessage("Failed loading workspace: "+explanation));
                 }
             );
+    }
+}
+
+export function getWorkspaces() {
+    return function(dispatch) {
+        return fetch('/api/v1/workspace?fields=id,title,description', {
+            credentials: 'include',
+            headers: {'Accept': 'application/json'}
+        }).
+        then(checkResponseAndExtractJSON).
+        then(json => {
+            console.log(json.results);
+            return json.results;
+        });
     }
 }
 

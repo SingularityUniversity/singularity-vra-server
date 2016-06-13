@@ -13,7 +13,7 @@ import { addSnippetToClipboard, toggleClipboard, clearClipboard } from '../actio
 import { connect } from 'react-redux';
 import Snackbar from 'material-ui/Snackbar';
 import { similaritySearch, startKeywordSearch, keywordSearch, clearSearch, addSearchResults } from '../actions/search-actions';
-import { loadWorkspace, saveWorkspace, clearWorkspace, setInWorkspace} from '../actions/workspace-actions';
+import { getWorkspaces, loadWorkspace, loadDefaultWorkspace, saveWorkspace, clearWorkspace, setInWorkspace} from '../actions/workspace-actions';
 import { getArticleCount } from '../actions/article-count-actions';
 import { showSnackbarMessage, closeSnackbar} from '../actions/snackbar-actions';
 import ArrowBack from 'material-ui/svg-icons/navigation/arrow-back';
@@ -21,7 +21,7 @@ import ArrowForward from 'material-ui/svg-icons/navigation/arrow-forward';
 import IconButton from 'material-ui/IconButton';
 import { ActionCreators as UndoActionCreators } from 'redux-undo'
 import RaisedButton from 'material-ui/RaisedButton';
-
+import WorkspaceChooser from '../components/workspace-chooser';
 import SearchHelpDialog from '../components/search-help-dialog';
 
 const Master = React.createClass({
@@ -32,7 +32,9 @@ const Master = React.createClass({
 
     getInitialState() {
         return {
-            enteredSearchText: ''
+            enteredSearchText: '',
+            workspaceChooserVisible: false,
+            workspacesOnServer: []
         };
     },
     componentWillReceiveProps(nextProps) {
@@ -78,11 +80,24 @@ const Master = React.createClass({
     unSelectAll() {
         this.props.onClearWorkspace();
     },
-    loadWorkspace() {
-        this.props.onLoadWorkspace();
+    showLoadWorkspace() {
+        this.props.onGetWorkspaces()
+            .then(workspaceList => 
+                this.setState( { workspacesOnServer: workspaceList, workspaceChooserVisible: true }))
+            .catch(error => {
+                this.onShowSnackbarMessage("There was an error getting list of workspaces");
+            });
+    },
+    chooseWorkspace(workspaceId) {
+        this.props.onLoadWorkspace(workspaceId).
+            then(() => this.setState({workspaceChooserVisible: false})).
+            catch(error => this.props.onShowSnackbarMessage("There was an error loading workspace: "+error));
     },
     saveWorkspace() {
         this.props.onSaveWorkspace(this.props.workspaceData);
+    },
+    cancelChooseWorkspace() {
+        this.setState({workspaceChooserVisible: false});
     },
     render() {
         let styles = this.props.muiTheme;
@@ -152,7 +167,7 @@ const Master = React.createClass({
                     <Toolbar> 
                         <ToolbarGroup>
                             <ToolbarTitle style={{color:colors.black, fontWeight: "bold", fontFamily:this.props.muiTheme.baseTheme.fontFamily}} text="Workspace"/>
-                            <RaisedButton primary={true} onMouseUp={this.loadWorkspace} label="Load Workspace"/>
+                            <RaisedButton primary={true} onMouseUp={this.showLoadWorkspace} label="Load Workspace"/>
                             <RaisedButton primary={true} onMouseUp={this.saveWorkspace} label="Save Workspace"/>
                         </ToolbarGroup>
                         <ToolbarGroup >
@@ -160,6 +175,10 @@ const Master = React.createClass({
                             {similarSearchButton}
                         </ToolbarGroup>
                     </Toolbar>
+                    <WorkspaceChooser visible={this.state.workspaceChooserVisible} 
+                        onChooseWorkspace={this.chooseWorkspace}
+                        onCancel={this.cancelChooseWorkspace}
+                        workspacesOnServer={this.state.workspacesOnServer}/>
                     {contentItems}
                 </div>
                 <Snackbar
@@ -235,7 +254,9 @@ const mapDispatchToProps = (dispatch) => {
         onUndo: () => dispatch(UndoActionCreators.undo()),
         onRedo: () => dispatch(UndoActionCreators.redo()),
         onSaveWorkspace: (content_list) => dispatch(saveWorkspace(content_list)),
-        onLoadWorkspace: () =>  dispatch(loadWorkspace()),
+        onLoadDefaultWorkspace: () =>  dispatch(loadDefaultWorkspace()),
+        onLoadWorkspace: (workspaceId) =>  dispatch(loadWorkspace(workspaceId)),
+        onGetWorkspaces: () => dispatch(getWorkspaces())
 
     }
 }

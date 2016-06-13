@@ -52,8 +52,31 @@ class ContentSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ('created', 'extract', 'summary', 'publisher')
 
+class DynamicFieldsModelSerializer(serializers.ModelSerializer):
+    '''
+    A ModelSerializer that takes an additional `fields` argument that
+    controls which fields should be displayed.
 
-class WorkspaceSerializer(serializers.ModelSerializer):
+    from: https://gist.github.com/manjitkumar/e6580296d634b0a48487
+    '''
+
+    def __init__(self, *args, **kwargs):
+        super(DynamicFieldsModelSerializer, self).__init__(*args, **kwargs)
+
+        fields = self.context['request'].query_params.get('fields')
+        if fields:
+            fields = fields.split(',')
+            # Drop any fields that are not specified in the `fields` argument.
+            allowed = set(fields)
+            existing = set(self.fields.keys())
+            not_to_display = existing - allowed
+
+            if not_to_display != existing:
+                for field_name in not_to_display:
+                    self.fields.pop(field_name)
+
+
+class WorkspaceSerializer(DynamicFieldsModelSerializer):
     user = serializers.PrimaryKeyRelatedField(read_only=True,
                                               default=serializers.CurrentUserDefault())
     articles = ContentSerializer(many=True, read_only=True)

@@ -13,7 +13,7 @@ import { addSnippetToClipboard, toggleClipboard, clearClipboard } from '../actio
 import { connect } from 'react-redux';
 import Snackbar from 'material-ui/Snackbar';
 import { similaritySearch, startKeywordSearch, keywordSearch, clearSearch, addSearchResults } from '../actions/search-actions';
-import { getWorkspaces, loadWorkspace, loadDefaultWorkspace, saveWorkspace, clearWorkspace, setInWorkspace} from '../actions/workspace-actions';
+import { createWorkspace, updateWorkspace, getWorkspaces, loadWorkspace, clearWorkspace, setInWorkspace} from '../actions/workspace-actions';
 import { getArticleCount } from '../actions/article-count-actions';
 import { showSnackbarMessage, closeSnackbar} from '../actions/snackbar-actions';
 import ArrowBack from 'material-ui/svg-icons/navigation/arrow-back';
@@ -22,6 +22,7 @@ import IconButton from 'material-ui/IconButton';
 import { ActionCreators as UndoActionCreators } from 'redux-undo'
 import RaisedButton from 'material-ui/RaisedButton';
 import WorkspaceChooser from '../components/workspace-chooser';
+import WorkspaceEditor from '../components/workspace-editor';
 import SearchHelpDialog from '../components/search-help-dialog';
 
 const Master = React.createClass({
@@ -34,6 +35,8 @@ const Master = React.createClass({
         return {
             enteredSearchText: '',
             workspaceChooserVisible: false,
+            workspaceEditorVisible: false,
+            workspaceEditorCreating: false,
             workspacesOnServer: []
         };
     },
@@ -69,7 +72,7 @@ const Master = React.createClass({
     },
     onFindSimilarMultiple() {
         this.clearSearch();
-        this.props.onSimilaritySearch(this.props.workspaceData.map((content) => {
+        this.props.onSimilaritySearch(this.props.workspaceData.articles.map((content) => {
             return content.pk; 
         }));
     },
@@ -93,8 +96,33 @@ const Master = React.createClass({
             then(() => this.setState({workspaceChooserVisible: false})).
             catch(error => this.props.onShowSnackbarMessage("There was an error loading workspace: "+error));
     },
-    saveWorkspace() {
-        this.props.onSaveWorkspace(this.props.workspaceData);
+    showUpdateWorkspace() {
+        this.setState({
+            workspaceEditorVisible: true,
+            workspaceEditorCreating: false,
+        });
+    },
+    showCreateWorkspace() {
+        this.setState({
+            workspaceEditorVisible: true,
+            workspaceEditorCreating: true,
+        });
+    },
+    cancelWorkspaceEditor() {
+        this.setState({
+            workspaceEditorVisible: false
+        });
+    },
+    submitWorkspace(workspaceData) {
+        if (workspaceData.id) {
+            this.props.onUpdateWorkspace(workspaceData).
+            then(() => this.setState({workspaceEditorVisible: false})).
+            catch(error => this.props.onShowSnackbarMessage("There was an error updating workspace: "+error));
+        } else {
+            this.props.onCreateWorkspace(workspaceData).
+            then(() => this.setState({workspaceEditorVisible: false})).
+            catch(error => this.props.onShowSnackbarMessage("There was an error saving new workspace: "+error));
+        }
     },
     cancelChooseWorkspace() {
         this.setState({workspaceChooserVisible: false});
@@ -108,7 +136,7 @@ const Master = React.createClass({
         let clipboardWidth = 450;
 
         let that = this;
-        let contentItems = this.props.workspaceData.map(function(content) {  
+        let contentItems = this.props.workspaceData.articles.map(function(content) {  
             return (
                 <ContentDetail key={content.pk} style={styles.fullWidthSection} content={content} onAction={that.handleContentAction}/> 
             );
@@ -120,8 +148,10 @@ const Master = React.createClass({
             ];
             disabled=true;
         }
-        let unSelectAllButton =  (<RaisedButton primary={true} onMouseUp={this.unSelectAll} label="Unselect All Content" disabled={disabled} />);
-        let similarSearchButton = (<RaisedButton primary={true} label="Find Similar Documents" onMouseUp={this.onFindSimilarMultiple} disabled={disabled}/> );
+        let clearDisabled = true;
+        if ((this.props.workspaceData.articles.length > 0) || this.props.workspaceData.title) {
+            clearDisabled = false;
+        }
         // XXX: This is really hacky - there are styles from the theme that we're setting in the theme.js
         // but then we are extracting them from the theme and passing in the containerStyle and style, because
         // I haven't figured out exactly  how to structure the entries in theme.js
@@ -150,7 +180,7 @@ const Master = React.createClass({
                 <AppLeftNav
                     onChangeSelected={this.handleSelectedForWorkspace}
                     displayedContent={this.props.searchData.searchResultData}
-                    workspaceContent={this.props.workspaceData}
+                    workspaceContent={this.props.workspaceData.articles}
                     totalCount={this.props.searchData.searchResultTotalCount}
                     searchType={this.props.searchData.searchType}
                     searchText={this.props.searchData.searchText}
@@ -166,19 +196,28 @@ const Master = React.createClass({
                 <div style={styles.fullWidthSection.root}>
                     <Toolbar> 
                         <ToolbarGroup>
-                            <ToolbarTitle style={{color:colors.black, fontWeight: "bold", fontFamily:this.props.muiTheme.baseTheme.fontFamily}} text="Workspace"/>
-                            <RaisedButton primary={true} onMouseUp={this.showLoadWorkspace} label="Load Workspace"/>
-                            <RaisedButton primary={true} onMouseUp={this.saveWorkspace} label="Save Workspace"/>
+                            <ToolbarTitle style={{color:colors.black, fontWeight: "bold", fontFamily:this.props.muiTheme.baseTheme.fontFamily}} 
+                                text={this.props.workspaceData.title? this.props.workspaceData.title : "Untitled Workspace"}/>
                         </ToolbarGroup>
-                        <ToolbarGroup >
-                            {unSelectAllButton}
-                            {similarSearchButton}
+                    </Toolbar>
+                    <Toolbar> 
+                        <ToolbarGroup>
+                            <RaisedButton primary={true} onMouseUp={this.showLoadWorkspace} label="Load Workspace"/>
+                            <RaisedButton primary={true} onMouseUp={this.showUpdateWorkspace} disabled={this.props.workspaceData.id == null} label="Update and Save Workspace"/>
+                            <RaisedButton primary={true} onMouseUp={this.showCreateWorkspace} label="Save New Workspace"/>
+                            <RaisedButton primary={true} onMouseUp={this.unSelectAll} label="Clear Workspace" disabled={clearDisabled}/>
+                            <RaisedButton primary={true} label="Find Similar" onMouseUp={this.onFindSimilarMultiple} disabled={disabled}/>
                         </ToolbarGroup>
                     </Toolbar>
                     <WorkspaceChooser visible={this.state.workspaceChooserVisible} 
                         onChooseWorkspace={this.chooseWorkspace}
                         onCancel={this.cancelChooseWorkspace}
                         workspacesOnServer={this.state.workspacesOnServer}/>
+                    <WorkspaceEditor visible={this.state.workspaceEditorVisible} 
+                        isCreating={this.state.workspaceEditorCreating}
+                        onSubmitWorkspace={this.submitWorkspace}
+                        onCancel={this.cancelWorkspaceEditor}
+                        workspaceData={this.props.workspaceData}/>
                     {contentItems}
                 </div>
                 <Snackbar
@@ -253,11 +292,10 @@ const mapDispatchToProps = (dispatch) => {
         },
         onUndo: () => dispatch(UndoActionCreators.undo()),
         onRedo: () => dispatch(UndoActionCreators.redo()),
-        onSaveWorkspace: (content_list) => dispatch(saveWorkspace(content_list)),
-        onLoadDefaultWorkspace: () =>  dispatch(loadDefaultWorkspace()),
         onLoadWorkspace: (workspaceId) =>  dispatch(loadWorkspace(workspaceId)),
-        onGetWorkspaces: () => dispatch(getWorkspaces())
-
+        onGetWorkspaces: () => getWorkspaces(), // Yes, this is kind of silly
+        onCreateWorkspace: (workspaceData) => dispatch(createWorkspace(workspaceData)),
+        onUpdateWorkspace: (workspaceData) => dispatch(updateWorkspace(workspaceData))
     }
 }
 

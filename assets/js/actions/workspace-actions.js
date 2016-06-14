@@ -1,5 +1,5 @@
 import {showSnackbarMessage} from './snackbar-actions';
-import {checkResponse, checkResponseAndExtractJSON} from './util';
+import {checkResponseAndExtractJSON} from './util';
 export const CLEAR_WORKSPACE = 'CLEAR_WORKSPACE'
 export const SET_IN_WORKSPACE = 'SET_IN_WORKSPACE'
 export const REPLACE_WORKSPACE = 'REPLACE_WORKSPACE'
@@ -18,10 +18,10 @@ export function setInWorkspace(content, inWorkspace) {
     }
 }
 
-function replaceWorkspace(contentList) {
+function replaceWorkspace(workspace) {
     return {
         type: REPLACE_WORKSPACE,
-        contentList: contentList
+        workspace: workspace
     }
 }
 
@@ -33,134 +33,94 @@ export function loadWorkspace(workspaceId) {
         })
         .then(checkResponseAndExtractJSON)
         .then(json => {
-            dispatch(replaceWorkspace(
+            dispatch(replaceWorkspace({
+                id: json.id,
                 // We don't use the raw representations - we actually wrap them in a thin
                 // layer that can contain metadata about search results, etc
-                json.articles.map((raw_article) =>
-                    {
-                        return {
-                            fields: raw_article,
-                            pk: raw_article.id,
-                            model: "core.content",
-                            score: 1
-                        }
+                articles: json.articles.map((raw_article) => {
+                    return {
+                        fields: raw_article,
+                        pk: raw_article.id,
+                        model: "core.content",
+                        score: 1
                     }
-                )
-            ))}
-        ).
+                }),
+                title: json.title,
+                description: json.description
+            }))
+        }).
         then(()=>{
             dispatch(showSnackbarMessage("Loaded workspace"));
         })
     });
 }
 
-export function loadDefaultWorkspace() {
-    return function(dispatch) {
-        dispatch(showSnackbarMessage("Loading workspace"));
-        getOrCreateDefaultWorkspace()
-            .then(workspaceId => dispatch(loadWorkspace(workspaceId)))
-            .catch(
-                (explanation) => {
-                    dispatch(showSnackbarMessage("Failed loading workspace: "+explanation));
-                }
-            );
-    }
-}
-
+// This is not a reducer action, so do not call it with dispatch()
 export function getWorkspaces() {
-    return function(dispatch) {
-        return fetch('/api/v1/workspace?fields=id,title,description', {
-            credentials: 'include',
-            headers: {'Accept': 'application/json'}
-        }).
-        then(checkResponseAndExtractJSON).
-        then(json => {
-            console.log(json.results);
-            return json.results;
-        });
-    }
-}
-
-function getOrCreateDefaultWorkspace() {
-    // Get a workspace
-    // Returns a promise that resolves with the id of current workspace
-
-    return fetch('/api/v1/workspace', {
+    return fetch('/api/v1/workspace?fields=id,title,description', {
         credentials: 'include',
         headers: {'Accept': 'application/json'}
-    })
-    .then(checkResponseAndExtractJSON)
-    .then(json =>  {
-        if (json.count > 0) {
-            let resultPromise = new Promise(resolve => {
-                resolve(json.results[0].id);
-            });
-            return resultPromise;
-        } else {
-            let data = {
-                title: "Default workspace"
-            }
-
-            return fetch('/api/v1/workspace', {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            })
-            .then(checkResponseAndExtractJSON)
-            .then(json => {
-                return json.id;
-            })
-            .catch(() => {
-                let error = new Error("Failed to create default workspace")
-                throw error;
-            });
-
-        }
-    })
-    .catch((explanation) =>  {
-        if (!explanation) {
-            explanation = "Failed to get list of workspaces";
-        }
-        let error = new Error(explanation);
-        throw error;
+    }).
+    then(checkResponseAndExtractJSON).
+    then(json => {
+        return json.results;
     });
 }
 
-
-export function saveWorkspace(content_list) {
+export function updateWorkspace(workspaceData) {
     return function(dispatch) {
-        dispatch(showSnackbarMessage("Saving workspace"));
-        const title = "Saved Workspace";
-        getOrCreateDefaultWorkspace()
-        .then(
-            (workspaceId) => {
-                let updateData = {
-                    ids: content_list.map((content) => content.pk),
-                    title: title
-                }
-                return fetch('/api/v1/workspace/'+workspaceId, {
-                    credentials: 'include',
-                    method: 'PATCH',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(updateData)
-                })
-                .then(checkResponse)
-                .then(() =>
-                    dispatch(showSnackbarMessage("Saved workspace"))
-                )
-            })
-        .catch(explanation => {
-            if (explanation) {
-                dispatch(showSnackbarMessage("Failed saving workspace: "+explanation));
-            } else {
-                dispatch(showSnackbarMessage("Failed saving workspace"));
-            }
+        let workspaceId = workspaceData.id;
+        let patchWorkspaceData = {
+            title: workspaceData.title,
+            ids: workspaceData.articles.map(article => article.pk),
+            description: workspaceData.description
+        }
+        dispatch(showSnackbarMessage(`Saving workspace ${workspaceData.title}`));
+
+        return fetch(`/api/v1/workspace/${workspaceId}`, {
+            credentials: 'include',
+            method: 'PATCH',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(patchWorkspaceData)
+        })
+        .then(checkResponseAndExtractJSON)
+        .then(json => {
+            // Update the workspace in the store with the new data
+            dispatch(replaceWorkspace(workspaceData));
+            dispatch(showSnackbarMessage(`Saved workspace ${workspaceData.title}`));
+            return json.id;
+        })
+    }
+}
+
+export function createWorkspace(workspaceData) {
+    return function(dispatch) {
+        dispatch(showSnackbarMessage(`Saving new workspace ${workspaceData.title}`));
+        let postWorkspaceData = {
+            title: workspaceData.title,
+            ids: workspaceData.articles.map(article => article.pk),
+            description: workspaceData.description
+        }
+
+        return fetch('/api/v1/workspace', {
+            credentials: 'include',
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(postWorkspaceData)
+        })
+        .then(checkResponseAndExtractJSON)
+        .then(json => {
+            // Update the workspace in the store with the id
+            let newWorkspace = {...workspaceData, id:json.id};
+            dispatch(replaceWorkspace(newWorkspace));
+            dispatch(showSnackbarMessage(`Saved new workspace ${workspaceData.title}`));
+            return json.id;
         })
     }
 }

@@ -1,7 +1,6 @@
 import React from 'react';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import { connect } from 'react-redux';
-import {checkResponseAndExtractJSON} from '../actions/util';
 import Dialog from 'material-ui/Dialog';
 import {List, ListItem} from 'material-ui/List';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -21,12 +20,14 @@ class WorkspaceChooser extends React.Component {
                 <ListItem key={item.id} primaryText={item.title} secondaryText={item.description} onClick={this.props.onChooseWorkspace.bind(null, item.id)}/>
             )
         });
+        const actions=[
+            (<RaisedButton  label="Cancel" primary={true} onTouchTap={this.props.onCancel} />)
+        ];
         return (
-            <Dialog title="Workspaces" open={this.props.visible}  autoScrollBodyContent={true}>
+            <Dialog actions={actions} title="Workspaces" open={this.props.visible}  autoScrollBodyContent={true}>
                 <List>
-                        {items}
-                    </List>
-                <RaisedButton  label="Cancel" primary={true} onTouchTap={this.props.onCancel} />
+                    {items}
+                </List>
             </Dialog>
         );
     }

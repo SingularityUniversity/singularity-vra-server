@@ -5,6 +5,7 @@ import FetchMock from 'fetch-mock'
 import {CLEAR_WORKSPACE, SET_IN_WORKSPACE, REPLACE_WORKSPACE, clearWorkspace, setInWorkspace, loadWorkspace, getWorkspaces,
     updateWorkspace, createWorkspace} from '../assets/js/actions/workspace-actions';
 import {SNACKBAR_SHOW_MESSAGE} from '../assets/js/actions/snackbar-actions'
+import {workspaceReducer} from '../assets/js/reducers/workspace-reducer'
 
 const middlewares = [ thunk ];
 const mockStore = configureMockStore(middlewares);
@@ -212,14 +213,81 @@ describe('Workspace functionality', () => {
         })
     })
     describe("Reducer Tests", () => {
-        it('CLEAR_WORKSPACE')
-        describe('SET_IN_WORKSPACE', () => {
-            it('Remove from workspace if already in workspace')
-            it('Remove from workspace is not in workspace')
-            it('Add to workspace if already in workspace')
-            it('Add to workspace if not already in workspace')
+        it('CLEAR_WORKSPACE', () => {
+            let newState = workspaceReducer(
+                {id:1, title:"old", description:"old", articles:[1,2,3]},
+                {type: CLEAR_WORKSPACE}
+            );
+            expect(newState).toEqual({id: null, title:'', description: '', articles: []});
         })
-        it('REPLACE_WORKSPACE')
+        describe('SET_IN_WORKSPACE', () => {
+            const existingState = {
+                id: 1, title: "dummy", description: "dummy",
+                articles: [{pk: 1, title: "1"}, {pk:2, title: "2"}]
+            }
+            it('Remove from workspace if already in workspace', () => {
+                const articleToRemove = {pk:1, title: "1"}
+                let newState = workspaceReducer(
+                    existingState,
+                    {
+                        type: SET_IN_WORKSPACE,
+                        content: articleToRemove,
+                        inWorkspace: false
+                    });
+                expect(newState).toEqual({ 
+                    id: 1, title: "dummy", description: "dummy", 
+                    articles: [{pk: 2, title: "2"}]
+                })
+            })
+            it('Remove from workspace is not in workspace', () => {
+                const articleToRemove = {pk:3, title: "3"}
+                let newState = workspaceReducer(
+                    existingState,
+                    {
+                        type: SET_IN_WORKSPACE,
+                        content: articleToRemove,
+                        inWorkspace: false
+                    });
+                expect(newState).toEqual({ 
+                    id: 1, title: "dummy", description: "dummy", 
+                    articles: [{pk:1, title: "1"}, {pk: 2, title: "2"}]
+                })
+            })
+            it('Add to workspace if already in workspace', () => {
+                const articleToAdd = {pk:2, title: "2"}
+                let newState = workspaceReducer(
+                    existingState,
+                    {
+                        type: SET_IN_WORKSPACE,
+                        content: articleToAdd,
+                        inWorkspace: true  
+                    });
+                expect(newState).toEqual({ 
+                    id: 1, title: "dummy", description: "dummy", 
+                    articles: [{pk:1, title: "1"}, {pk: 2, title: "2"}]
+                })
+            })
+            it('Add to workspace if not already in workspace', () => {
+                const articleToAdd = {pk:3, title: "3"}
+                let newState = workspaceReducer(
+                    existingState,
+                    {
+                        type: SET_IN_WORKSPACE,
+                        content: articleToAdd,
+                        inWorkspace: true  
+                    });
+                expect(newState).toEqual({ 
+                    id: 1, title: "dummy", description: "dummy", 
+                    articles: [{pk:1, title: "1"}, {pk: 2, title: "2"}, {pk:3, title:"3"}]
+                })
+            })
+        })
+        it('REPLACE_WORKSPACE', () => {
+            let newState = workspaceReducer(
+                {state: 'old state'}, 
+                {type: REPLACE_WORKSPACE, workspace:{newstate: 'success'}});
+            expect(newState).toEqual({newstate: 'success'});
+        })
     })
 
     describe("UI Component Tests", () => {

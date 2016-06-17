@@ -337,3 +337,47 @@ class WorkspaceTests(APITestCase):
         self.assertEqual(Workspace.objects.get(pk=workspace.id).articles.all()[0].id,
                          articles[2].id)
 
+    def test_partial_update_one_article(self):
+        workspace = SequenceWorkspaceFactory.create(user=self.user1)
+        articles = self.add_articles_to_workspace(workspace, 3)
+        new_article = SequenceContentFactory.create()
+        url = reverse('workspace-detail', kwargs={'pk': workspace.id})
+        self.client.force_authenticate(user=self.user1)
+        data={'id': new_article.id}
+        response = self.client.patch(url, data, format='json')
+        workspace_all_articles = Workspace.objects.get(pk=workspace.id).articles.all()
+        self.assertEqual([new_article.id], [x.id for x in workspace_all_articles])
+
+    def test_partial_update_many_articles(self):
+        workspace = SequenceWorkspaceFactory.create(user=self.user1)
+        articles = self.add_articles_to_workspace(workspace, 3)
+        new_article1 = SequenceContentFactory.create()
+        new_article2 = SequenceContentFactory.create()
+        url = reverse('workspace-detail', kwargs={'pk': workspace.id})
+        self.client.force_authenticate(user=self.user1)
+        data={'ids': [new_article1.id, new_article2.id]}
+        response = self.client.patch(url, data, format='json')
+        workspace_all_articles = Workspace.objects.get(pk=workspace.id).articles.all()
+        self.assertEqual([new_article1.id, new_article2.id], [x.id for x in workspace_all_articles])
+
+    def test_create_with_one_article(self):
+        new_article = SequenceContentFactory.create()
+        url = reverse('workspace-list')
+        self.client.force_authenticate(user=self.user1)
+        data = {'title': 'New Workspace', 'description': 'Description', 'id': new_article.id}
+        response = self.client.post(url, data, format='json')
+        workspace_id = response.json()['id'] 
+        workspace_all_articles = Workspace.objects.get(pk=workspace_id).articles.all()
+        self.assertEqual([new_article.id], [x.id for x in workspace_all_articles])
+
+    def test_create_with_many_articles(self):
+        new_article1 = SequenceContentFactory.create()
+        new_article2 = SequenceContentFactory.create()
+        url = reverse('workspace-list')
+        self.client.force_authenticate(user=self.user1)
+        data = {'title': 'New Workspace', 'description': 'Description', 'ids': [new_article1.id,
+                                                                                new_article2.id]}
+        response = self.client.post(url, data, format='json')
+        workspace_id = response.json()['id'] 
+        workspace_all_articles = Workspace.objects.get(pk=workspace_id).articles.all()
+        self.assertEqual([new_article1.id, new_article2.id], [x.id for x in workspace_all_articles])

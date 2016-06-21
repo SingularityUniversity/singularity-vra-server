@@ -6,7 +6,8 @@ import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import Moment from 'moment';
 
-class WorkspaceEditor extends React.Component {
+
+export class WorkspaceEditorInternal extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -47,8 +48,8 @@ class WorkspaceEditor extends React.Component {
             action = "Save";
         }
         const actions = [
-            (<RaisedButton label={action} primary={true} onTouchTap={this.onSubmit} />),
-            (<RaisedButton label="Cancel" primary={true} onTouchTap={this.props.onCancel} />)
+            (<RaisedButton label={action} primary={true} onClick={this.onSubmit} />),
+            (<RaisedButton label="Cancel" primary={true} onClick={this.props.onCancel} />)
         ];
         return (
             <Dialog title="Workspace" open={this.props.visible} actions={actions}  autoScrollBodyContent={true}>
@@ -68,7 +69,7 @@ class WorkspaceEditor extends React.Component {
         )
     }
 }
-export default connect(null, null)(muiThemeable()(WorkspaceEditor));
+export default connect(null, null)(muiThemeable()(WorkspaceEditorInternal));
 
 
 

@@ -15,7 +15,7 @@ export function workspaceReducer(state=initialState, action) {
         // XXX: Do we want to clear out the workspace title, id, and description too?
         return Object.assign({}, initialState);
     case SET_IN_WORKSPACE:
-        
+
         content = action.content;
         inWorkspace = action.inWorkspace;
         if (!inWorkspace) {

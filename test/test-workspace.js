@@ -132,6 +132,7 @@ describe('Workspace functionality', () => {
             it('Dispatches updateWorkspace correctly', (done) => {
                 let matcher = /.*/;
                 let workspaceData = {
+                    dirty:true,
                     id: 999,
                     title: "Updated Title",
                     description: "Updated Description",
@@ -169,7 +170,8 @@ describe('Workspace functionality', () => {
                 let workspaceData = {
                     title: "New Title",
                     description: "New Description",
-                    articles: [ {pk: 101}, {pk: 102}, {pk:103} ]
+                    articles: [ {pk: 101}, {pk: 102}, {pk:103} ],
+                    dirty: true
                 }
                 let mocked_http_results = {
                     id: 999
@@ -189,7 +191,7 @@ describe('Workspace functionality', () => {
                     expect(storeActions[0].type).toEqual(SNACKBAR_SHOW_MESSAGE);
                     expect(storeActions[1]).toEqual({
                         type: REPLACE_WORKSPACE,
-                        workspace: {id: 999, ...workspaceData}
+                        workspace: {id: 999, ...workspaceData, dirty: false}
                     });
                     expect(storeActions[2].type).toEqual(SNACKBAR_SHOW_MESSAGE);
                 }).then(done).catch(done);

@@ -117,7 +117,7 @@ export function createWorkspace(workspaceData) {
         .then(checkResponseAndExtractJSON)
         .then(json => {
             // Update the workspace in the store with the id
-            let newWorkspace = {...workspaceData, id:json.id};
+            let newWorkspace = {...workspaceData, dirty:false,  id:json.id};
             dispatch(replaceWorkspace(newWorkspace));
             dispatch(showSnackbarMessage(`Saved new workspace ${workspaceData.title}`));
             return json.id;

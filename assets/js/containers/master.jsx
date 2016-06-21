@@ -152,6 +152,7 @@ const Master = React.createClass({
         if ((this.props.workspaceData.articles.length > 0) || this.props.workspaceData.title) {
             clearDisabled = false;
         }
+        let dirty = this.props.workspaceData.dirty ? (<ToolbarTitle style={{color: colors.grey500, fontFamily: this.props.muiTheme.baseTheme.fontFamily, fontStyle: "italic"}} text="Unsaved"/>) : "";
         // XXX: This is really hacky - there are styles from the theme that we're setting in the theme.js
         // but then we are extracting them from the theme and passing in the containerStyle and style, because
         // I haven't figured out exactly  how to structure the entries in theme.js
@@ -197,7 +198,8 @@ const Master = React.createClass({
                     <Toolbar> 
                         <ToolbarGroup>
                             <ToolbarTitle style={{color:colors.black, fontWeight: "bold", fontFamily:this.props.muiTheme.baseTheme.fontFamily}} 
-                                text={this.props.workspaceData.title? this.props.workspaceData.title : "Untitled Workspace"}/>
+                                text={this.props.workspaceData.title? this.props.workspaceData.title : "Untitled Workspace"}/><br/>
+                            {dirty}
                         </ToolbarGroup>
                     </Toolbar>
                     <Toolbar> 

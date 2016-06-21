@@ -199,15 +199,16 @@ describe('Workspace functionality', () => {
     describe("Reducer Tests", () => {
         it('CLEAR_WORKSPACE', () => {
             let newState = workspaceReducer(
-                {id:1, title:"old", description:"old", articles:[1,2,3]},
+                {id:1, title:"old", description:"old", articles:[1,2,3], dirty: true},
                 {type: CLEAR_WORKSPACE}
             );
-            expect(newState).toEqual({id: null, title:'', description: '', articles: []});
+            expect(newState).toEqual({id: null, title:'', description: '', articles: [], dirty: false});
         })
         describe('SET_IN_WORKSPACE', () => {
             const existingState = {
                 id: 1, title: "dummy", description: "dummy",
-                articles: [{pk: 1, title: "1"}, {pk:2, title: "2"}]
+                articles: [{pk: 1, title: "1"}, {pk:2, title: "2"}],
+                dirty: false
             }
             it('Remove from workspace if already in workspace', () => {
                 const articleToRemove = {pk:1, title: "1"}
@@ -220,22 +221,32 @@ describe('Workspace functionality', () => {
                     });
                 expect(newState).toEqual({
                     id: 1, title: "dummy", description: "dummy",
-                    articles: [{pk: 2, title: "2"}]
+                    articles: [{pk: 2, title: "2"}],
+                    dirty: true
                 })
             })
-            it('Remove from workspace is not in workspace', () => {
+            it('Remove from workspace if not in workspace', () => {
                 const articleToRemove = {pk:3, title: "3"}
                 let newState = workspaceReducer(
                     existingState,
                     {
                         type: SET_IN_WORKSPACE,
                         content: articleToRemove,
-                        inWorkspace: false
+                        inWorkspace: false,
                     });
-                expect(newState).toEqual({
-                    id: 1, title: "dummy", description: "dummy",
-                    articles: [{pk:1, title: "1"}, {pk: 2, title: "2"}]
-                })
+                expect(newState).toEqual(existingState);
+            })
+            it('Remove from workspace if not in dirty workspace', () => {
+                const articleToRemove = {pk:3, title: "3"}
+                const previousState = Object.assign({}, existingState, {dirty: true});
+                let newState = workspaceReducer(
+                    previousState,
+                    {
+                        type: SET_IN_WORKSPACE,
+                        content: articleToRemove,
+                        inWorkspace: false,
+                    });
+                expect(newState).toEqual(previousState);
             })
             it('Add to workspace if already in workspace', () => {
                 const articleToAdd = {pk:2, title: "2"}
@@ -244,12 +255,21 @@ describe('Workspace functionality', () => {
                     {
                         type: SET_IN_WORKSPACE,
                         content: articleToAdd,
-                        inWorkspace: true
+                        inWorkspace: true,
                     });
-                expect(newState).toEqual({
-                    id: 1, title: "dummy", description: "dummy",
-                    articles: [{pk:1, title: "1"}, {pk: 2, title: "2"}]
-                })
+                expect(newState).toEqual(existingState);
+            })
+            it('Add to workspace if already in dirty workspace', () => {
+                const articleToAdd = {pk:2, title: "2"}
+                const previousState = Object.assign({}, existingState, {dirty: true});
+                let newState = workspaceReducer(
+                    previousState,
+                    {
+                        type: SET_IN_WORKSPACE,
+                        content: articleToAdd,
+                        inWorkspace: true,
+                    });
+                expect(newState).toEqual(previousState);
             })
             it('Add to workspace if not already in workspace', () => {
                 const articleToAdd = {pk:3, title: "3"}
@@ -258,19 +278,28 @@ describe('Workspace functionality', () => {
                     {
                         type: SET_IN_WORKSPACE,
                         content: articleToAdd,
-                        inWorkspace: true
+                        inWorkspace: true,
                     });
                 expect(newState).toEqual({
                     id: 1, title: "dummy", description: "dummy",
-                    articles: [{pk:1, title: "1"}, {pk: 2, title: "2"}, {pk:3, title:"3"}]
+                    articles: [{pk:1, title: "1"}, {pk: 2, title: "2"}, {pk:3, title:"3"}],
+                    dirty: true
                 })
             })
         })
-        it('REPLACE_WORKSPACE', () => {
+        describe('REPLACE_WORKSPACE', () => {
+            it ("Clean workspace", () => {
             let newState = workspaceReducer(
-                {state: 'old state'},
+                {state: 'old state', dirty: true},
                 {type: REPLACE_WORKSPACE, workspace:{newstate: 'success'}});
-            expect(newState).toEqual({newstate: 'success'});
+            expect(newState).toEqual({newstate: 'success', dirty: false});
+            })
+            it('Dirty workspace', () => {
+                let newState = workspaceReducer(
+                    {state: 'old state'},
+                    {type: REPLACE_WORKSPACE, workspace:{newstate: 'success', dirty: true}});
+                expect(newState).toEqual({newstate: 'success', dirty: true});
+            })
         })
     })
 

@@ -4,7 +4,8 @@ export const initialState = {
     id: null,
     title: '',
     description: '',
-    articles: []
+    articles: [],
+    dirty: false
 }
 
 export function workspaceReducer(state=initialState, action) {
@@ -14,6 +15,7 @@ export function workspaceReducer(state=initialState, action) {
         // XXX: Do we want to clear out the workspace title, id, and description too?
         return Object.assign({}, initialState);
     case SET_IN_WORKSPACE:
+        
         content = action.content;
         inWorkspace = action.inWorkspace;
         if (!inWorkspace) {
@@ -21,8 +23,8 @@ export function workspaceReducer(state=initialState, action) {
             let filteredInWorkspace = state.articles.filter(function(workspaceContent) {
                 return (content.pk != workspaceContent.pk)
             });
-            if (filteredInWorkspace.length != state.length) {
-                return Object.assign({}, state, {articles: filteredInWorkspace});
+            if (filteredInWorkspace.length != state.articles.length) {
+                return Object.assign({}, state, {dirty: true, articles: filteredInWorkspace});
             } else {
                 return state;
             }
@@ -38,12 +40,12 @@ export function workspaceReducer(state=initialState, action) {
         if (!alreadyInWorkspace) {
             let newInWorkspace = state.articles.slice();
             newInWorkspace.push(content);
-            return Object.assign({}, state, {articles: newInWorkspace});
+            return Object.assign({}, state, {dirty: true, articles: newInWorkspace});
         } else {
             return state;
         }
     case REPLACE_WORKSPACE:
-        return Object.assign({}, action.workspace);
+        return Object.assign({}, {dirty: false}, action.workspace);
     default:
         return state;
     }

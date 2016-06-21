@@ -1,5 +1,5 @@
 import {showSnackbarMessage} from './snackbar-actions';
-import {checkResponseAndExtractJSON} from './util';
+import {checkResponseAndExtractJSON, checkResponse} from './util';
 export const CLEAR_WORKSPACE = 'CLEAR_WORKSPACE'
 export const SET_IN_WORKSPACE = 'SET_IN_WORKSPACE'
 export const REPLACE_WORKSPACE = 'REPLACE_WORKSPACE'
@@ -52,6 +52,20 @@ export function loadWorkspace(workspaceId) {
         then(()=>{
             dispatch(showSnackbarMessage("Loaded workspace"));
         })
+    });
+}
+
+export function deleteWorkspace(workspaceId) {
+    return (dispatch => {
+        return fetch('/api/v1/workspace/'+workspaceId, {
+            credentials: 'include',
+            headers: {'Accept': 'application/json'},
+            method: 'DELETE'
+        })
+            .then(checkResponse)
+            .then(() => {
+                dispatch(showSnackbarMessage("Deleted workspace"));
+            })
     });
 }
 

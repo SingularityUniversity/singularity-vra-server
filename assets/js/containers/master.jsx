@@ -13,7 +13,7 @@ import { addSnippetToClipboard, toggleClipboard, clearClipboard } from '../actio
 import { connect } from 'react-redux';
 import Snackbar from 'material-ui/Snackbar';
 import { similaritySearch, startKeywordSearch, keywordSearch, clearSearch, addSearchResults } from '../actions/search-actions';
-import { createWorkspace, updateWorkspace, getWorkspaces, loadWorkspace, clearWorkspace, setInWorkspace} from '../actions/workspace-actions';
+import { createWorkspace, updateWorkspace, getWorkspaces, loadWorkspace, clearWorkspace, setInWorkspace, deleteWorkspace} from '../actions/workspace-actions';
 import { getArticleCount } from '../actions/article-count-actions';
 import { showSnackbarMessage, closeSnackbar} from '../actions/snackbar-actions';
 import ArrowBack from 'material-ui/svg-icons/navigation/arrow-back';
@@ -88,13 +88,25 @@ const Master = React.createClass({
             .then(workspaceList => 
                 this.setState( { workspacesOnServer: workspaceList, workspaceChooserVisible: true }))
             .catch(error => {
-                this.onShowSnackbarMessage("There was an error getting list of workspaces");
+                this.props.onShowSnackbarMessage("There was an error getting list of workspaces:"  +  error);
             });
     },
     chooseWorkspace(workspaceId) {
         this.props.onLoadWorkspace(workspaceId).
             then(() => this.setState({workspaceChooserVisible: false})).
             catch(error => this.props.onShowSnackbarMessage("There was an error loading workspace: "+error));
+    },
+    deleteWorkspace(workspaceId) {
+        this.props.onDeleteWorkspace(workspaceId)
+            .then(() => {
+                if (this.props.workspaceData.id == workspaceId) {
+                    this.props.onClearWorkspace();
+                }
+                this.setState({
+                    workspacesOnServer: this.state.workspacesOnServer.filter(x => x.id != workspaceId)
+                });
+            })
+            .catch(error => this.props.onShowSnackbarMessage("There was an error deleting workspace: "+error));
     },
     showUpdateWorkspace() {
         this.setState({
@@ -204,16 +216,17 @@ const Master = React.createClass({
                     </Toolbar>
                     <Toolbar> 
                         <ToolbarGroup>
-                            <RaisedButton primary={true} onMouseUp={this.showLoadWorkspace} label="Load Workspace"/>
-                            <RaisedButton primary={true} onMouseUp={this.showUpdateWorkspace} disabled={this.props.workspaceData.id == null} label="Update and Save Workspace"/>
-                            <RaisedButton primary={true} onMouseUp={this.showCreateWorkspace} label="Save New Workspace"/>
-                            <RaisedButton primary={true} onMouseUp={this.unSelectAll} label="Clear Workspace" disabled={clearDisabled}/>
+                            <RaisedButton primary={true} onMouseUp={this.showLoadWorkspace} label="Load/Manage"/>
+                            <RaisedButton primary={true} onMouseUp={this.showUpdateWorkspace} disabled={this.props.workspaceData.id == null} label="Update and Save"/>
+                            <RaisedButton primary={true} onMouseUp={this.showCreateWorkspace} label="Save New"/>
+                            <RaisedButton primary={true} onMouseUp={this.unSelectAll} label="Clear" disabled={clearDisabled}/>
                             <RaisedButton primary={true} label="Find Similar" onMouseUp={this.onFindSimilarMultiple} disabled={disabled}/>
                         </ToolbarGroup>
                     </Toolbar>
                     <WorkspaceChooser visible={this.state.workspaceChooserVisible} 
                         onChooseWorkspace={this.chooseWorkspace}
                         onCancel={this.cancelChooseWorkspace}
+                        onDeleteWorkspace={this.deleteWorkspace}
                         workspacesOnServer={this.state.workspacesOnServer}/>
                     <WorkspaceEditor visible={this.state.workspaceEditorVisible} 
                         isCreating={this.state.workspaceEditorCreating}
@@ -295,6 +308,7 @@ const mapDispatchToProps = (dispatch) => {
         onUndo: () => dispatch(UndoActionCreators.undo()),
         onRedo: () => dispatch(UndoActionCreators.redo()),
         onLoadWorkspace: (workspaceId) =>  dispatch(loadWorkspace(workspaceId)),
+        onDeleteWorkspace: (workspaceId) => dispatch(deleteWorkspace(workspaceId)),
         onGetWorkspaces: () => getWorkspaces(), // Yes, this is kind of silly
         onCreateWorkspace: (workspaceData) => dispatch(createWorkspace(workspaceData)),
         onUpdateWorkspace: (workspaceData) => dispatch(updateWorkspace(workspaceData))

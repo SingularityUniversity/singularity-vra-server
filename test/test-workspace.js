@@ -3,7 +3,7 @@ import thunk from 'redux-thunk'
 import expect from 'expect'
 import FetchMock from 'fetch-mock'
 import {CLEAR_WORKSPACE, SET_IN_WORKSPACE, REPLACE_WORKSPACE, clearWorkspace, setInWorkspace, loadWorkspace, getWorkspaces,
-    updateWorkspace, createWorkspace} from '../assets/js/actions/workspace-actions';
+    updateWorkspace, createWorkspace, deleteWorkspace} from '../assets/js/actions/workspace-actions';
 import {SNACKBAR_SHOW_MESSAGE} from '../assets/js/actions/snackbar-actions'
 import {workspaceReducer} from '../assets/js/reducers/workspace-reducer'
 import TestUtils from 'react-addons-test-utils'
@@ -13,6 +13,7 @@ import {WorkspaceEditorInternal} from '../assets/js/components/workspace-editor'
 import { mount, shallow } from 'enzyme';
 import TextField from 'material-ui/TextField';
 import {ListItem} from 'material-ui/List';
+import IconButton from 'material-ui/IconButton';
 import theme from '../assets/js/theme';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import {jsdom} from 'jsdom';
@@ -22,6 +23,7 @@ const mockStore = configureMockStore(middlewares);
 
 /*
  * TODO: Workspace-related Master functionality (encourage refactoring)
+ * TODO: Refactor UI component tests into much smaller tests
  */
 
 describe('Workspace functionality', () => {
@@ -105,6 +107,26 @@ describe('Workspace functionality', () => {
             })
         })
 
+        describe('async action: deleteWorkspace', () => {
+            beforeEach(() => FetchMock.restore()),
+            it('Dispatches deleteWorkspace correctly', (done) => {
+                let matcher = /.*/;
+                FetchMock.mock(matcher, 204);
+                const store = mockStore({});
+                deleteWorkspace(999)(store.dispatch).then(() => {
+                    let calls = FetchMock.calls();
+                    expect(calls.matched.length).toEqual(1);
+                    expect(calls.unmatched.length).toEqual(0);
+                    expect(FetchMock.lastUrl()).toEqual('/api/v1/workspace/999');
+                    expect(FetchMock.lastOptions().method).toEqual('DELETE');
+
+                    let otherActions = store.getActions();
+                    expect(otherActions.length).toEqual(1);
+                    expect(otherActions[0].type).toEqual(SNACKBAR_SHOW_MESSAGE);
+                }).then(done).catch(done);
+            })
+
+        })
         describe('async action: getWorkspaces', () => {
             beforeEach(() => FetchMock.restore()),
             it('Dispatches getWorkspaces correctly', (done) => {
@@ -234,7 +256,7 @@ describe('Workspace functionality', () => {
                     {
                         type: SET_IN_WORKSPACE,
                         content: articleToRemove,
-                        inWorkspace: false,
+                        inWorkspace: false
                     });
                 expect(newState).toEqual(existingState);
             })
@@ -246,7 +268,7 @@ describe('Workspace functionality', () => {
                     {
                         type: SET_IN_WORKSPACE,
                         content: articleToRemove,
-                        inWorkspace: false,
+                        inWorkspace: false
                     });
                 expect(newState).toEqual(previousState);
             })
@@ -257,7 +279,7 @@ describe('Workspace functionality', () => {
                     {
                         type: SET_IN_WORKSPACE,
                         content: articleToAdd,
-                        inWorkspace: true,
+                        inWorkspace: true
                     });
                 expect(newState).toEqual(existingState);
             })
@@ -269,7 +291,7 @@ describe('Workspace functionality', () => {
                     {
                         type: SET_IN_WORKSPACE,
                         content: articleToAdd,
-                        inWorkspace: true,
+                        inWorkspace: true
                     });
                 expect(newState).toEqual(previousState);
             })
@@ -280,7 +302,7 @@ describe('Workspace functionality', () => {
                     {
                         type: SET_IN_WORKSPACE,
                         content: articleToAdd,
-                        inWorkspace: true,
+                        inWorkspace: true
                     });
                 expect(newState).toEqual({
                     id: 1, title: "dummy", description: "dummy",
@@ -291,10 +313,10 @@ describe('Workspace functionality', () => {
         })
         describe('REPLACE_WORKSPACE', () => {
             it ("Clean workspace", () => {
-            let newState = workspaceReducer(
+                let newState = workspaceReducer(
                 {state: 'old state', dirty: true},
                 {type: REPLACE_WORKSPACE, workspace:{newstate: 'success'}});
-            expect(newState).toEqual({newstate: 'success', dirty: false});
+                expect(newState).toEqual({newstate: 'success', dirty: false});
             })
             it('Dirty workspace', () => {
                 let newState = workspaceReducer(
@@ -308,9 +330,10 @@ describe('Workspace functionality', () => {
     describe("UI Component Tests", () => {
         describe('<WorkspaceChooser>', () => {
 
-            it('<WorkspaceList>', () => {
+            it('<WorkspaceList> shallow', () => {
                 const onCancel = expect.createSpy();
                 const onChooseWorkspace = expect.createSpy();
+                const onDeleteWorkspace = expect.createSpy();
                 const workspacesOnServer =  [
                     {id: 1, title: "workspace 1", description: "description 1"},
                     {id: 2, title: "workspace 2", description: "description 2"},
@@ -319,7 +342,7 @@ describe('Workspace functionality', () => {
                 const store = mockStore({});
 
                 const item = shallow(
-                    <WorkspaceList onCancel={onCancel} onChooseWorkspace={onChooseWorkspace} workspacesOnServer={workspacesOnServer}/>,
+                    <WorkspaceList onCancel={onCancel} onDeleteWorkspace={onDeleteWorkspace} onChooseWorkspace={onChooseWorkspace} workspacesOnServer={workspacesOnServer}/>,
                     {
                         context: {
                             muiTheme: getMuiTheme(theme),
@@ -343,6 +366,40 @@ describe('Workspace functionality', () => {
                 expect(onChooseWorkspace.calls[0].arguments).toEqual([1]);
                 expect(onChooseWorkspace.calls[1].arguments).toEqual([2]);
                 expect(onChooseWorkspace.calls[2].arguments).toEqual([3]);
+            })
+            it('<WorkspaceList> mount', () => {
+                const onCancel = expect.createSpy();
+                const onChooseWorkspace = expect.createSpy();
+                const onDeleteWorkspace = expect.createSpy();
+                const workspacesOnServer =  [
+                    {id: 1, title: "workspace 1", description: "description 1"},
+                    {id: 2, title: "workspace 2", description: "description 2"},
+                    {id: 3, title: "workspace 3", description: "description 3"}
+                ]
+                const store = mockStore({});
+
+                const item = mount(
+                    <WorkspaceList onCancel={onCancel} onDeleteWorkspace={onDeleteWorkspace} onChooseWorkspace={onChooseWorkspace} workspacesOnServer={workspacesOnServer}/>,
+                    {
+                        context: {
+                            muiTheme: getMuiTheme(theme),
+                            store: store
+                        },
+                        childContextTypes: {
+                            muiTheme: React.PropTypes.object,
+                            store: React.PropTypes.object
+                        }
+                    }
+                );
+
+                let deleteButton1 = item.find(IconButton);
+                deleteButton1.at(0).simulate("click");
+                deleteButton1.at(1).simulate("click");
+                deleteButton1.at(2).simulate("click");
+                expect(onDeleteWorkspace.calls.length).toEqual(3);
+                expect(onDeleteWorkspace.calls[0].arguments).toEqual([1]);
+                expect(onDeleteWorkspace.calls[1].arguments).toEqual([2]);
+                expect(onDeleteWorkspace.calls[2].arguments).toEqual([3]);
             })
             it('<WorkspaceChooser>', () => {
                 // XXX: How do we test material-ui elemenst where the body is rendered outside the dom of the root element (ie

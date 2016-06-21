@@ -17,6 +17,7 @@
     "css-loader": "^0.23.1",
     "d3": "^3.5.17",
     "d3-cloud": "^1.2.1",
+    "enzyme": "^2.3.0",
     "expect": "^1.20.1",
     "expect-jsx": "^2.6.0",
     "exports-loader": "^0.6.3",
@@ -60,7 +61,7 @@
     "watch": "webpack -d --watch --config webpack.local.config.js",
     "build": "webpack -d --config webpack.local.config.js",
     "build-prod": "webpack -p --config webpack.prod.config.js",
-    "test": "mocha test/* --compilers js:babel-core/register --recursive",
+    "test": "mocha test/.setup.js test/* --compilers js:babel-core/register --recursive",
     "test:watch": "npm test -- --watch",
     "serve": "node server.js"
   }

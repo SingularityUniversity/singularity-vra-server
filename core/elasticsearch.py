@@ -21,10 +21,7 @@ def get_client():
                 ca_certs = '/etc/ssl/certs/ca-certificates.crt'
             else:
                 ca_certs = None
-            _es = Elasticsearch([settings.ELASTICSEARCH_URL], verify_certs=True, ca_certs=ca_certs,
-                                sniff_on_start=True,
-                                sniff_on_connection_fail=True,
-                                sniffer_timeout=60)
+            _es = Elasticsearch([settings.ELASTICSEARCH_URL], verify_certs=True, ca_certs=ca_certs)
     return _es
 
 

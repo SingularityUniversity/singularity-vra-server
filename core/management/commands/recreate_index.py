@@ -17,7 +17,7 @@ class Command(BaseCommand):
 
         contents = Content.objects.all()
         total = 0
-        n = 50
+        n = 250 
         with tqdm(total=contents.count()) as pbar:
             for chunk in [contents[i:i+n] for i in range(0, contents.count(), n)]:
                 bulk_index_documents(chunk)

@@ -46,7 +46,7 @@ def bulk_index_documents(documents, doc_type=settings.ELASTICSEARCH_TYPE):
 
     actions = [
         {'_type': doc_type, '_op_type': 'index', '_index': index,
-         '_id': int(doc.id), '_source': doc.as_json_serializable()} for doc in documents]
+         '_id': int(doc.id), '_source': doc.as_indexable_json()} for doc in documents]
 
     result = helpers.bulk(client, actions)
     return result

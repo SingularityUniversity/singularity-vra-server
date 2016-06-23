@@ -3,7 +3,7 @@
 2) Postgres
 3) Redis
 4) EmbedLy account
-5) ElasticSearch
+5) ElasticSearch (you'll need to add `script.inline: true` and `script.indexed: true` to the elasticsearch.yml file locally
 6) AWS S3 account
 7) Node
 

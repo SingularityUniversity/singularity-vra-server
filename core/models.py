@@ -97,9 +97,18 @@ class Content(models.Model):
     def as_json_serializable(self):
         return json.loads(serializers.serialize('json', [self]))[0]
 
+    def as_indexable_json(self):
+        body_json = self.as_json_serializable()
+        content = body_json['fields']['extract']['content']
+        if content is None:
+            body_json['content_length'] = 0
+        else:
+            body_json['content_length'] = len(content)
+        return body_json
+
     def add_to_search_index(self):
         # XXX: should this go here? Will other indexing/extraction methods be called this way?
-        index_document(self.as_json_serializable(), self.id)
+        index_document(self.as_indexable_json(), self.id)
 
     def add_to_s3(self):
         put_content_to_s3(self)

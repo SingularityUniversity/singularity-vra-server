@@ -98,7 +98,24 @@ class SearchView(views.APIView):
         param_dict['size'] = LargeResultsLimitOffsetPagination.default_limit
         if 'limit' in query_params:
             param_dict['size'] = query_params['limit']
-        param_dict['q'] = self.map_query_to_fields(param_dict['q'])
+        # The score boost function is 
+        # score * (1+sigmoid((content_length-300)/100))
+        param_dict['body']= {
+            "query": {
+                "function_score": {
+                    "query": {
+                        "query_string": {"query":self.map_query_to_fields(param_dict['q'])}
+                    },
+                    "functions": [
+                        {
+                            "script_score": {
+                                "script" : "_score * (1 + (1/(1+Math.exp(-((doc.content_length.value-300) / 100.0)))))"
+                            }
+                        }
+                    ]
+                }
+            }
+        }
         try:
             results = client.search(**param_dict)
         except RequestError as req_err:

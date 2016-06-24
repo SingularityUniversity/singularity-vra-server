@@ -150,7 +150,7 @@ const Master = React.createClass({
         let that = this;
         let contentItems = this.props.workspaceData.articles.map(function(content) {  
             return (
-                <ContentDetail key={content.pk} style={styles.fullWidthSection} content={content} onAction={that.handleContentAction}/> 
+                <ContentDetail isPreview={false} key={content.pk} style={styles.fullWidthSection} content={content} onAction={that.handleContentAction}/> 
             );
         });
         let disabled=false;

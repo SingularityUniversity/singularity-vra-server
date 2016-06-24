@@ -21,6 +21,7 @@ import Moment from 'moment';
 const ContentDetail = React.createClass({
 
     propTypes: {
+        isPreview: React.PropTypes.bool.isRequired,
         content: React.PropTypes.object,
         muiTheme: React.PropTypes.object.isRequired,
         onAction: React.PropTypes.func.isRequired  // onAction(content, action_id, params)
@@ -87,7 +88,8 @@ const ContentDetail = React.createClass({
     },
     render() {
         const {
-            content
+            content,
+            isPreview
         } = this.props;
 
         if (content ) {
@@ -113,12 +115,29 @@ const ContentDetail = React.createClass({
                         </Card>
                     </ListItem>
                 )
-            } 
+            }
+            let removeButton;
+            let cardActions;
+            if (isPreview) {
+                removeButton=""; 
+                cardActions="";
+            }
+            else{
+                removeButton = (
+                    <IconButton onClick={this.removeFromWorkspace} ><ContentRemoveCircle color={colors.red500}/></IconButton>
+                );
+                cardActions = (
+                    <CardActions expandable={true}>
+                        <RaisedButton primary={true} onMouseUp={this.clickedFindSimilar} label="Find similar documents"/>
+                        <RaisedButton primary={true} label="Action2"/>
+                    </CardActions>
+                );
+            }
             let title= (
                 <span>
-                    {extract.title}
-                    <IconButton onClick={this.removeFromWorkspace} ><ContentRemoveCircle color={colors.red500}/></IconButton>
+                    {extract.title} {removeButton}
                 </span>);
+
 
             return (
                 <Card initiallyExpanded={true} containerStyle={this.props.muiTheme.fullWidthSection.item}>
@@ -159,10 +178,7 @@ const ContentDetail = React.createClass({
                             </ListItem>
                         </List>
                     </CardText>
-                    <CardActions expandable={true}>
-                        <RaisedButton primary={true} onMouseUp={this.clickedFindSimilar} label="Find similar documents"/>
-                        <RaisedButton primary={true} label="Action2"/>
-                    </CardActions>
+                    {cardActions}
                 </Card>
             );
         } else {

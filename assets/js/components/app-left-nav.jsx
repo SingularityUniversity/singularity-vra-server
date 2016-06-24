@@ -10,6 +10,7 @@ import IconButton from 'material-ui/IconButton';
 import ChevronRight from 'material-ui/svg-icons/navigation/chevron-right';
 import { showSnackbarMessage} from '../actions/snackbar-actions';
 import { connect } from 'react-redux';
+import ContentPreview from './content-preview';
 
 let SelectableList = MakeSelectable(List);
 
@@ -57,7 +58,8 @@ let propTypes = {
 const AppLeftNav = React.createClass({
     getInitialState: function() {
         return {listHeight: window.innerHeight - this.props.muiTheme.leftNav.headerHeight - spacing.desktopGutter,
-            selectedPKIDs: []
+            selectedPKIDs: [],
+            previewContent: null
         };
     },
     handleResize: function(e) { // eslint-disable-line no-unused-vars
@@ -86,16 +88,23 @@ const AppLeftNav = React.createClass({
             return content.pk;
         });
     },
-    onClickedItem(content) {
+    onClickedItem(e, content) {
+        e.stopPropagation();
         if (this.state.selectedPKIDs.indexOf(content.pk) < 0 ) {
             this.props.onShowSnackbarMessage("Added content to the workspace");
             this.props.onChangeSelected(content, true);
         }
     },
+    showPreview(content) {
+        this.setState({previewContent: content});
+    },
+    onPreviewClose() {
+        this.setState({previewContent: null})
+    },
     _renderRow(index) {
         let published = '';
         let publisher = '';
-        let cardStyle ={whiteSpace: "inherit", boxShadow: 0, backgroundColor:null, height:120} ;
+        let cardStyle ={cursor: "pointer", whiteSpace: "inherit", boxShadow: 0, backgroundColor:null, height:120} ;
 
         let content = this.props.displayedContent[index];
         if (!content) {
@@ -115,15 +124,15 @@ const AppLeftNav = React.createClass({
         if (this.state.selectedPKIDs.indexOf(content.pk) >=0 ) {
             cardStyle['backgroundColor'] = colors.grey300;
         } else {
-            cardStyle['cursor'] = 'pointer';
             addIcon=(
-                <IconButton style={{float: "right"}}>
+                <IconButton onClick={function(e) {that.onClickedItem(e, content)}} style={{zIndex: 100, float: "right"}}>
                     <ChevronRight/>
                 </IconButton>
             );
         }
         return (
-            <Card onClick={function() {that.onClickedItem(content)}} key={content.pk} style={cardStyle}> 
+            <Card onClick={function() { that.showPreview(content)}} 
+                key={content.pk} style={cardStyle}> 
                 {addIcon}
                 <CardTitle 
                     title={title} 
@@ -183,6 +192,7 @@ const AppLeftNav = React.createClass({
                         )}
                     </InfiniteLoader>
                 </div>
+                <ContentPreview content={this.state.previewContent} onClose={this.onPreviewClose}/>
             </Drawer>
         );
     }

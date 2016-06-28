@@ -15,17 +15,17 @@ const mapDispatchToProps = (dispatch) => {
     };
 }
 
-
 const propTypes = {
     content: React.PropTypes.object.isRequired,
     snippets: React.PropTypes.array.isRequired
-};
+}
 
 const iconStyle= {
     width: 18,
     height: 18,
     padding:0
 }
+
 const buttonStyle= {
     width: 18,
     height: 18,
@@ -34,21 +34,21 @@ const buttonStyle= {
     verticalAlign: "middle"
 }
 
-let ArticleSnippets = React.createClass({
-    propTypes: propTypes,
+class ArticleSnippets extends React.Component {
 
     clickedRemove(index) {
         this.props.onItemDeleted(this.props.content, index);
-    },
+    }
+
     snippets() {
         return this.props.snippets.map((snippet, index) => {
             return (
                 <li key={snippet}>
-                    {snippet}<IconButton onClick={this.clickedRemove.bind(this, index)} style={buttonStyle} iconStyle={iconStyle} ><ContentRemoveCircle color={colors.red500}/></IconButton>
+                    {snippet}<IconButton onClick={() => this.clickedRemove(index)} style={buttonStyle} iconStyle={iconStyle} ><ContentRemoveCircle color={colors.red500}/></IconButton>
                 </li>
             );
         });
-    },
+    }
 
     render() {
         return (
@@ -60,7 +60,9 @@ let ArticleSnippets = React.createClass({
             </ListItem>
         );
     }
-});
+};
+
+ArticleSnippets.propTypes = propTypes;
 
 ArticleSnippets = connect(null, mapDispatchToProps)(muiThemeable()(ArticleSnippets));
 export default ArticleSnippets; 

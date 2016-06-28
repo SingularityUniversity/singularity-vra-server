@@ -1,11 +1,13 @@
 import React from 'react';
+
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import {Toolbar, ToolbarGroup, ToolbarTitle} from 'material-ui/Toolbar';
-import WorkspaceChooser from '../components/workspace-chooser';
-import WorkspaceEditor from '../components/workspace-editor';
 import {Card, CardTitle}  from 'material-ui/Card';
 import {colors} from 'material-ui/styles';
 import RaisedButton from 'material-ui/RaisedButton';
+
+import WorkspaceChooser from '../components/workspace-chooser';
+import WorkspaceEditor from '../components/workspace-editor';
 import ContentDetail from '../components/content-detail';
 
 

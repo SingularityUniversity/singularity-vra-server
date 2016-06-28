@@ -1,17 +1,24 @@
 import React from 'react';
+
+import { connect } from 'react-redux';
+
+import { ActionCreators as UndoActionCreators } from 'redux-undo'
+
 import muiThemeable from 'material-ui/styles/muiThemeable';
+import Snackbar from 'material-ui/Snackbar';
+
 import AppLeftNav from '../components/app-left-nav';
 import Clipboard from '../components/clipboard';
-import { addSnippetToClipboard, toggleClipboard, clearClipboard } from '../actions/clipboard-actions';
-import { connect } from 'react-redux';
-import Snackbar from 'material-ui/Snackbar';
-import { similaritySearch, startKeywordSearch, keywordSearch, clearSearch, addSearchResults } from '../actions/search-actions';
-import { createWorkspace, updateWorkspace, getWorkspaces, loadWorkspace, clearWorkspace, setInWorkspace, deleteWorkspace} from '../actions/workspace-actions';
-import { getArticleCount } from '../actions/article-count-actions';
-import { showSnackbarMessage, closeSnackbar} from '../actions/snackbar-actions';
-import { ActionCreators as UndoActionCreators } from 'redux-undo'
 import AppMenuBar from '../components/app-menu-bar';
 import Workspace from '../components/workspace';
+
+import { addSnippetToClipboard, toggleClipboard, clearClipboard } from '../actions/clipboard-actions';
+import { similaritySearch, startKeywordSearch, keywordSearch,
+    clearSearch, addSearchResults } from '../actions/search-actions';
+import { createWorkspace, updateWorkspace, getWorkspaces, loadWorkspace,
+    clearWorkspace, setInWorkspace, deleteWorkspace} from '../actions/workspace-actions';
+import { getArticleCount } from '../actions/article-count-actions';
+import { showSnackbarMessage, closeSnackbar} from '../actions/snackbar-actions';
 
 class Master extends React.Component {
 

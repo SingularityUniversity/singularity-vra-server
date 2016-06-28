@@ -61,6 +61,11 @@ class Master extends React.Component {
         }));
     }
 
+    getSearchItems({startIndex, stopIndex}) {
+        // XXX: We are assuming we are getting more searchItems for paging, This is probably a bad assumption moving forward
+        this.props.onKeywordSearch(this.props.searchData.searchText, startIndex, stopIndex-startIndex);
+    }
+
     doSearch(searchText) {
         this.props.onStartKeywordSearch(searchText);
         this.props.onKeywordSearch(searchText, 0);
@@ -170,7 +175,7 @@ class Master extends React.Component {
                     totalCount={this.props.searchData.searchResultTotalCount}
                     searchType={this.props.searchData.searchType}
                     searchText={this.props.searchData.searchText}
-                    loadItems={x => this.getItems(x)}
+                    loadItems={x => this.getSearchItems(x)}
                 />
                 <Clipboard
                     docked={true}
@@ -206,11 +211,6 @@ class Master extends React.Component {
                 />
             </div>
             );
-    }
-
-    getItems({startIndex, stopIndex}) {
-        // XXX: We are assuming we are getting more searchItems for paging, This is probably a bad assumption moving forward
-        this.props.onKeywordSearch(this.props.searchData.searchText, startIndex, stopIndex-startIndex);
     }
 }
 

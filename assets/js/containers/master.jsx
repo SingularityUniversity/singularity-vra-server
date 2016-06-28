@@ -24,13 +24,14 @@ import RaisedButton from 'material-ui/RaisedButton';
 import WorkspaceChooser from '../components/workspace-chooser';
 import WorkspaceEditor from '../components/workspace-editor';
 import SearchHelpDialog from '../components/search-help-dialog';
+import SearchEntry from '../components/search-entry';
 
 class Master extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            enteredSearchText: '',
+            initialSearchText: '', // The initial text to set the search input to
             workspaceChooserVisible: false,
             workspaceEditorVisible: false,
             workspaceEditorCreating: false,
@@ -40,24 +41,12 @@ class Master extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         if (this.props.searchData.searchText != nextProps.searchData.searchText) {
-            this.setState({enteredSearchText: nextProps.searchData.searchText});
+            this.setState({initialSearchText: nextProps.searchData.searchText});
         }
     }
 
     componentDidMount() {
         this.props.onGetArticleCount();
-    }
-
-    handleSearchChange(event) {
-        this.setState({enteredSearchText: event.target.value});
-    }
-
-    handleSearchKeypress(e) {
-        if (e.keyCode != 13) {
-            return;
-        }
-        this.props.onStartKeywordSearch(this.state.enteredSearchText);
-        this.props.onKeywordSearch(this.state.enteredSearchText, 0);
     }
 
     handleSelectedForWorkspace(content, inWorkspace) {
@@ -78,8 +67,13 @@ class Master extends React.Component {
         }));
     }
 
+    doSearch(searchText) {
+        this.props.onStartKeywordSearch(searchText);
+        this.props.onKeywordSearch(searchText, 0);
+    }
+
     clearSearch() {
-        this.setState({enteredSearchText: ""});
+        this.setState({initialSearchText: ""});
         this.props.onClearSearch();
     }
 
@@ -195,8 +189,11 @@ class Master extends React.Component {
                         <IconButton disabled={!this.props.canRedoSearch} onClick={this.props.onRedo}><ArrowForward/></IconButton>
                     </ToolbarGroup>
                     <ToolbarGroup float='right'>
-                        <TextField value={this.state.enteredSearchText} hintText='Search' onChange={(evt) => this.handleSearchChange(evt)} onKeyDown={(evt) => this.handleSearchKeypress(evt)} />
-                        <SearchHelpDialog /> 
+                        <SearchEntry
+                            initialSearchText={this.state.initialSearchText}
+                            onSearch={(searchText) => this.doSearch(searchText)}
+                        />
+                        <SearchHelpDialog/>
                         <ClipboardVisibilityButton
                         onClick={this.props.onClipboardVisibilityClick}
                         open={this.props.clipboardVisibility} />

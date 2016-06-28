@@ -25,33 +25,32 @@ import WorkspaceChooser from '../components/workspace-chooser';
 import WorkspaceEditor from '../components/workspace-editor';
 import SearchHelpDialog from '../components/search-help-dialog';
 
-const Master = React.createClass({
-    propTypes: {
-        children: React.PropTypes.node,
-        muiTheme: React.PropTypes.object.isRequired
-    },
+class Master extends React.Component {
 
-    getInitialState() {
-        return {
+    constructor(props) {
+        super(props);
+        this.state = {
             enteredSearchText: '',
             workspaceChooserVisible: false,
             workspaceEditorVisible: false,
             workspaceEditorCreating: false,
             workspacesOnServer: []
         };
-    },
+    }
+
     componentWillReceiveProps(nextProps) {
         if (this.props.searchData.searchText != nextProps.searchData.searchText) {
             this.setState({enteredSearchText: nextProps.searchData.searchText});
         }
-    },
-    componentDidMount: function() {
+    }
+
+    componentDidMount() {
         this.props.onGetArticleCount();
-    },
+    }
 
     handleSearchChange(event) {
         this.setState({enteredSearchText: event.target.value});
-    },
+    }
 
     handleSearchKeypress(e) {
         if (e.keyCode != 13) {
@@ -59,30 +58,35 @@ const Master = React.createClass({
         }
         this.props.onStartKeywordSearch(this.state.enteredSearchText);
         this.props.onKeywordSearch(this.state.enteredSearchText, 0);
-    },
+    }
 
     handleSelectedForWorkspace(content, inWorkspace) {
         this.props.onSetInWorkspace(content, inWorkspace);
-    },
+    }
+
     handleContentAction(content, action, params) {  // eslint-disable-line no-unused-vars
         if (action=="similar") {
             this.clearSearch();
             this.props.onSimilaritySearch([content.pk]);
         }
-    },
+    }
+
     onFindSimilarMultiple() {
         this.clearSearch();
         this.props.onSimilaritySearch(this.props.workspaceData.articles.map((content) => {
             return content.pk; 
         }));
-    },
+    }
+
     clearSearch() {
         this.setState({enteredSearchText: ""});
         this.props.onClearSearch();
-    },
+    }
+
     unSelectAll() {
         this.props.onClearWorkspace();
-    },
+    }
+
     showLoadWorkspace() {
         this.props.onGetWorkspaces()
             .then(workspaceList => 
@@ -90,12 +94,14 @@ const Master = React.createClass({
             .catch(error => {
                 this.props.onShowSnackbarMessage("There was an error getting list of workspaces:"  +  error);
             });
-    },
+    }
+
     chooseWorkspace(workspaceId) {
         this.props.onLoadWorkspace(workspaceId).
             then(() => this.setState({workspaceChooserVisible: false})).
             catch(error => this.props.onShowSnackbarMessage("There was an error loading workspace: "+error));
-    },
+    }
+
     deleteWorkspace(workspaceId) {
         this.props.onDeleteWorkspace(workspaceId)
             .then(() => {
@@ -107,24 +113,28 @@ const Master = React.createClass({
                 });
             })
             .catch(error => this.props.onShowSnackbarMessage("There was an error deleting workspace: "+error));
-    },
+    }
+
     showUpdateWorkspace() {
         this.setState({
             workspaceEditorVisible: true,
             workspaceEditorCreating: false,
         });
-    },
+    }
+
     showCreateWorkspace() {
         this.setState({
             workspaceEditorVisible: true,
             workspaceEditorCreating: true,
         });
-    },
+    }
+
     cancelWorkspaceEditor() {
         this.setState({
             workspaceEditorVisible: false
         });
-    },
+    }
+
     submitWorkspace(workspaceData) {
         if (workspaceData.id) {
             this.props.onUpdateWorkspace(workspaceData).
@@ -135,10 +145,12 @@ const Master = React.createClass({
             then(() => this.setState({workspaceEditorVisible: false})).
             catch(error => this.props.onShowSnackbarMessage("There was an error saving new workspace: "+error));
         }
-    },
+    }
+
     cancelChooseWorkspace() {
         this.setState({workspaceChooserVisible: false});
-    },
+    }
+
     render() {
         let styles = this.props.muiTheme;
 
@@ -150,7 +162,7 @@ const Master = React.createClass({
         let that = this;
         let contentItems = this.props.workspaceData.articles.map(function(content) {  
             return (
-                <ContentDetail isPreview={false} key={content.pk} style={styles.fullWidthSection} content={content} onAction={that.handleContentAction}/> 
+                <ContentDetail isPreview={false} key={content.pk} style={styles.fullWidthSection} content={content} onAction={() => this.handleContentAction()}/> 
             );
         });
         let disabled=false;
@@ -183,7 +195,7 @@ const Master = React.createClass({
                         <IconButton disabled={!this.props.canRedoSearch} onClick={this.props.onRedo}><ArrowForward/></IconButton>
                     </ToolbarGroup>
                     <ToolbarGroup float='right'>
-                        <TextField value={this.state.enteredSearchText} hintText='Search' onChange={this.handleSearchChange} onKeyDown={this.handleSearchKeypress} />
+                        <TextField value={this.state.enteredSearchText} hintText='Search' onChange={(evt) => this.handleSearchChange(evt)} onKeyDown={(evt) => this.handleSearchKeypress(evt)} />
                         <SearchHelpDialog /> 
                         <ClipboardVisibilityButton
                         onClick={this.props.onClipboardVisibilityClick}
@@ -191,13 +203,13 @@ const Master = React.createClass({
                     </ToolbarGroup>
                 </AppBar>
                 <AppLeftNav
-                    onChangeSelected={this.handleSelectedForWorkspace}
+                    onChangeSelected={(content, selected) => this.handleSelectedForWorkspace(content, selected)}
                     displayedContent={this.props.searchData.searchResultData}
                     workspaceContent={this.props.workspaceData.articles}
                     totalCount={this.props.searchData.searchResultTotalCount}
                     searchType={this.props.searchData.searchType}
                     searchText={this.props.searchData.searchText}
-                    loadItems={this.getItems}
+                    loadItems={x => this.getItems(x)}
                 />
                 <Clipboard 
                     docked={clipboardDocked}
@@ -216,22 +228,22 @@ const Master = React.createClass({
                     </Toolbar>
                     <Toolbar> 
                         <ToolbarGroup>
-                            <RaisedButton primary={true} onMouseUp={this.showLoadWorkspace} label="Load/Manage"/>
-                            <RaisedButton primary={true} onMouseUp={this.showUpdateWorkspace} disabled={this.props.workspaceData.id == null} label="Update and Save"/>
-                            <RaisedButton primary={true} onMouseUp={this.showCreateWorkspace} label="Save New"/>
-                            <RaisedButton primary={true} onMouseUp={this.unSelectAll} label="Clear" disabled={clearDisabled}/>
-                            <RaisedButton primary={true} label="Find Similar" onMouseUp={this.onFindSimilarMultiple} disabled={disabled}/>
+                            <RaisedButton primary={true} onMouseUp={() => this.showLoadWorkspace()} label="Load/Manage"/>
+                            <RaisedButton primary={true} onMouseUp={() => this.showUpdateWorkspace()} disabled={this.props.workspaceData.id == null} label="Update and Save"/>
+                            <RaisedButton primary={true} onMouseUp={() => this.showCreateWorkspace()} label="Save New"/>
+                            <RaisedButton primary={true} onMouseUp={() => this.unSelectAll()} label="Clear" disabled={clearDisabled}/>
+                            <RaisedButton primary={true} label="Find Similar" onMouseUp={() => this.onFindSimilarMultiple()} disabled={disabled}/>
                         </ToolbarGroup>
                     </Toolbar>
                     <WorkspaceChooser visible={this.state.workspaceChooserVisible} 
-                        onChooseWorkspace={this.chooseWorkspace}
-                        onCancel={this.cancelChooseWorkspace}
-                        onDeleteWorkspace={this.deleteWorkspace}
+                        onChooseWorkspace={(id) => this.chooseWorkspace(id)}
+                        onCancel={() => this.cancelChooseWorkspace()}
+                        onDeleteWorkspace={(id) => this.deleteWorkspace(id)}
                         workspacesOnServer={this.state.workspacesOnServer}/>
                     <WorkspaceEditor visible={this.state.workspaceEditorVisible} 
                         isCreating={this.state.workspaceEditorCreating}
-                        onSubmitWorkspace={this.submitWorkspace}
-                        onCancel={this.cancelWorkspaceEditor}
+                        onSubmitWorkspace={(id) => this.submitWorkspace(id)}
+                        onCancel={() => this.cancelWorkspaceEditor()}
                         workspaceData={this.props.workspaceData}/>
                     {contentItems}
                 </div>
@@ -244,12 +256,18 @@ const Master = React.createClass({
                 />
             </div>
             );
-    },
+    }
+
     getItems({startIndex, stopIndex}) {
         // XXX: We are assuming we are getting more searchItems for paging, This is probably a bad assumption moving forward
         this.props.onKeywordSearch(this.props.searchData.searchText, startIndex, stopIndex-startIndex);
     }
-});
+};
+
+Master.propTypes = {
+    children: React.PropTypes.node,
+    muiTheme: React.PropTypes.object.isRequired
+};
 
 const mapStateToProps = (state) => {
     return {

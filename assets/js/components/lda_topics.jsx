@@ -7,9 +7,9 @@ import muiThemeable from 'material-ui/styles/muiThemeable';
 import d3 from 'd3';
 import d3Cloud from 'd3-cloud';
 
-var fill = d3.scale.category20();
+const fill = d3.scale.category20();
 
-function normalizeWeights(wordmap) {
+const normalizeWeights = (wordmap) => {
     var max = wordmap.reduce(function(prev, current) {
         return Math.max(prev, current[1]);
     }, 0);
@@ -25,7 +25,7 @@ function normalizeWeights(wordmap) {
     });
 }
 
-function drawWordCloud(node, wordsobj) {
+const drawWordCloud = (node, wordsobj) => {
     var normalizedWords = normalizeWeights(wordsobj);
     // wordsobj is a list of word,weight list/tuple 
     var cloud = d3Cloud()
@@ -63,27 +63,25 @@ function drawWordCloud(node, wordsobj) {
     cloud.start();
 }
 
-const WordCloud = React.createClass({
-    propTypes: {
-        words: React.PropTypes.array
-    },
-    componentDidMount: function() {
+class WordCloud extends React.Component {
+    componentDidMount() {
         var el = ReactDOM.findDOMNode(this);
         drawWordCloud(el, this.props.words);
-    },
-    render: function() {
+    }
+
+    render() {
         return ( <div></div> )
     }
-});
+}
 
+WordCloud.propTypes = {
+    words: React.PropTypes.array
+}
 
-const TopicsList = React.createClass({
-    propTypes: {
-        topics: React.PropTypes.arrayOf(React.PropTypes.array)
-    },
+class TopicsList extends React.Component {
     render() {
-        var topicList = this.props.topics.map(function(topic) {
-            var topicItems = topic[0].map(function(topicword) {
+        const topicList = this.props.topics.map((topic) => {
+            const topicItems = topic[0].map((topicword) => {
                 return (
                     <ListItem key={topicword} innerDivStyle={{paddingTop: "5px", paddingBottom: "5px"}}>
                         {topicword[0]} - {topicword[1]}
@@ -95,7 +93,7 @@ const TopicsList = React.createClass({
                     <CardText style={{display: "inline-block"}}>
                         <div style={{fontSize: "120%"}}>Weight: {topic[1]}</div>
                         <List>
-                        {topicItems}
+                            {topicItems}
                         </List>
                     </CardText>
                     <CardText style={{display: "inline-block"}}>
@@ -110,6 +108,11 @@ const TopicsList = React.createClass({
             </div>
         )
     }
-});
+}
+
+TopicsList.propTypes =  {
+    topics: React.PropTypes.arrayOf(React.PropTypes.array)
+}
+
 export default  muiThemeable()(TopicsList);
 

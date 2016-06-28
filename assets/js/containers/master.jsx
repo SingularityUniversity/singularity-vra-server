@@ -140,7 +140,7 @@ class Master extends React.Component {
     }
 
     render() {
-        let styles = this.props.muiTheme;
+        const styles = this.props.muiTheme;
 
         // XXX: This is really hacky - there are styles from the theme that we're setting in the theme.js
         // but then we are extracting them from the theme and passing in the containerStyle and style, because
@@ -178,8 +178,8 @@ class Master extends React.Component {
                     openSecondary={true}
                     width={450}
                     articleSnippetList={this.props.articleSnippetList}
-                    onClear={this.props.onClearClipboard} />
-
+                    onClear={this.props.onClearClipboard} 
+                />
                 <Workspace
                     chooseWorkspace={(id) => this.chooseWorkspace(id)}
                     deleteWorkspace={(id) => this.deleteWorkspace(id)}
@@ -198,7 +198,7 @@ class Master extends React.Component {
                     workspaceEditorCreating={this.state.workspaceEditorCreating}
                 />
                 <Snackbar
-                    style={{fontFamily: this.props.muiTheme.baseTheme.fontFamily, textAlign: "center"}}
+                    style={{fontFamily: styles.baseTheme.fontFamily, textAlign: "center"}}
                     open={this.props.snackbar.open}
                     message={this.props.snackbar.message}
                     autoHideDuration={2000}

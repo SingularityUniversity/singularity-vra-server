@@ -1,11 +1,7 @@
 import React from 'react';
-import {Toolbar, ToolbarGroup, ToolbarTitle} from 'material-ui/Toolbar';
-import {Card, CardTitle}  from 'material-ui/Card';
 import muiThemeable from 'material-ui/styles/muiThemeable';
-import {colors} from 'material-ui/styles';
 import AppLeftNav from '../components/app-left-nav';
 import Clipboard from '../components/clipboard';
-import ContentDetail from '../components/content-detail';
 import { addSnippetToClipboard, toggleClipboard, clearClipboard } from '../actions/clipboard-actions';
 import { connect } from 'react-redux';
 import Snackbar from 'material-ui/Snackbar';
@@ -14,10 +10,8 @@ import { createWorkspace, updateWorkspace, getWorkspaces, loadWorkspace, clearWo
 import { getArticleCount } from '../actions/article-count-actions';
 import { showSnackbarMessage, closeSnackbar} from '../actions/snackbar-actions';
 import { ActionCreators as UndoActionCreators } from 'redux-undo'
-import RaisedButton from 'material-ui/RaisedButton';
-import WorkspaceChooser from '../components/workspace-chooser';
-import WorkspaceEditor from '../components/workspace-editor';
 import AppMenuBar from '../components/app-menu-bar';
+import Workspace from '../components/workspace';
 
 class Master extends React.Component {
 
@@ -144,27 +138,14 @@ class Master extends React.Component {
         let clipboardDocked = true;
         let clipboardWidth = 450;
 
-        let contentItems = this.props.workspaceData.articles.map(function(content) {
-            return (
-                <ContentDetail isPreview={false} key={content.pk} style={styles.fullWidthSection} content={content} onAction={() => this.handleContentAction()}/>
-            );
-        });
-        let disabled=false;
-        if (contentItems.length == 0) {
-            contentItems = [
-                (<Card key={"empty"}><CardTitle title="Please select content"/></Card>)
-            ];
-            disabled=true;
-        }
-        let clearDisabled = true;
-        if ((this.props.workspaceData.articles.length > 0) || this.props.workspaceData.title) {
-            clearDisabled = false;
-        }
-        let dirty = this.props.workspaceData.dirty ? (<ToolbarTitle style={{color: colors.grey500, fontFamily: this.props.muiTheme.baseTheme.fontFamily, fontStyle: "italic"}} text="Unsaved"/>) : "";
         // XXX: This is really hacky - there are styles from the theme that we're setting in the theme.js
         // but then we are extracting them from the theme and passing in the containerStyle and style, because
         // I haven't figured out exactly  how to structure the entries in theme.js
         // XXX: Also a hack in the snackbar to force fontFamily - this may be a bug in material-ui
+        //
+        // XXX: While its nice to refactor out components, it may be that some components, like workspae, should actually be containers themselves
+        // and interact more with the store, rather than letting master mediate all those interactions. As it is, we have a lot of callbacks
+        // and logic in master that probabaly belongs in Workspace, for example.
         return (
             <div style={styles.root}>
                 <AppMenuBar
@@ -194,35 +175,24 @@ class Master extends React.Component {
                     width={clipboardWidth}
                     articleSnippetList={this.props.articleSnippetList}
                     onClear={this.props.onClearClipboard} />
-                <div style={styles.fullWidthSection.root}>
-                    <Toolbar>
-                        <ToolbarGroup>
-                            <ToolbarTitle style={{color:colors.black, fontWeight: "bold", fontFamily:this.props.muiTheme.baseTheme.fontFamily}}
-                                text={this.props.workspaceData.title? this.props.workspaceData.title : "Untitled Workspace"}/><br/>
-                            {dirty}
-                        </ToolbarGroup>
-                    </Toolbar>
-                    <Toolbar>
-                        <ToolbarGroup>
-                            <RaisedButton primary={true} onMouseUp={() => this.showLoadWorkspace()} label="Load/Manage"/>
-                            <RaisedButton primary={true} onMouseUp={() => this.showUpdateWorkspace()} disabled={this.props.workspaceData.id == null} label="Update and Save"/>
-                            <RaisedButton primary={true} onMouseUp={() => this.showCreateWorkspace()} label="Save New"/>
-                            <RaisedButton primary={true} onMouseUp={() => this.unSelectAll()} label="Clear" disabled={clearDisabled}/>
-                            <RaisedButton primary={true} label="Find Similar" onMouseUp={() => this.onFindSimilarMultiple()} disabled={disabled}/>
-                        </ToolbarGroup>
-                    </Toolbar>
-                    <WorkspaceChooser visible={this.state.workspaceChooserVisible}
-                        onChooseWorkspace={(id) => this.chooseWorkspace(id)}
-                        onCancel={() => this.cancelChooseWorkspace()}
-                        onDeleteWorkspace={(id) => this.deleteWorkspace(id)}
-                        workspacesOnServer={this.state.workspacesOnServer}/>
-                    <WorkspaceEditor visible={this.state.workspaceEditorVisible}
-                        isCreating={this.state.workspaceEditorCreating}
-                        onSubmitWorkspace={(id) => this.submitWorkspace(id)}
-                        onCancel={() => this.cancelWorkspaceEditor()}
-                        workspaceData={this.props.workspaceData}/>
-                    {contentItems}
-                </div>
+
+                <Workspace
+                    chooseWorkspace={(id) => this.chooseWorkspace(id)}
+                    deleteWorkspace={(id) => this.deleteWorkspace(id)}
+                    workspacesOnServer={this.state.workspacesOnServer}
+                    submitWorkspace={(id) => this.submitWorkspace(id)}
+                    workspaceData={this.props.workspaceData}
+                    showLoadWorkspace={() => this.showLoadWorkspace()}
+                    showUpdateWorkspace={() => this.showUpdateWorkspace()}
+                    showCreateWorkspace={() => this.showCreateWorkspace()}
+                    unSelectAll={() => this.unSelectAll()}
+                    cancelChooseWorkspace={() => this.cancelChooseWorkspace()}
+                    cancelWorkspaceEditor={() => this.cancelWorkspaceEditor()}
+                    findSimilarMultiple={() => this.onFindSimilarMultiple()}
+                    workspaceChooserVisible={this.state.workspaceChooserVisible}
+                    workspaceEditorVisible={this.state.workspaceEditorVisible}
+                    workspaceEditorCreating={this.state.workspaceEditorCreating}
+                />
                 <Snackbar
                     style={{fontFamily: this.props.muiTheme.baseTheme.fontFamily, textAlign: "center"}}
                     open={this.props.snackbar.open}

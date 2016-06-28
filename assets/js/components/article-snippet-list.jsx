@@ -3,13 +3,7 @@ import {List} from 'material-ui/List';
 import ArticleSnippets from './article-snippets';
 
 
-const propTypes = {
-    articleSnippets: React.PropTypes.array.isRequired
-};
-
-const ArticleSnippetList = React.createClass({
-    propTypes: propTypes,
-
+class ArticleSnippetList extends React.Component {
     articleSnippets() {
         return this.props.articleSnippets.map((article) => {
             return (
@@ -20,7 +14,7 @@ const ArticleSnippetList = React.createClass({
                 </div>
             );
         }); 
-    },
+    }
 
     render() {
         return (
@@ -29,6 +23,10 @@ const ArticleSnippetList = React.createClass({
             </List>
         );
     }
-});
+}
+
+ArticleSnippetList.propTypes = {
+    articleSnippets: React.PropTypes.array.isRequired
+}
 
 export default ArticleSnippetList

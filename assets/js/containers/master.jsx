@@ -142,9 +142,6 @@ class Master extends React.Component {
     render() {
         let styles = this.props.muiTheme;
 
-        let clipboardDocked = true;
-        let clipboardWidth = 450;
-
         // XXX: This is really hacky - there are styles from the theme that we're setting in the theme.js
         // but then we are extracting them from the theme and passing in the containerStyle and style, because
         // I haven't figured out exactly  how to structure the entries in theme.js
@@ -176,10 +173,10 @@ class Master extends React.Component {
                     loadItems={x => this.getItems(x)}
                 />
                 <Clipboard
-                    docked={clipboardDocked}
+                    docked={true}
                     open={this.props.clipboardVisibility}
                     openSecondary={true}
-                    width={clipboardWidth}
+                    width={450}
                     articleSnippetList={this.props.articleSnippetList}
                     onClear={this.props.onClearClipboard} />
 

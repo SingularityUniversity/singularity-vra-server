@@ -67,11 +67,11 @@ class ContentDetail extends React.Component {
             }
         });
 
-        // XXX: Refactor me into an async action 
+        // XXX: Refactor me into an async action
         fetch(`/api/v1/content/${this.props.content.pk}/summary`,  {
             credentials: 'include',
             headers: {
-                'Accept': 'application/json',
+                'Accept': 'application/json'
             }
         })
         .then(checkResponseAndExtractJSON)
@@ -100,12 +100,12 @@ class ContentDetail extends React.Component {
             var lda_stuff = null;
             if (content.lda_similarity_topics) {
                 lda_stuff = (
-                    <ListItem>	
+                    <ListItem>
                         LDA-Inferred Topics - Similarity to Query Candidate is {content.score.toFixed(3)}
                         <Card>
-                            <CardTitle 
-                                actAsExpander={true} showExpandableButton={true} 
-                                subtitleStyle={{textAlign: 'center'}}/> 
+                            <CardTitle
+                                actAsExpander={true} showExpandableButton={true}
+                                subtitleStyle={{textAlign: 'center'}}/>
                             <CardText expandable={true}>
                                 <TopicsList topics={content.lda_similarity_topics}/>
                             </CardText>
@@ -116,7 +116,7 @@ class ContentDetail extends React.Component {
             let removeButton;
             let cardActions;
             if (isPreview) {
-                removeButton=""; 
+                removeButton="";
                 cardActions="";
             }
             else{
@@ -139,9 +139,9 @@ class ContentDetail extends React.Component {
 
             return (
                 <Card initiallyExpanded={true} containerStyle={this.props.muiTheme.fullWidthSection.item}>
-                    <CardTitle 
+                    <CardTitle
                         showExpandableButton={true}
-                        title={title} 
+                        title={title}
                         subtitle={"From: "+extract.provider_name}
                         titleStyle={{textAlign: 'center'}}
                         subtitleStyle={{textAlign: 'center'}}>
@@ -190,7 +190,7 @@ class ContentDetail extends React.Component {
         }
 
     }
-};
+}
 
 ContentDetail.propTypes = {
     isPreview: React.PropTypes.bool.isRequired,
@@ -209,7 +209,7 @@ const mapDispatchToProps = (dispatch) => {
             dispatch(keywordSearch(text));
         },
         onSetInWorkspace: (content, inWorkspace) => {
-            dispatch(setInWorkspace(content, inWorkspace)); 
+            dispatch(setInWorkspace(content, inWorkspace));
         }
     };
 }

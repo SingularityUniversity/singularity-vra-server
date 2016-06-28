@@ -2,7 +2,6 @@ import React from 'react';
 import AppBar from 'material-ui/AppBar';
 import {Toolbar, ToolbarGroup, ToolbarTitle} from 'material-ui/Toolbar';
 import {Card, CardTitle}  from 'material-ui/Card';
-import TextField from 'material-ui/TextField';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import {colors} from 'material-ui/styles';
 import AppLeftNav from '../components/app-left-nav';
@@ -63,7 +62,7 @@ class Master extends React.Component {
     onFindSimilarMultiple() {
         this.clearSearch();
         this.props.onSimilaritySearch(this.props.workspaceData.articles.map((content) => {
-            return content.pk; 
+            return content.pk;
         }));
     }
 
@@ -83,7 +82,7 @@ class Master extends React.Component {
 
     showLoadWorkspace() {
         this.props.onGetWorkspaces()
-            .then(workspaceList => 
+            .then(workspaceList =>
                 this.setState( { workspacesOnServer: workspaceList, workspaceChooserVisible: true }))
             .catch(error => {
                 this.props.onShowSnackbarMessage("There was an error getting list of workspaces:"  +  error);
@@ -112,14 +111,14 @@ class Master extends React.Component {
     showUpdateWorkspace() {
         this.setState({
             workspaceEditorVisible: true,
-            workspaceEditorCreating: false,
+            workspaceEditorCreating: false
         });
     }
 
     showCreateWorkspace() {
         this.setState({
             workspaceEditorVisible: true,
-            workspaceEditorCreating: true,
+            workspaceEditorCreating: true
         });
     }
 
@@ -153,10 +152,9 @@ class Master extends React.Component {
         let clipboardDocked = true;
         let clipboardWidth = 450;
 
-        let that = this;
-        let contentItems = this.props.workspaceData.articles.map(function(content) {  
+        let contentItems = this.props.workspaceData.articles.map(function(content) {
             return (
-                <ContentDetail isPreview={false} key={content.pk} style={styles.fullWidthSection} content={content} onAction={() => this.handleContentAction()}/> 
+                <ContentDetail isPreview={false} key={content.pk} style={styles.fullWidthSection} content={content} onAction={() => this.handleContentAction()}/>
             );
         });
         let disabled=false;
@@ -208,22 +206,22 @@ class Master extends React.Component {
                     searchText={this.props.searchData.searchText}
                     loadItems={x => this.getItems(x)}
                 />
-                <Clipboard 
+                <Clipboard
                     docked={clipboardDocked}
                     open={this.props.clipboardVisibility}
-                    openSecondary={true} 
-                    width={clipboardWidth} 
+                    openSecondary={true}
+                    width={clipboardWidth}
                     articleSnippetList={this.props.articleSnippetList}
                     onClear={this.props.onClearClipboard} />
                 <div style={styles.fullWidthSection.root}>
-                    <Toolbar> 
+                    <Toolbar>
                         <ToolbarGroup>
-                            <ToolbarTitle style={{color:colors.black, fontWeight: "bold", fontFamily:this.props.muiTheme.baseTheme.fontFamily}} 
+                            <ToolbarTitle style={{color:colors.black, fontWeight: "bold", fontFamily:this.props.muiTheme.baseTheme.fontFamily}}
                                 text={this.props.workspaceData.title? this.props.workspaceData.title : "Untitled Workspace"}/><br/>
                             {dirty}
                         </ToolbarGroup>
                     </Toolbar>
-                    <Toolbar> 
+                    <Toolbar>
                         <ToolbarGroup>
                             <RaisedButton primary={true} onMouseUp={() => this.showLoadWorkspace()} label="Load/Manage"/>
                             <RaisedButton primary={true} onMouseUp={() => this.showUpdateWorkspace()} disabled={this.props.workspaceData.id == null} label="Update and Save"/>
@@ -232,12 +230,12 @@ class Master extends React.Component {
                             <RaisedButton primary={true} label="Find Similar" onMouseUp={() => this.onFindSimilarMultiple()} disabled={disabled}/>
                         </ToolbarGroup>
                     </Toolbar>
-                    <WorkspaceChooser visible={this.state.workspaceChooserVisible} 
+                    <WorkspaceChooser visible={this.state.workspaceChooserVisible}
                         onChooseWorkspace={(id) => this.chooseWorkspace(id)}
                         onCancel={() => this.cancelChooseWorkspace()}
                         onDeleteWorkspace={(id) => this.deleteWorkspace(id)}
                         workspacesOnServer={this.state.workspacesOnServer}/>
-                    <WorkspaceEditor visible={this.state.workspaceEditorVisible} 
+                    <WorkspaceEditor visible={this.state.workspaceEditorVisible}
                         isCreating={this.state.workspaceEditorCreating}
                         onSubmitWorkspace={(id) => this.submitWorkspace(id)}
                         onCancel={() => this.cancelWorkspaceEditor()}
@@ -259,7 +257,7 @@ class Master extends React.Component {
         // XXX: We are assuming we are getting more searchItems for paging, This is probably a bad assumption moving forward
         this.props.onKeywordSearch(this.props.searchData.searchText, startIndex, stopIndex-startIndex);
     }
-};
+}
 
 Master.propTypes = {
     children: React.PropTypes.node,
@@ -317,7 +315,7 @@ const mapDispatchToProps = (dispatch) => {
         onCloseSnackbar: () => {
             dispatch(closeSnackbar());
         },
-        onShowSnackbarMessage: (message) => { 
+        onShowSnackbarMessage: (message) => {
             dispatch(showSnackbarMessage(message));
         },
         onUndo: () => dispatch(UndoActionCreators.undo()),

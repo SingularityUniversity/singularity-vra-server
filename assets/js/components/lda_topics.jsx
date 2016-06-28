@@ -27,7 +27,7 @@ const normalizeWeights = (wordmap) => {
 
 const drawWordCloud = (node, wordsobj) => {
     var normalizedWords = normalizeWeights(wordsobj);
-    // wordsobj is a list of word,weight list/tuple 
+    // wordsobj is a list of word,weight list/tuple
     var cloud = d3Cloud()
         .size([300, 300])
         .words(normalizedWords.map(function(tuple) {
@@ -40,7 +40,7 @@ const drawWordCloud = (node, wordsobj) => {
         .on("end", draw);
 
     /*
-     * Create draw as a closure on "node" and "cloud" 
+     * Create draw as a closure on "node" and "cloud"
      */
     function draw(words) {
         d3.select(node).append('svg')
@@ -97,7 +97,7 @@ class TopicsList extends React.Component {
                         </List>
                     </CardText>
                     <CardText style={{display: "inline-block"}}>
-                        <WordCloud words={topic[0]}/> 
+                        <WordCloud words={topic[0]}/>
                     </CardText>
                 </Card>
             )

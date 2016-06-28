@@ -51,7 +51,7 @@ class Clipboard extends React.Component {
                     article.snippets.join('\n');
             });
             clipboardText=clipboardItems.join("\n\n---------------\n\n");
-        } 
+        }
 
         const style = this.props.muiTheme.leftNav;
         const showButtons = (articleSnippetList.length > 0);
@@ -65,15 +65,15 @@ class Clipboard extends React.Component {
                 >
                 <div style={{paddingLeft: '10px', paddingBottom: '10px'}}>
                     <b>Clipboard</b>
-                    <IconButton 
-                        ref='clipboard_button' 
+                    <IconButton
+                        ref='clipboard_button'
                         tooltip={showButtons ? 'Copy to system clipboard' : ''}
                         disabled={!showButtons}
                         data-clipboard-text={clipboardText}>
                         <ContentCopy />
                     </IconButton>
-                    <IconButton 
-                        ref='clipboard_clear_button' 
+                    <IconButton
+                        ref='clipboard_clear_button'
                         tooltip={showButtons ? 'Clear clipboard' : ''}
                         disabled={!showButtons}
                         onClick={onClear}>

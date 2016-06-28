@@ -60,9 +60,8 @@ class ArticleSnippets extends React.Component {
             </ListItem>
         );
     }
-};
+}
 
 ArticleSnippets.propTypes = propTypes;
 
-ArticleSnippets = connect(null, mapDispatchToProps)(muiThemeable()(ArticleSnippets));
-export default ArticleSnippets; 
+export default connect(null, mapDispatchToProps)(muiThemeable()(ArticleSnippets));

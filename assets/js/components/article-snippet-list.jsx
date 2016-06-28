@@ -8,12 +8,12 @@ class ArticleSnippetList extends React.Component {
         return this.props.articleSnippets.map((article) => {
             return (
                 <div key={article.content.pk}>
-                    <ArticleSnippets 
+                    <ArticleSnippets
                     content={article.content}
                     snippets={article.snippets} />
                 </div>
             );
-        }); 
+        });
     }
 
     render() {

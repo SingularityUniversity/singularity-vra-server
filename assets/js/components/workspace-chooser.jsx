@@ -20,12 +20,12 @@ export class WorkspaceList extends React.Component {
         this.props.onDeleteWorkspace(workspaceId);
     }
     render() {
-            
+
         let items = this.props.workspacesOnServer.map(item => {
-            const deleteButton=( 
+            const deleteButton=(
                 <IconButton onClick={this.deleteWorkspace.bind(this, item.id)} ><ContentRemoveCircle color={colors.red500}/></IconButton>
             )
-            return ( 
+            return (
                 <ListItem key={item.id} primaryText={item.title} secondaryText={item.description} onClick={this.props.onChooseWorkspace.bind(null, item.id)}
                     rightIconButton={deleteButton}/>
             )
@@ -46,13 +46,13 @@ export class WorkspaceChooser extends React.Component {
         ];
         return (
             <Dialog actions={actions} title="Workspaces" open={this.props.visible}  autoScrollBodyContent={true}>
-                <WorkspaceList workspacesOnServer={this.props.workspacesOnServer} onCancel={this.props.onCancel} 
+                <WorkspaceList workspacesOnServer={this.props.workspacesOnServer} onCancel={this.props.onCancel}
                     onChooseWorkspace={this.props.onChooseWorkspace}
                     onDeleteWorkspace={this.props.onDeleteWorkspace}
                 />
             </Dialog>
         )
-    };
+    }
 }
 
 export default connect(null, null)(muiThemeable()(WorkspaceChooser));

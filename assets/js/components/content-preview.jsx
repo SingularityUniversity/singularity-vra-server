@@ -16,14 +16,14 @@ class ContentPreview extends React.Component {
         const actions=[
             (<RaisedButton  label="Close" primary={true} onTouchTap={this.props.onClose} />)
         ];
-        return( 
-            <Dialog 
+        return(
+            <Dialog
                 title={title}
                 modal={true}
                 open={this.props.content != null}
                 contentStyle={{width: "90%", maxWidth:null}}
                 actions={actions}
-                autoScrollBodyContent={true} 
+                autoScrollBodyContent={true}
             >
                 <ContentDetail isPreview={true} content={this.props.content}/>
             </Dialog>

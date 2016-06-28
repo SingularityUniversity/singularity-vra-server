@@ -9,8 +9,8 @@ import $ from 'jquery';
 
 import "../css/style.scss";
 
-// Needed for onTouchTap 
-// http://stackoverflow.com/a/34015469/988941 
+// Needed for onTouchTap
+// http://stackoverflow.com/a/34015469/988941
 injectTapEventPlugin();
 
 let state = {hello: 1};

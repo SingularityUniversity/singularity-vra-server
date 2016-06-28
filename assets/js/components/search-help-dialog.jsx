@@ -6,7 +6,7 @@ import IconButton from 'material-ui/IconButton'
 import ActionHelpOutline from 'material-ui/svg-icons/action/help-outline'
 import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table'
 
-class SearchHelpDialog extends React.Component { 
+class SearchHelpDialog extends React.Component {
     constructor(props) {
         super(props);
         this.state={open:false};

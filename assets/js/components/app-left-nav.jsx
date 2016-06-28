@@ -43,7 +43,7 @@ const wrapState = (ComposedComponent) => {
                 />
             );
         }
-    };
+    }
     return StateWrapper;
 }
 
@@ -149,11 +149,11 @@ class AppLeftNav extends React.Component {
         }
 
         return (
-            <Card onClick={() => this.showPreview(content)} 
-                key={content.pk} style={cardStyle}> 
+            <Card onClick={() => this.showPreview(content)}
+                key={content.pk} style={cardStyle}>
                 {addIcon}
-                <CardTitle 
-                    title={title} 
+                <CardTitle
+                    title={title}
                     subtitle={subtitle}
                     titleStyle={{fontSize: '75%', lineHeight:null }}>
                 </CardTitle>
@@ -192,8 +192,8 @@ class AppLeftNav extends React.Component {
                     >
                         {({ onRowsRendered, registerChild }) => (
                             <AutoSizer>
-                            {({height, width }) => 
-                                (<VirtualScroll 
+                            {({height, width }) =>
+                                (<VirtualScroll
                                  ref={registerChild}
                                  width={width}
                                  height={height-style.headerHeight}
@@ -205,7 +205,7 @@ class AppLeftNav extends React.Component {
                                  }
                                  overscanRowCount={10}
                                  />
-                                )}    
+                                )}
                             </AutoSizer>
                         )}
                     </InfiniteLoader>
@@ -214,7 +214,7 @@ class AppLeftNav extends React.Component {
             </Drawer>
         );
     }
-};
+}
 
 AppLeftNav.propTypes=propTypes;
 

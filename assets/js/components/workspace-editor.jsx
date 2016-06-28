@@ -35,7 +35,6 @@ export class WorkspaceEditorInternal extends React.Component {
             articles: this.props.workspaceData.articles.slice()
         }
         let action;
-        let that=this;
         if (this.props.isCreating) {
             workspaceData.title = this.props.workspaceData.title? `Copy of ${this.props.workspaceData.title}` :
                 'New Workspace';
@@ -53,16 +52,16 @@ export class WorkspaceEditorInternal extends React.Component {
         ];
         return (
             <Dialog title="Workspace" open={this.props.visible} actions={actions}  autoScrollBodyContent={true}>
-                <TextField 
-                    fullWidth={true} 
-                    floatingLabelText="Title" 
+                <TextField
+                    fullWidth={true}
+                    floatingLabelText="Title"
                     defaultValue={workspaceData.title}
                     ref={(field) => this.titleField = field}/>
                 <br/>
-                <TextField 
-                    multiLine={true} 
-                    fullWidth={true} 
-                    floatingLabelText="Description" 
+                <TextField
+                    multiLine={true}
+                    fullWidth={true}
+                    floatingLabelText="Description"
                     defaultValue={workspaceData.description}
                     ref={(field) => this.descriptionField = field}/>
             </Dialog>

@@ -17,11 +17,13 @@ let SelectableList = MakeSelectable(List);
 // XXX: This wrapState is confusing an obfuscates whats going on.
 // Propose we mergeis back into AppLeftNav
 
-function wrapState(ComposedComponent) {
-    const StateWrapper = React.createClass({
-        getInitialState() {
-            return {selectedIndex: 1};
-        },
+const wrapState = (ComposedComponent) => {
+    class StateWrapper extends React.Component {
+        constructor(props) {
+            super(props);
+            this.state = {selectedIndex: 1};
+        }
+
         handleUpdateSelectedIndex(e, index) {
             this.setState({
                 selectedIndex: index
@@ -29,23 +31,26 @@ function wrapState(ComposedComponent) {
             if (this.props.onChange) {
                 this.props.onChange(e, index);
             }
-        },
+        }
+
         render() {
             return (
                 <ComposedComponent
                     {...this.props}
                     {...this.state}
                     value={this.state.selectedIndex}
-                    onChange={this.handleUpdateSelectedIndex}
+                    onChange={() => this.handleUpdateSelectedIndex()}
                 />
             );
         }
-    });
+    };
     return StateWrapper;
 }
 
+
 SelectableList = wrapState(SelectableList);
-let propTypes = {
+
+const propTypes = {
     muiTheme: React.PropTypes.object.isRequired,
     displayedContent: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
     workspaceContent: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
@@ -55,52 +60,64 @@ let propTypes = {
     searchType: React.PropTypes.string,
     searchText: React.PropTypes.string
 };
-const AppLeftNav = React.createClass({
-    getInitialState: function() {
-        return {listHeight: window.innerHeight - this.props.muiTheme.leftNav.headerHeight - spacing.desktopGutter,
+
+class AppLeftNav extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            listHeight: window.innerHeight - this.props.muiTheme.leftNav.headerHeight - spacing.desktopGutter,
             selectedPKIDs: [],
             previewContent: null
         };
-    },
-    handleResize: function(e) { // eslint-disable-line no-unused-vars
+        this.handleResize = this.handleResize.bind(this);  // Needed for event handler callback logic
+
+    }
+
+    handleResize() {
         this.setState({listHeight: window.innerHeight - this.props.muiTheme.leftNav.headerHeight - spacing.desktopGutter});
-    },
-    componentWillMount: function() {
+    }
+
+    componentWillMount() {
         this.setState({selectedPKIDs: this.getSelectedIDS()});
-    },
-    componentWillReceiveProps: function(nextProps) {
+    }
+
+    componentWillReceiveProps(nextProps) {
         if (nextProps.workspaceContent) {
             this.setState({selectedPKIDs: nextProps.workspaceContent.map((content) => content.pk)});
         }
-    },
-    componentDidMount: function() {
+    }
+
+    componentDidMount() {
         window.addEventListener('resize', this.handleResize);
-    },
+    }
 
-    componentWillUnmount: function() {
+    componentWillUnmount() {
         window.removeEventListener('resize', this.handleResize);
-    },
+    }
 
-    propTypes: propTypes, 
     getSelectedIDS() {
         // XXX: Don't recalculate this every time, only should have to calculate once when mounted component
         return this.props.workspaceContent.map((content) => {
             return content.pk;
         });
-    },
+    }
+
     onClickedItem(e, content) {
         e.stopPropagation();
         if (this.state.selectedPKIDs.indexOf(content.pk) < 0 ) {
             this.props.onShowSnackbarMessage("Added content to the workspace");
             this.props.onChangeSelected(content, true);
         }
-    },
+    }
+
     showPreview(content) {
         this.setState({previewContent: content});
-    },
+    }
+
     onPreviewClose() {
         this.setState({previewContent: null})
-    },
+    }
+
     _renderRow(index) {
         let published = '';
         let publisher = '';
@@ -111,27 +128,28 @@ const AppLeftNav = React.createClass({
             return (<Card key={'empty-'+index} style={cardStyle}></Card> );
 
         }
-        let that = this;
         if (content.fields.extract['published']) {
             published = Moment(parseInt(content.fields.extract['published'])).format('YYYY-MM-DD');
         }
         if (content.fields.extract['provider_name']) {
             publisher = content.fields.extract['provider_name'];
         }
-        let title = (<span style={{fontSize: "125%"}}>{content.fields.extract['title']}</span>);
-        let subtitle = (<span>{content.score.toFixed(3)}<br/> <a href="#">{publisher}</a>{published}</span>);
+        const title = (<span style={{fontSize: "125%"}}>{content.fields.extract['title']}</span>);
+        const subtitle = (<span>{content.score.toFixed(3)}<br/> <a href="#">{publisher}</a>{published}</span>);
         let addIcon="";
+
         if (this.state.selectedPKIDs.indexOf(content.pk) >=0 ) {
             cardStyle['backgroundColor'] = colors.grey300;
         } else {
             addIcon=(
-                <IconButton onClick={function(e) {that.onClickedItem(e, content)}} style={{zIndex: 100, float: "right"}}>
+                <IconButton onClick={(e) => this.onClickedItem(e, content)} style={{zIndex: 100, float: "right"}}>
                     <ChevronRight/>
                 </IconButton>
             );
         }
+
         return (
-            <Card onClick={function() { that.showPreview(content)}} 
+            <Card onClick={() => this.showPreview(content)} 
                 key={content.pk} style={cardStyle}> 
                 {addIcon}
                 <CardTitle 
@@ -141,7 +159,8 @@ const AppLeftNav = React.createClass({
                 </CardTitle>
             </Card>
             );
-    },
+    }
+
     render() {
         const {
             workspaceContent,
@@ -150,7 +169,6 @@ const AppLeftNav = React.createClass({
             muiTheme,
             totalCount
         } = this.props;
-        let that = this;
         const style = muiTheme.leftNav;
         return (
             <Drawer
@@ -183,7 +201,7 @@ const AppLeftNav = React.createClass({
                                  rowCount={totalCount}
                                  onRowsRendered={onRowsRendered}
                                  rowRenderer={
-                                     ({index}) => that._renderRow(index)
+                                     ({index}) => this._renderRow(index)
                                  }
                                  overscanRowCount={10}
                                  />
@@ -192,11 +210,13 @@ const AppLeftNav = React.createClass({
                         )}
                     </InfiniteLoader>
                 </div>
-                <ContentPreview content={this.state.previewContent} onClose={this.onPreviewClose}/>
+                <ContentPreview content={this.state.previewContent} onClose={() => this.onPreviewClose()}/>
             </Drawer>
         );
     }
-});
+};
+
+AppLeftNav.propTypes=propTypes;
 
 const mapDispatchToProps = (dispatch) => {
     return {

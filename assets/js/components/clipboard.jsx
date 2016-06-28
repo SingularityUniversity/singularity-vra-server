@@ -18,14 +18,13 @@ const propTypes = {
     muiTheme: React.PropTypes.object.isRequired,
     articleSnippetList: React.PropTypes.array.isRequired,
     onClear: React.PropTypes.func.isRequired
-};
+}
 
-const Clipboard = React.createClass({
-    propTypes: propTypes, 
+class Clipboard extends React.Component {
 
     componentDidMount() {
         new ClipboardCopy(findDOMNode(this.refs.clipboard_button));
-    },
+    }
 
     render() {
         const {
@@ -86,6 +85,8 @@ const Clipboard = React.createClass({
             </Drawer>
         );
     }
-});
+}
+
+Clipboard.propTypes = propTypes;
 
 export default muiThemeable()(Clipboard);

@@ -6,14 +6,15 @@ import IconButton from 'material-ui/IconButton'
 import ActionHelpOutline from 'material-ui/svg-icons/action/help-outline'
 import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table'
 
-const SearchHelpDialog = React.createClass({
-    getInitialState() {
-        return {open: false}
-    },
+class SearchHelpDialog extends React.Component { 
+    constructor(props) {
+        super(props);
+        this.state={open:false};
+    }
 
     toggleState() {
         this.setState({open: !this.state.open})
-    },
+    }
 
     helpText() {
         const columnOneWidth = '25%';
@@ -112,33 +113,33 @@ const SearchHelpDialog = React.createClass({
                 </TableBody>
             </Table>
         )
-    },
+    }
 
     render() {
         const actions = [
             <FlatButton
                 label="Ok"
                 primary={true}
-        onTouchTap={this.toggleState}
+        onTouchTap={()=>this.toggleState()}
         keyboardFocused={true}
         />
         ]
 
         return (
             <div>
-                <IconButton onClick={this.toggleState}><ActionHelpOutline /></IconButton>
+                <IconButton onClick={() => this.toggleState()}><ActionHelpOutline /></IconButton>
                 <Dialog
                     title='Search Help'
                     actions={actions}
                     modal={false}
                     open={this.state.open}
-                    onRequestClose={this.toggleState}
+                    onRequestClose={() => this.toggleState() }
                     autoScrollBodyContent={true} >
                     {this.helpText()}
                 </Dialog>
             </div>
         )
     }
-})
+}
 
 export default muiThemeable()(SearchHelpDialog)

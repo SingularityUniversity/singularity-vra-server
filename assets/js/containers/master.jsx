@@ -1,12 +1,10 @@
 import React from 'react';
-import AppBar from 'material-ui/AppBar';
 import {Toolbar, ToolbarGroup, ToolbarTitle} from 'material-ui/Toolbar';
 import {Card, CardTitle}  from 'material-ui/Card';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import {colors} from 'material-ui/styles';
 import AppLeftNav from '../components/app-left-nav';
 import Clipboard from '../components/clipboard';
-import ClipboardVisibilityButton from '../components/clipboard-visibility-button';
 import ContentDetail from '../components/content-detail';
 import { addSnippetToClipboard, toggleClipboard, clearClipboard } from '../actions/clipboard-actions';
 import { connect } from 'react-redux';
@@ -15,15 +13,11 @@ import { similaritySearch, startKeywordSearch, keywordSearch, clearSearch, addSe
 import { createWorkspace, updateWorkspace, getWorkspaces, loadWorkspace, clearWorkspace, setInWorkspace, deleteWorkspace} from '../actions/workspace-actions';
 import { getArticleCount } from '../actions/article-count-actions';
 import { showSnackbarMessage, closeSnackbar} from '../actions/snackbar-actions';
-import ArrowBack from 'material-ui/svg-icons/navigation/arrow-back';
-import ArrowForward from 'material-ui/svg-icons/navigation/arrow-forward';
-import IconButton from 'material-ui/IconButton';
 import { ActionCreators as UndoActionCreators } from 'redux-undo'
 import RaisedButton from 'material-ui/RaisedButton';
 import WorkspaceChooser from '../components/workspace-chooser';
 import WorkspaceEditor from '../components/workspace-editor';
-import SearchHelpDialog from '../components/search-help-dialog';
-import SearchEntry from '../components/search-entry';
+import AppMenuBar from '../components/app-menu-bar';
 
 class Master extends React.Component {
 
@@ -147,8 +141,6 @@ class Master extends React.Component {
     render() {
         let styles = this.props.muiTheme;
 
-        let title = (<span>Virtual Research Assistant <i className='small'>({this.props.articleCount} articles and counting...)</i></span>);
-        let showMenuIconButton = false;
         let clipboardDocked = true;
         let clipboardWidth = 450;
 
@@ -175,28 +167,17 @@ class Master extends React.Component {
         // XXX: Also a hack in the snackbar to force fontFamily - this may be a bug in material-ui
         return (
             <div style={styles.root}>
-                <AppBar
-                    ref='appBar'
-                    title={title}
-                    titleStyle={styles.appBar.content}
-                    zDepth={0}
-                    style={styles.appBar}
-                    showMenuIconButton={showMenuIconButton} >
-                    <ToolbarGroup>
-                        <IconButton disabled={!this.props.canUndoSearch} onClick={this.props.onUndo}><ArrowBack/></IconButton>
-                        <IconButton disabled={!this.props.canRedoSearch} onClick={this.props.onRedo}><ArrowForward/></IconButton>
-                    </ToolbarGroup>
-                    <ToolbarGroup float='right'>
-                        <SearchEntry
-                            initialSearchText={this.state.initialSearchText}
-                            onSearch={(searchText) => this.doSearch(searchText)}
-                        />
-                        <SearchHelpDialog/>
-                        <ClipboardVisibilityButton
-                        onClick={this.props.onClipboardVisibilityClick}
-                        open={this.props.clipboardVisibility} />
-                    </ToolbarGroup>
-                </AppBar>
+                <AppMenuBar
+                    articleCount = {this.props.articleCount}
+                    canUndoSearch = {this.props.canUndoSearch}
+                    canRedoSearch = {this.props.canRedoSearch}
+                    onUndo = {this.props.onUndo}
+                    onRedo = {this.props.onRedo}
+                    doSearch = {(searchText) => this.doSearch(searchText)}
+                    initialSearchText = {this.state.initialSearchText}
+                    onClipboardVisibilityClick = {this.props.onClipboardVisibilityClick}
+                    clipboardVisibility = {this.props.clipboardVisibilty}
+                />
                 <AppLeftNav
                     onChangeSelected={(content, selected) => this.handleSelectedForWorkspace(content, selected)}
                     displayedContent={this.props.searchData.searchResultData}

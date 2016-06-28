@@ -18,25 +18,20 @@ import {checkResponseAndExtractJSON} from '../actions/util';
 
 import Moment from 'moment';
 
-const ContentDetail = React.createClass({
-
-    propTypes: {
-        isPreview: React.PropTypes.bool.isRequired,
-        content: React.PropTypes.object,
-        muiTheme: React.PropTypes.object.isRequired,
-        onAction: React.PropTypes.func.isRequired  // onAction(content, action_id, params)
-    }, 
-    getInitialState() {
-        return {
+class ContentDetail extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
             summaries: [],
             selectedText: null
         };
-    },
+    }
+
     clickedFindSimilar() {
         if (this.props.onAction) {
             this.props.onAction(this.props.content, 'similar');
         }
-    },
+    }
 
     handleSelectionMenu(e, text) {
         if (e.target.id == 'clip-text') {
@@ -50,14 +45,14 @@ const ContentDetail = React.createClass({
         } else {
             console.error(`SelectionMenu: unknown action (${e.target.id})`);
         }
-    },
+    }
 
     componentDidMount() {
         let that=this;
         new SelectionMenu({
             container: findDOMNode(this.refs.summary_section),
             content: '<div  class="selection-menu"> <ul> <li id="clip-text" class="shortcut" style="padding-left: .5em; padding-right: .5em">Clip&nbsp;Text</li> <li id="search-text" class="shortcut">Search</li> </ul> </div>',
-            handler: function(e) {
+            handler: function(e) {  // Not using es6 => because we want to bind to the SelectionMenu Object
                 that.handleSelectionMenu(e, this.selectedText);
                 this.hide(true);
             }
@@ -66,7 +61,7 @@ const ContentDetail = React.createClass({
         new SelectionMenu({
             container: findDOMNode(this.refs.content_section),
             content: '<div class="selection-menu"> <ul> <li id="clip-text" class="shortcut" style="padding-left: .5em; padding-right: .5em">Clip&nbsp;Text</li> <li id="search-text" class="shortcut">Search</li> </ul> </div>',
-            handler: function(e) {
+            handler: function(e) { // Not using es6 => because we want to bind to the SelectionMenu Object
                 that.handleSelectionMenu(e, this.selectedText);
                 this.hide(true);
             }
@@ -82,10 +77,12 @@ const ContentDetail = React.createClass({
         .then(checkResponseAndExtractJSON)
         .then(json => this.setState({summaries: json.summary}))
         .catch(explanation => console.error("Error getting summary for "+this.props.content.pk+": "+explanation));
-    },
+    }
+
     removeFromWorkspace() {
         this.props.onSetInWorkspace(this.props.content, false);
-    },
+    }
+
     render() {
         const {
             content,
@@ -124,16 +121,17 @@ const ContentDetail = React.createClass({
             }
             else{
                 removeButton = (
-                    <IconButton onClick={this.removeFromWorkspace} ><ContentRemoveCircle color={colors.red500}/></IconButton>
+                    <IconButton onClick={() => this.removeFromWorkspace()} ><ContentRemoveCircle color={colors.red500}/></IconButton>
                 );
                 cardActions = (
                     <CardActions expandable={true}>
-                        <RaisedButton primary={true} onMouseUp={this.clickedFindSimilar} label="Find similar documents"/>
+                        <RaisedButton primary={true} onMouseUp={() => this.clickedFindSimilar()} label="Find similar documents"/>
                         <RaisedButton primary={true} label="Action2"/>
                     </CardActions>
                 );
             }
-            let title= (
+
+            const title= (
                 <span>
                     {extract.title} {removeButton}
                 </span>);
@@ -192,7 +190,14 @@ const ContentDetail = React.createClass({
         }
 
     }
-});
+};
+
+ContentDetail.propTypes = {
+    isPreview: React.PropTypes.bool.isRequired,
+    content: React.PropTypes.object,
+    muiTheme: React.PropTypes.object.isRequired,
+    onAction: React.PropTypes.func.isRequired  // onAction(content, action_id, params)
+}
 
 const mapDispatchToProps = (dispatch) => {
     return {

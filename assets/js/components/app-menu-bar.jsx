@@ -11,12 +11,6 @@ import SearchEntry from '../components/search-entry';
 
 
 class AppMenuBar extends React.Component {
-    constructor(props)  {
-        super(props);
-        this.state = {
-            clipboardVisibility: false
-        }
-    }
 
     render() {
         const styles = this.props.muiTheme;

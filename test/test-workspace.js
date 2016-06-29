@@ -10,13 +10,17 @@ import TestUtils from 'react-addons-test-utils'
 import React from 'react'
 import {WorkspaceList} from '../assets/js/components/workspace-chooser'
 import {WorkspaceEditorInternal} from '../assets/js/components/workspace-editor'
+import {_Workspace} from '../assets/js/components/workspace'
 import { mount, shallow } from 'enzyme';
 import TextField from 'material-ui/TextField';
 import {ListItem} from 'material-ui/List';
 import IconButton from 'material-ui/IconButton';
+import {Toolbar, ToolbarGroup, ToolbarTitle} from 'material-ui/Toolbar';
+import {Card}  from 'material-ui/Card';
 import theme from '../assets/js/theme';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import {jsdom} from 'jsdom';
+import ContentDetail from '../assets/js/components/content-detail';
 const middlewares = [ thunk ];
 const mockStore = configureMockStore(middlewares);
 
@@ -558,6 +562,137 @@ describe('Workspace functionality', () => {
                 })
             })
         })
-        it('Workspace-related Master functionality (encourage refactoring)')
+        describe("<Workspace> tests", () => {
+            const defaultProps = {
+                chooseWorkspace: expect.createSpy(),
+                deleteWorkspace: expect.createSpy(),
+                workspacesOnServer:  [
+                    {id: 1, title: "workspace 1", description: "description 1"},
+                    {id: 2, title: "workspace 2", description: "description 2"},
+                    {id: 3, title: "workspace 3", description: "description 3"}
+                ],
+                submitWorkspace: expect.createSpy(),
+                workspaceData: {
+                    title: "New Title",
+                    description: "New Description",
+                    articles: [ {pk: 101}, {pk: 102}, {pk:103} ],
+                    dirty: false
+                },
+                showLoadWorkspace: expect.createSpy(),
+                showUpdateWorkspace: expect.createSpy(),
+                showCreateWorkspace: expect.createSpy(),
+                unSelectAll: expect.createSpy(),
+                cancelChooseWorkspace: expect.createSpy(),
+                findSimilarMultiple: expect.createSpy(),
+                workspaceChooserVisible: false,
+                workspaceEditorVisible: false,
+                workspaceEditorCreating: false,
+                muiTheme: getMuiTheme(theme)
+            }
+            it("Renders non-empty workspace correctly", () => {
+                const store = mockStore({});
+                const props = Object.assign({}, defaultProps);
+                const item = shallow(
+                    <_Workspace {...props}/>,
+                    {
+                        context: {
+                            muiTheme: getMuiTheme(theme),
+                            store: store
+                        },
+                        childContextTypes: {
+                            muiTheme: React.PropTypes.object,
+                            store: React.PropTypes.object
+                        }
+                    }
+                );
+                const toolbars = item.find(Toolbar);
+                expect(toolbars.length).toEqual(2);
+                const firstToolbar = toolbars.at(0);
+                const toolbarTitle = firstToolbar.find(ToolbarTitle);
+                expect(toolbarTitle.get(0).props['text']).toEqual("New Title");
+                expect(firstToolbar.find(ToolbarGroup).at(0).children().length).toEqual(2); // No text for "Unsaved"
+                expect(item.children().length).toEqual(7);
+                expect(item.childAt(4).type()).toEqual(ContentDetail);
+                expect(item.childAt(5).type()).toEqual(ContentDetail);
+                expect(item.childAt(6).type()).toEqual(ContentDetail);
+            })
+            it("Renders empty workspace with no title correctly", () => {
+                const store = mockStore({});
+                const props = Object.assign({}, defaultProps, {workspaceData: {title: '', description: '', articles: [], dirty: false}});
+                const item = shallow(
+                    <_Workspace {...props}/>,
+                    {
+                        context: {
+                            muiTheme: getMuiTheme(theme),
+                            store: store
+                        },
+                        childContextTypes: {
+                            muiTheme: React.PropTypes.object,
+                            store: React.PropTypes.object
+                        }
+                    }
+                );
+                const title = item.find(ToolbarTitle).get(0);
+                expect(title.props['text']).toEqual('Untitled Workspace');
+                const firstToolbarGroup = item.find(ToolbarGroup).at(0);
+                expect(firstToolbarGroup.children().length).toEqual(2);
+                expect(item.children().length).toEqual(5);
+                expect(item.childAt(4).type()).toEqual(Card);
+            })
+            it("Renders empty workspace with title correctly", () => {
+                const store = mockStore({});
+                const props = Object.assign({}, defaultProps, {workspaceData: {title: 'A real title', description: '', articles: [], dirty: false}});
+                const item = shallow(
+                    <_Workspace {...props}/>,
+                    {
+                        context: {
+                            muiTheme: getMuiTheme(theme),
+                            store: store
+                        },
+                        childContextTypes: {
+                            muiTheme: React.PropTypes.object,
+                            store: React.PropTypes.object
+                        }
+                    }
+                );
+                const title = item.find(ToolbarTitle).get(0);
+                expect(title.props['text']).toEqual('A real title');
+                const firstToolbarGroup = item.find(ToolbarGroup).at(0);
+                expect(firstToolbarGroup.children().length).toEqual(2);
+                expect(item.children().length).toEqual(5);
+                expect(item.childAt(4).type()).toEqual(Card);
+
+            })
+            it("Renders dirty workspace correctly", () => {
+                const props = Object.assign({}, defaultProps, {workspaceData: Object.assign({}, defaultProps.workspaceData, {dirty: true})});
+                const store = mockStore({});
+                const item = shallow(
+                    <_Workspace {...props}/>,
+                    {
+                        context: {
+                            muiTheme: getMuiTheme(theme),
+                            store: store
+                        },
+                        childContextTypes: {
+                            muiTheme: React.PropTypes.object,
+                            store: React.PropTypes.object
+                        }
+                    }
+                );
+                const toolbars = item.find(Toolbar);
+                expect(toolbars.length).toEqual(2);
+                const firstToolbar = toolbars.at(0);
+                const toolbarTitle = firstToolbar.find(ToolbarTitle);
+                expect(toolbarTitle.get(0).props['text']).toEqual("New Title");
+                expect(firstToolbar.find(ToolbarGroup).at(0).children().length).toEqual(3); // text for "Unsaved"
+                expect(firstToolbar.find(ToolbarGroup).at(0).childAt(2).type()).toEqual(ToolbarTitle);
+                expect(firstToolbar.find(ToolbarGroup).at(0).children().get(2).props['text']).toEqual('Unsaved');
+                expect(item.children().length).toEqual(7);
+                expect(item.childAt(4).type()).toEqual(ContentDetail);
+                expect(item.childAt(5).type()).toEqual(ContentDetail);
+                expect(item.childAt(6).type()).toEqual(ContentDetail);
+            })
+        })
     })
+    it('Integration tests - test that the right callback happens if buttons pressed after full rendering')
 })

@@ -11,7 +11,7 @@ import WorkspaceEditor from '../components/workspace-editor';
 import ContentDetail from '../components/content-detail';
 
 
-class Workspace extends React.Component {
+export class _Workspace extends React.Component {
 
     render() {
         const styles = this.props.muiTheme;
@@ -70,7 +70,7 @@ class Workspace extends React.Component {
 
 }
 
-Workspace.propTypes = {
+_Workspace.propTypes = {
     chooseWorkspace: React.PropTypes.func.isRequired,
     deleteWorkspace: React.PropTypes.func.isRequired,
     workspacesOnServer: React.PropTypes.array.isRequired,
@@ -87,4 +87,4 @@ Workspace.propTypes = {
     workspaceEditorCreating: React.PropTypes.bool.isRequired
 }
 
-export default muiThemeable()(Workspace);
+export default muiThemeable()(_Workspace);

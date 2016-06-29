@@ -31,6 +31,7 @@
     "mocha": "^2.5.3",
     "moment": "^2.13.0",
     "node-sass": "^3.8.0",
+    "nyc": "^6.6.1",
     "postcss-loader": "^0.8.2",
     "react": "^15.1.0",
     "react-addons-shallow-compare": "^15.1.0",
@@ -61,8 +62,21 @@
     "watch": "webpack -d --watch --config webpack.local.config.js",
     "build": "webpack -d --config webpack.local.config.js",
     "build-prod": "webpack -p --config webpack.prod.config.js",
-    "test": "mocha test/.setup.js test/* --compilers js:babel-core/register --recursive",
+    "test": "nyc --reporter=lcov --reporter=html --reporter=text mocha test/.setup.js test/* --compilers js:babel-core/register --recursive",
     "test:watch": "npm test -- --watch",
     "serve": "node server.js"
+  },
+  "nyc": {
+    "include": [
+      "assets/js/**"
+    ],
+    "require": [
+      "babel-register"
+    ],
+    "extension": [
+      ".js",
+      ".jsx",
+      ".es6"
+    ]
   }
 }

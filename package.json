@@ -62,7 +62,8 @@
     "watch": "webpack -d --watch --config webpack.local.config.js",
     "build": "webpack -d --config webpack.local.config.js",
     "build-prod": "webpack -p --config webpack.prod.config.js",
-    "test": "nyc --reporter=lcov --reporter=html --reporter=text mocha test/.setup.js test/* --compilers js:babel-core/register --recursive",
+    "test": "mocha test/.setup.js test/* --compilers js:babel-core/register --recursive",
+    "test-coverage": "nyc --reporter=lcov --reporter=html --reporter=text mocha test/.setup.js test/* --compilers js:babel-core/register --recursive && echo 'BE SUSPICIOUS OF THESE COVERAGE NUMBERS SINCE TESTS INVOKE CODE NOT NECCESARILY BEING TESTED'",
     "test:watch": "npm test -- --watch",
     "serve": "node server.js"
   },

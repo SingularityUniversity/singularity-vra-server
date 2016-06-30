@@ -114,6 +114,10 @@ class AppLeftNav extends React.Component {
         this.setState({previewContent: content});
     }
 
+    onPreviewClose() {
+        this.setState({previewContent: null});
+    }
+
     _renderRow(index) {
         let published = '';
         let publisher = '';
@@ -207,7 +211,7 @@ class AppLeftNav extends React.Component {
                         )}
                     </InfiniteLoader>
                 </div>
-                <ContentPreview content={this.state.previewContent}/>
+                <ContentPreview onClose={() => this.onPreviewClose()} content={this.state.previewContent}/>
             </Drawer>
         );
     }

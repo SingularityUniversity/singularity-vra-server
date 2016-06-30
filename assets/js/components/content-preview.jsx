@@ -16,10 +16,11 @@ class ContentPreview extends React.Component {
 
     requestClose() {
         this.toggleState();
+        this.props.onClose();
     }
 
     componentWillReceiveProps(newProps) {
-        if (newProps.content != null) {
+        if ((newProps.content != null)  && (newProps.content != this.props.content)) {
             this.setState({open: true});
         }
     }
@@ -41,7 +42,7 @@ class ContentPreview extends React.Component {
                 contentStyle={{width: "90%", maxWidth:null}}
                 actions={actions}
                 autoScrollBodyContent={true}
-                onRequestClose={() => this.toggleState()}
+                onRequestClose={() => this.requestClose()}
             >
                 <ContentDetail isPreview={true} content={this.props.content}/>
             </Dialog>
@@ -51,7 +52,8 @@ class ContentPreview extends React.Component {
 
 ContentPreview.propTypes={
     muiTheme: React.PropTypes.object.isRequired,
-    content: React.PropTypes.object.isRequired
+    content: React.PropTypes.object.isRequired,
+    onClose: React.PropTypes.func.isRequired
 
 };
 

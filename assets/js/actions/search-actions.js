@@ -42,8 +42,10 @@ export function keywordSearch(query, offset, limit) {
             .then(json => {
                 let entries = json.hits.hits.map(function(x) {return {score: x._score, ...x._source}});
                 delete keywordSearchRequests[data];
-                let msg = ( <span> Did a content search with <em>{query}</em> </span>);
-                dispatch(showSnackbarMessage(msg));
+                if (offset == 0) {
+                    let msg = ( <span> Did a content search with <em>{query}</em> </span>);
+                    dispatch(showSnackbarMessage(msg));
+                }
 
                 dispatch(addSearchResults(entries, offset, json.hits.total));
                 resolve();

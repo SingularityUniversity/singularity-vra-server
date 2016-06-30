@@ -129,33 +129,34 @@ class AppLeftNav extends React.Component {
 
         }
         if (content.fields.extract['published']) {
-            published = Moment(parseInt(content.fields.extract['published'])).format('YYYY-MM-DD');
+            published = (<div style={{fontSize:12}}>Published on {Moment(parseInt(content.fields.extract['published'])).format('YYYY-MM-DD')}</div>);
         }
         if (content.fields.extract['provider_name']) {
             publisher = content.fields.extract['provider_name'];
         }
-        const title = (<span style={{fontSize: "125%"}}>{content.fields.extract['title']}</span>);
-        const subtitle = (<span>{content.score.toFixed(3)}<br/> <a href="#">{publisher}</a>{published}</span>);
         let addIcon="";
-
         if (this.state.selectedPKIDs.indexOf(content.pk) >=0 ) {
             cardStyle['backgroundColor'] = colors.grey300;
         } else {
             addIcon=(
-                <IconButton onClick={(e) => this.onClickedItem(e, content)} style={{zIndex: 100, float: "right"}}>
+                <IconButton onClick={(e) => this.onClickedItem(e, content)} style={{width: 48, zIndex: 9900, verticalAlign: "top", float: "right"}} >
                     <ChevronRight/>
                 </IconButton>
             );
         }
+        const drawerWidth = this.props.muiTheme.drawer.width;
+
+        const title = (<span><span style={{fontSize: 14, lineHeight: "1em", display: "inline-block", width:drawerWidth-32-48, textOverflow: "ellipsis", maxHeight: "4em", overflow:"hidden"}}>{content.fields.extract['title']}</span>{addIcon}</span>); // 32 from padding from cardtitle, 48 for button
+        const subtitle = (<span><div style={{fontSize: 12}}>Score: {content.score.toFixed(3)}</div> {published} <a href="#">{publisher}</a></span>);
+
 
         return (
             <Card onClick={() => this.showPreview(content)}
                 key={content.pk} style={cardStyle}>
-                {addIcon}
                 <CardTitle
+                    titleStyle={{fontSize: 14, lineHeight: '1em'}}
                     title={title}
-                    subtitle={subtitle}
-                    titleStyle={{fontSize: '75%', lineHeight:null }}>
+                    subtitle={subtitle}>
                 </CardTitle>
             </Card>
             );

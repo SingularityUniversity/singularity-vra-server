@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import {Toolbar, ToolbarGroup, ToolbarTitle} from 'material-ui/Toolbar';
@@ -13,12 +14,28 @@ import ContentDetail from '../components/content-detail';
 
 export class _Workspace extends React.Component {
 
+    componentDidUpdate(prevProps, prevState) { 
+        if ((prevProps.workspaceData.articles.length) < (this.props.workspaceData.articles.length)) {
+            if (this._lastContent) {
+                let domNode = ReactDOM.findDOMNode(this._lastContent);
+                domNode.scrollIntoView();
+            }
+        }
+    }
+
     render() {
         const styles = this.props.muiTheme;
-        let contentItems = this.props.workspaceData.articles.map(function(content) {
-            return (
-                <ContentDetail isPreview={false} key={content.pk} style={styles.fullWidthSection} content={content} onAction={() => this.handleContentAction()}/>
-            );
+        const that = this;
+        let contentItems = this.props.workspaceData.articles.map(function(content, index, array) {
+            if (index == array.length - 1) {
+                return (
+                    <ContentDetail ref={(c) => that._lastContent = c} isPreview={false} key={content.pk} style={styles.fullWidthSection} content={content} onAction={() => this.handleContentAction()}/>
+                );
+            } else {
+                return (
+                    <ContentDetail isPreview={false} key={content.pk} style={styles.fullWidthSection} content={content} onAction={() => this.handleContentAction()}/>
+                );
+            }
         });
         let disabled=false;
         if (contentItems.length == 0) {

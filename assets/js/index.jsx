@@ -4,7 +4,6 @@ import React from 'react';
 import {render} from 'react-dom';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import App from './app';
-import Cookies from 'js-cookie';
 import $ from 'jquery';
 
 import "../css/style.scss";

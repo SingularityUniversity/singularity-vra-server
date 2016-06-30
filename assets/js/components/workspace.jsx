@@ -14,7 +14,7 @@ import ContentDetail from '../components/content-detail';
 
 export class _Workspace extends React.Component {
 
-    componentDidUpdate(prevProps, prevState) { 
+    componentDidUpdate(prevProps, prevState) { // eslint-disable-line no-unused-vars
         if ((prevProps.workspaceData.articles.length) < (this.props.workspaceData.articles.length)) {
             if (this._lastContent) {
                 let domNode = ReactDOM.findDOMNode(this._lastContent);

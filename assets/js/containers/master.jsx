@@ -183,7 +183,7 @@ class Master extends React.Component {
                     openSecondary={true}
                     width={450}
                     articleSnippetList={this.props.articleSnippetList}
-                    onClear={this.props.onClearClipboard} 
+                    onClear={this.props.onClearClipboard}
                 />
                 <Workspace
                     chooseWorkspace={(id) => this.chooseWorkspace(id)}

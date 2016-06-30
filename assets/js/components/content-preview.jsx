@@ -52,7 +52,7 @@ class ContentPreview extends React.Component {
 
 ContentPreview.propTypes={
     muiTheme: React.PropTypes.object.isRequired,
-    content: React.PropTypes.object.isRequired,
+    content: React.PropTypes.object,
     onClose: React.PropTypes.func.isRequired
 
 };

@@ -196,7 +196,7 @@ ContentDetail.propTypes = {
     isPreview: React.PropTypes.bool.isRequired,
     content: React.PropTypes.object,
     muiTheme: React.PropTypes.object.isRequired,
-    onAction: React.PropTypes.func.isRequired  // onAction(content, action_id, params)
+    onAction: React.PropTypes.func // onAction(content, action_id, params)
 }
 
 const mapDispatchToProps = (dispatch) => {

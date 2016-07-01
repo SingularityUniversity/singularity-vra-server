@@ -8,11 +8,12 @@ import {SNACKBAR_SHOW_MESSAGE} from '../assets/js/actions/snackbar-actions'
 import {workspaceReducer} from '../assets/js/reducers/workspace-reducer'
 import TestUtils from 'react-addons-test-utils'
 import React from 'react'
-import {WorkspaceList} from '../assets/js/components/workspace-chooser'
+import {WorkspaceList, _WorkspaceChooser} from '../assets/js/components/workspace-chooser'
 import {WorkspaceEditorInternal} from '../assets/js/components/workspace-editor'
 import {_Workspace} from '../assets/js/components/workspace'
 import { mount, shallow } from 'enzyme';
 import TextField from 'material-ui/TextField';
+import RaisedButton from 'material-ui/RaisedButton';
 import {ListItem} from 'material-ui/List';
 import IconButton from 'material-ui/IconButton';
 import {Toolbar, ToolbarGroup, ToolbarTitle} from 'material-ui/Toolbar';
@@ -405,9 +406,103 @@ describe('Workspace functionality', () => {
                 expect(onDeleteWorkspace.calls[1].arguments).toEqual([2]);
                 expect(onDeleteWorkspace.calls[2].arguments).toEqual([3]);
             })
-            it('<WorkspaceChooser>', () => {
-                // XXX: How do we test material-ui elemenst where the body is rendered outside the dom of the root element (ie
-                // popover-based components?) See: https://github.com/airbnb/enzyme/issues/252
+            describe('<_WorkspaceChooser> mount', () => {
+                let context = {};
+                beforeEach(() => {
+                    global.document=jsdom('');
+                    context.onCancel = expect.createSpy();
+                    context.onChooseWorkspace = expect.createSpy();
+                    context.onDeleteWorkspace = expect.createSpy();
+                    context.workspacesOnServer =  [
+                        {id: 1, title: "workspace 1", description: "description 1"},
+                        {id: 2, title: "workspace 2", description: "description 2"},
+                        {id: 3, title: "workspace 3", description: "description 3"}
+                    ]
+                    context.store = mockStore({});
+                    context.startProps = {
+                        visible: false, 
+                        onCancel: context.onCancel,
+                        onDeleteWorkspace: context.onDeleteWorkspace,
+                        onChooseWorkspace: context.onChooseWorkspace,
+                        workspacesOnServer: context.workspacesOnServer
+                    }
+                    context.mountOptions = {
+                            context: {
+                                muiTheme: getMuiTheme(theme),
+                                store: context.store
+                            },
+                            childContextTypes: {
+                                muiTheme: React.PropTypes.object,
+                                store: React.PropTypes.object
+                            }
+                        }
+                })
+                it('clicking cancel dismisses it', () => {
+
+                    const item = mount(
+                        <_WorkspaceChooser {...context.startProps}/>,
+                        context.mountOptions
+                    );
+/*                    console.log("Item layer is ", item.instance().refs.dialog);
+                    let dialogObject = item.instance().refs.dialog;
+                    console.log("Button is ", dialogObject.props); // STOPPED
+                    let cancelButton = item.find(RaisedButton);
+                    console.log("Found raisedButton!", cancelButton);
+*/
+
+                    item.setProps({...context.startProps, visible: true});
+                    expect(item.state().open).toEqual(true);
+                    const overlayElement = document.getElementsByClassName('workspaceChooser')[0].childNodes[2];
+                    const button = document.getElementsByTagName('button')[0];
+                    expect(overlayElement.offsetLeft >= 0);
+                    TestUtils.Simulate.click(button);
+//                    expect(context.onCancel.calls.length).toEqual(1);
+//                    expect(item.state().open).toEqual(false);
+                    expect(overlayElement.offsetLeft < 0);
+                })
+
+                it('hitting escape dismisses it', () => {
+
+                    const item = mount(
+                        <_WorkspaceChooser {...context.startProps}/>,
+                        context.mountOptions
+                    );
+
+                    item.setProps({...context.startProps, visible: true});
+                    expect(item.state().open).toEqual(true);
+                    const overlayElement = document.getElementsByClassName('workspaceChooser')[0].childNodes[2];
+                    expect(overlayElement.offsetLeft >= 0);
+                    TestUtils.Simulate.keyPress(overlayElement, {which: 27, keyCode: 27});
+//                    expect(context.onCancel.calls.length).toEqual(1);
+//                    expect(item.state().open).toEqual(false);
+                    expect(overlayElement.offsetLeft < 0);
+                })
+                it('clicking outside chooser dismisses it', () => {
+
+                    const item = mount(
+                        <_WorkspaceChooser {...context.startProps}/>,
+                        context.mountOptions
+                    );
+
+                    item.setProps({...context.startProps, visible: true});
+                    expect(item.state().open).toEqual(true);
+                    const overlayElement = document.getElementsByClassName('workspaceChooser')[0].childNodes[2];
+                    expect(overlayElement.offsetLeft >= 0);
+                    TestUtils.Simulate.click(overlayElement);
+//                    expect(context.onCancel.calls.length).toEqual(1);
+//                    expect(item.state().open).toEqual(false);
+                    expect(overlayElement.offsetLeft < 0);
+                })
+
+                it('mounts with expected visibility and converts to visible when prop changes', () => {
+                    const item = mount(
+                        <_WorkspaceChooser {...context.startProps}/>,
+                        context.mountOptions
+                    );
+                    expect(item.state().open).toEqual(false);
+                    item.setProps({...context.startProps, visible: true});
+                    expect(item.state().open).toEqual(true);
+                })
             })
         })
         describe('<WorkspaceEditor>', () => {

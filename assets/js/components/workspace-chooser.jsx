@@ -38,15 +38,37 @@ export class WorkspaceList extends React.Component {
     }
 
 }
-export class WorkspaceChooser extends React.Component {
+export class _WorkspaceChooser extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state={open:false};
+    }
+
+    toggleState() {
+        this.setState({open: !this.state.open})
+    }
+
+    requestClose() {
+        console.log("Request close was called!");
+        this.setState({open: false});
+        this.props.onCancel();
+    }
+
+    componentWillReceiveProps(newProps) {
+        if ((newProps.visible)  && (!this.props.visible)) {
+            this.setState({open: true});
+        } else if (!newProps.visible) {
+            this.setState({open: false});
+        }
+    }
 
     render() {
         const actions=[
-            (<RaisedButton  label="Cancel" primary={true} onTouchTap={this.props.onCancel} />)
+            (<RaisedButton  label="Cancel" primary={true} onTouchTap={() =>{this.requestClose()}} />)
         ];
         return (
-            <Dialog actions={actions} title="Workspaces" open={this.props.visible}  autoScrollBodyContent={true}>
-                <WorkspaceList workspacesOnServer={this.props.workspacesOnServer} onCancel={this.props.onCancel}
+            <Dialog ref="dialog" className="workspaceChooser" actions={actions} title="Workspaces" open={this.state.open}  modal={false} onRequestClose={() => this.requestClose()} autoScrollBodyContent={true}>
+                <WorkspaceList workspacesOnServer={this.props.workspacesOnServer} onCancel={() => this.requestClose()}
                     onChooseWorkspace={this.props.onChooseWorkspace}
                     onDeleteWorkspace={this.props.onDeleteWorkspace}
                 />
@@ -55,5 +77,5 @@ export class WorkspaceChooser extends React.Component {
     }
 }
 
-export default connect(null, null)(muiThemeable()(WorkspaceChooser));
+export default connect(null, null)(muiThemeable()(_WorkspaceChooser));
 

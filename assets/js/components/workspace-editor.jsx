@@ -11,7 +11,25 @@ export class WorkspaceEditorInternal extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            workspacesToLoad: []
+            workspacesToLoad: [],
+            open: false
+        }
+    }
+
+    toggleState() {
+        this.setState({open: !this.state.open})
+    }
+
+    requestClose() {
+        this.toggleState();
+        this.props.onCancel();
+    }
+
+    componentWillReceiveProps(newProps) {
+        if ((newProps.visible)  && (!this.props.visible)) {
+            this.setState({open: true});
+        } else if (!newProps.visible) {
+            this.setState({open: false});
         }
     }
 
@@ -48,10 +66,10 @@ export class WorkspaceEditorInternal extends React.Component {
         }
         const actions = [
             (<RaisedButton label={action} primary={true} onClick={this.onSubmit} />),
-            (<RaisedButton label="Cancel" primary={true} onClick={this.props.onCancel} />)
+            (<RaisedButton label="Cancel" primary={true} onClick={() => this.requestClose()} />)
         ];
         return (
-            <Dialog title="Workspace" open={this.props.visible} actions={actions}  autoScrollBodyContent={true}>
+            <Dialog title="Workspace" open={this.props.visible} actions={actions} modal={false} onRequestClose={() => this.requestClose()} autoScrollBodyContent={true}>
                 <TextField
                     fullWidth={true}
                     floatingLabelText="Title"

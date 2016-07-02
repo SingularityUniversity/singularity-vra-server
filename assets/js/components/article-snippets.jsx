@@ -44,7 +44,7 @@ class ArticleSnippets extends React.Component {
         return this.props.snippets.map((snippet, index) => {
             return (
                 <li key={snippet}>
-                    {snippet}<IconButton onClick={() => this.clickedRemove(index)} style={buttonStyle} iconStyle={iconStyle} ><ContentRemoveCircle color={colors.red500}/></IconButton>
+                    {snippet}<IconButton tooltip="Remove snippet from clipboard" onClick={() => this.clickedRemove(index)} style={buttonStyle} iconStyle={iconStyle} ><ContentRemoveCircle color={colors.red500}/></IconButton>
                 </li>
             );
         });

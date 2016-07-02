@@ -121,7 +121,7 @@ class ContentDetail extends React.Component {
             }
             else{
                 removeButton = (
-                    <IconButton onClick={() => this.removeFromWorkspace()} ><ContentRemoveCircle color={colors.red500}/></IconButton>
+                    <IconButton tooltip="Remove from workspace"  onClick={() => this.removeFromWorkspace()} ><ContentRemoveCircle color={colors.red500}/></IconButton>
                 );
                 cardActions = (
                     <CardActions expandable={true}>

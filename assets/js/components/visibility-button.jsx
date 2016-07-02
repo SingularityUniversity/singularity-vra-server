@@ -4,7 +4,7 @@ import KeyboardArrowRight from 'material-ui/svg-icons/hardware/keyboard-arrow-ri
 import KeyboardArrowLeft from 'material-ui/svg-icons/hardware/keyboard-arrow-left';
 
 
-class ClipboardVisibilityButton extends React.Component {
+class VisibilityButton extends React.Component {
     arrow() {
         let isLeft = true;
         if (this.props.side=="right") {
@@ -21,10 +21,8 @@ class ClipboardVisibilityButton extends React.Component {
     tooltip() {
         if (this.props.open) {
             return this.props.tooltipOpenedText;
-            //            return 'Close clipboard';
         } else {
             return this.props.tooltipClosedText;
-            //            return 'Open clipboard';
         }
     }
 
@@ -41,7 +39,7 @@ class ClipboardVisibilityButton extends React.Component {
     }
 }
 
-ClipboardVisibilityButton.propTypes={
+VisibilityButton.propTypes={
     open: React.PropTypes.bool.isRequired,
     tooltipPosition: React.PropTypes.string.isRequired,
     tooltipClosedText: React.PropTypes.string.isRequired,
@@ -49,4 +47,4 @@ ClipboardVisibilityButton.propTypes={
     side: React.PropTypes.string.isRequired, // "left" or "right"
 }
 
-export default ClipboardVisibilityButton
+export default VisibilityButton

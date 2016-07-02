@@ -9,7 +9,7 @@ import ContentCopy from 'material-ui/svg-icons/content/content-copy';
 import ContentClear from 'material-ui/svg-icons/content/clear';
 import ArticleSnippetList from './article-snippet-list';
 import ClipboardCopy from 'clipboard';
-import ClipboardVisibilityButton from '../components/clipboard-visibility-button';
+import VisibilityButton from '../components/visibility-button';
 
 
 const propTypes = {
@@ -63,7 +63,7 @@ class Clipboard extends React.Component {
                     right: 0,
                     top: "50%"
                 }}>
-                    <ClipboardVisibilityButton
+                    <VisibilityButton
                         onClick={this.props.onClipboardVisibilityClick}
                         open={this.props.open} 
                         tooltipPosition="bottom-left"
@@ -85,7 +85,7 @@ class Clipboard extends React.Component {
                     top: "50%",
                     zIndex: 9999
                 }}>
-                    <ClipboardVisibilityButton
+                    <VisibilityButton
                         onClick={this.props.onClipboardVisibilityClick}
                         open={this.props.open}
                         tooltipPosition="bottom-center"

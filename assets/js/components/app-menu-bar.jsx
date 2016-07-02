@@ -3,7 +3,6 @@ import muiThemeable from 'material-ui/styles/muiThemeable';
 import AppBar from 'material-ui/AppBar';
 import {ToolbarGroup} from 'material-ui/Toolbar';
 import IconButton from 'material-ui/IconButton';
-import ClipboardVisibilityButton from '../components/clipboard-visibility-button';
 import ArrowBack from 'material-ui/svg-icons/navigation/arrow-back';
 import ArrowForward from 'material-ui/svg-icons/navigation/arrow-forward';
 import SearchHelpDialog from '../components/search-help-dialog';

@@ -11,7 +11,7 @@ import ChevronRight from 'material-ui/svg-icons/navigation/chevron-right';
 import { showSnackbarMessage} from '../actions/snackbar-actions';
 import { connect } from 'react-redux';
 import ContentPreview from './content-preview';
-import ClipboardVisibilityButton from '../components/clipboard-visibility-button';
+import VisibilityButton from '../components/visibility-button';
 
 let SelectableList = MakeSelectable(List);
 
@@ -180,7 +180,7 @@ class AppLeftNav extends React.Component {
                     left: 0,
                     top: "50%"
                 }}>
-                    <ClipboardVisibilityButton
+                    <VisibilityButton
                         onClick={this.props.onSearchResultsVisibilityClick}
                         open={this.props.open} 
                         tooltipPosition="bottom-right"
@@ -200,7 +200,7 @@ class AppLeftNav extends React.Component {
                     top: "50%",
                     zIndex: 9999
                 }}>
-                    <ClipboardVisibilityButton
+                    <VisibilityButton
                         onClick={this.props.onSearchResultsVisibilityClick}
                         open={this.props.open}
                         tooltipPosition="bottom-center"

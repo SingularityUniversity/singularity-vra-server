@@ -73,6 +73,7 @@ export class _Workspace extends React.Component {
         if ((this.props.workspaceData.articles.length > 0) || this.props.workspaceData.title) {
             clearDisabled = false;
         }
+        const itemCount = (<ToolbarTitle style={{color: colors.grey500, fontFamily: this.props.muiTheme.baseTheme.fontFamily, fontStyle: "italic"}} text={`${this.props.workspaceData.articles.length} item(s)`}/> );
         let dirty = this.props.workspaceData.dirty ? (<ToolbarTitle style={{color: colors.grey500, fontFamily: this.props.muiTheme.baseTheme.fontFamily, fontStyle: "italic"}} text="Unsaved"/>) : "";
 
         return (
@@ -81,7 +82,7 @@ export class _Workspace extends React.Component {
                     <ToolbarGroup>
                         <ToolbarTitle style={{color:colors.black, fontWeight: "bold", fontFamily:this.props.muiTheme.baseTheme.fontFamily}}
                             text={this.props.workspaceData.title? this.props.workspaceData.title : "Untitled Workspace"}/><br/>
-                        {dirty}
+                        {itemCount} {dirty}
                     </ToolbarGroup>
                 </Toolbar>
                 <Toolbar>

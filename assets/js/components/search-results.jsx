@@ -215,7 +215,6 @@ class SearchResults extends React.Component {
                     <p><strong>{searchType}</strong><br/>
                         {searchText ? (<span><i>'{searchText}'</i><br/></span>) : ''}
                         <i>{totalCount} results</i><br/>
-                        <i>{workspaceContent.length} in workspace</i><br/>
                     </p>
                     <Divider/>
                 </div>

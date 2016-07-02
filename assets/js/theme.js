@@ -104,11 +104,7 @@ export default {
             marginBottom: desktopGutter
         },
         root: {
-            maxWidth: '1200px',
-            marginTop: desktopKeylineIncrement * 2,
-            marginRight: desktopKeylineIncrement,
-            marginBottom: desktopKeylineIncrement,
-            marginLeft: desktopGutter + (desktopKeylineIncrement * 4)
+            margin: desktopKeylineIncrement *2
         }
     }
 };

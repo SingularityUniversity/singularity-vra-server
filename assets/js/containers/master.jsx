@@ -192,9 +192,7 @@ class Master extends React.Component {
                     width={450}
                 />
                 <Clipboard
-                    docked={true}
                     open={this.props.clipboardVisibility}
-                    openSecondary={true}
                     width={450}
                     articleSnippetList={this.props.articleSnippetList}
                     onClear={this.props.onClearClipboard}

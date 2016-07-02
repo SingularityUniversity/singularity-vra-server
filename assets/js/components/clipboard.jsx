@@ -29,9 +29,7 @@ class Clipboard extends React.Component {
 
     render() {
         const {
-            docked,
             open,
-            openSecondary,
             width,
             articleSnippetList,
             onClear
@@ -74,9 +72,9 @@ class Clipboard extends React.Component {
                 </div>
             <Drawer
                 containerStyle={style}
-                docked={docked}
+                docked={true}
                 open={open}
-                openSecondary={openSecondary}
+                openSecondary={true}
                 width={width}
                 >
                 <div style={{

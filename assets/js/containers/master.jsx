@@ -166,7 +166,7 @@ class Master extends React.Component {
                     doSearch = {(searchText) => this.doSearch(searchText)}
                     initialSearchText = {this.state.initialSearchText}
                     onClipboardVisibilityClick = {this.props.onClipboardVisibilityClick}
-                    clipboardVisibility = {this.props.clipboardVisibilty}
+                    clipboardVisibility = {this.props.clipboardVisibility}
                 />
                 <AppLeftNav
                     onChangeSelected={(content, selected) => this.handleSelectedForWorkspace(content, selected)}

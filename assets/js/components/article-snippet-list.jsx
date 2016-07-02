@@ -18,7 +18,7 @@ class ArticleSnippetList extends React.Component {
 
     render() {
         return (
-            <List>
+            <List style={{padding:"0 0 0 24px"}}>
                 { this.articleSnippets() }
             </List>
         );

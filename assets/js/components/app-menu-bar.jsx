@@ -32,9 +32,6 @@ class AppMenuBar extends React.Component {
                         onSearch={this.props.doSearch}
                     />
                     <SearchHelpDialog/>
-                    <ClipboardVisibilityButton
-                        onClick={this.props.onClipboardVisibilityClick}
-                        open={this.props.clipboardVisibility} />
                 </ToolbarGroup>
             </AppBar>
 
@@ -49,9 +46,7 @@ AppMenuBar.props={
     onUndo: React.PropTypes.func.isRequired,
     onRedo: React.PropTypes.func.isRequired,
     initialSearchText: React.PropTypes.string.isRequired,
-    doSearch: React.PropTypes.func.isRequired,
-    onClipboardVisibilityClick: React.PropTypes.func.isRequired,
-    clipboardVisibility: React.PropTypes.bool.isRequired
+    doSearch: React.PropTypes.func.isRequired
 }
 
 export default muiThemeable()(AppMenuBar)

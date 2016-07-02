@@ -9,6 +9,7 @@ import ContentCopy from 'material-ui/svg-icons/content/content-copy';
 import ContentClear from 'material-ui/svg-icons/content/clear';
 import ArticleSnippetList from './article-snippet-list';
 import ClipboardCopy from 'clipboard';
+import ClipboardVisibilityButton from '../components/clipboard-visibility-button';
 
 
 const propTypes = {
@@ -53,9 +54,20 @@ class Clipboard extends React.Component {
             clipboardText=clipboardItems.join("\n\n---------------\n\n");
         }
 
-        const style = this.props.muiTheme.leftNav;
+        const style = {...this.props.muiTheme.leftNav, overflow: "visible"};
         const showButtons = (articleSnippetList.length > 0);
         return (
+            <div>
+                <div style={{
+                    position: "fixed",
+                    right: 0,
+                    top: "50%"
+                }}>
+                    <ClipboardVisibilityButton
+                        onClick={this.props.onClipboardVisibilityClick}
+                        open={this.props.open} 
+                        tooltipPosition="bottom-left"/>
+                </div>
             <Drawer
                 containerStyle={style}
                 docked={docked}
@@ -63,6 +75,17 @@ class Clipboard extends React.Component {
                 openSecondary={openSecondary}
                 width={width}
                 >
+                <div style={{
+                    position: "absolute",
+                    left: 0,
+                    top: "50%",
+                    zIndex: 9999
+                }}>
+                    <ClipboardVisibilityButton
+                        onClick={this.props.onClipboardVisibilityClick}
+                        open={this.props.open}
+                        tooltipPosition="bottom-center"/>
+                </div>
                 <div style={{paddingLeft: '10px', paddingBottom: '10px'}}>
                     <b>Clipboard</b>
                     <IconButton
@@ -83,6 +106,7 @@ class Clipboard extends React.Component {
                 <Divider />
                 <ArticleSnippetList articleSnippets={articleSnippetList}/>
             </Drawer>
+        </div>
         );
     }
 }

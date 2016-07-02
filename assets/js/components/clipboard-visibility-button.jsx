@@ -24,8 +24,10 @@ class ClipboardVisibilityButton extends React.Component {
     render() {
         return (
             <IconButton
+                style={{padding:0, border:0, margin:0, height: 24 , width: 24}}
                 tooltip={this.tooltip()}
-                onClick={this.props.onClick} >
+                onClick={this.props.onClick} 
+                tooltipPosition={this.props.tooltipPosition}>
                 { this.arrow() }
             </IconButton>
         );

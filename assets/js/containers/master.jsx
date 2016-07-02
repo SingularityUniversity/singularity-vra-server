@@ -165,8 +165,6 @@ class Master extends React.Component {
                     onRedo = {this.props.onRedo}
                     doSearch = {(searchText) => this.doSearch(searchText)}
                     initialSearchText = {this.state.initialSearchText}
-                    onClipboardVisibilityClick = {this.props.onClipboardVisibilityClick}
-                    clipboardVisibility = {this.props.clipboardVisibility}
                 />
                 <AppLeftNav
                     onChangeSelected={(content, selected) => this.handleSelectedForWorkspace(content, selected)}
@@ -184,6 +182,7 @@ class Master extends React.Component {
                     width={450}
                     articleSnippetList={this.props.articleSnippetList}
                     onClear={this.props.onClearClipboard}
+                    onClipboardVisibilityClick = {this.props.onClipboardVisibilityClick}
                 />
                 <Workspace
                     chooseWorkspace={(id) => this.chooseWorkspace(id)}

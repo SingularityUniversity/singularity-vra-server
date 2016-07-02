@@ -1,4 +1,5 @@
-import { KEYWORD_SEARCH, SIMILARITY_SEARCH, CLEAR_SEARCH, ADD_SEARCH_RESULTS } from '../actions/search-actions'
+import { KEYWORD_SEARCH, SIMILARITY_SEARCH, CLEAR_SEARCH, ADD_SEARCH_RESULTS,
+         TOGGLE_SEARCH_RESULTS, SHOW_SEARCH_RESULTS, HIDE_SEARCH_RESULTS} from '../actions/search-actions'
 import undoable from 'redux-undo'
 
 export const initialState= {
@@ -79,3 +80,18 @@ function newSearchResult(action, currentState, previousHistory) {
 }
 
 export let searchReducer = undoable(_searchReducer, {filter: newSearchResult})
+
+export let searchResultsVisibilityReducer =  (state=false, action) => {
+    switch (action.type) {
+    case TOGGLE_SEARCH_RESULTS:
+        return !state
+    case SHOW_SEARCH_RESULTS:
+        return true;
+    case HIDE_SEARCH_RESULTS:
+        return false;
+    default:
+        return state;
+    }
+}
+
+

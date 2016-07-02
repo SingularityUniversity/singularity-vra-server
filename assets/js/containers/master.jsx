@@ -14,7 +14,7 @@ import Workspace from '../components/workspace';
 
 import { addSnippetToClipboard, toggleClipboard, clearClipboard } from '../actions/clipboard-actions';
 import { similaritySearch, startKeywordSearch, keywordSearch,
-    clearSearch, addSearchResults } from '../actions/search-actions';
+    clearSearch, addSearchResults, toggleSearchResults, showSearchResults, hideSearchResults } from '../actions/search-actions';
 import { createWorkspace, updateWorkspace, getWorkspaces, loadWorkspace,
     clearWorkspace, setInWorkspace, deleteWorkspace} from '../actions/workspace-actions';
 import { getArticleCount } from '../actions/article-count-actions';
@@ -50,12 +50,14 @@ class Master extends React.Component {
     handleContentAction(content, action, params) {  // eslint-disable-line no-unused-vars
         if (action=="similar") {
             this.clearSearch();
+            this.props.onShowSearchResults();
             this.props.onSimilaritySearch([content.pk]);
         }
     }
 
     onFindSimilarMultiple() {
         this.clearSearch();
+        this.props.onShowSearchResults();
         this.props.onSimilaritySearch(this.props.workspaceData.articles.map((content) => {
             return content.pk;
         }));
@@ -67,6 +69,7 @@ class Master extends React.Component {
     }
 
     doSearch(searchText) {
+        this.props.onShowSearchResults();
         this.props.onStartKeywordSearch(searchText);
         this.props.onKeywordSearch(searchText, 0);
     }
@@ -144,6 +147,16 @@ class Master extends React.Component {
         this.setState({workspaceChooserVisible: false});
     }
 
+    undoSearch() {
+        this.props.onShowSearchResults();
+        this.props.onUndo();
+    }
+
+    redoSearch() {
+        this.props.onShowSearchResults();
+        this.props.onRedo();
+    }
+
     render() {
         const styles = this.props.muiTheme;
 
@@ -161,12 +174,14 @@ class Master extends React.Component {
                     articleCount = {this.props.articleCount}
                     canUndoSearch = {this.props.canUndoSearch}
                     canRedoSearch = {this.props.canRedoSearch}
-                    onUndo = {this.props.onUndo}
-                    onRedo = {this.props.onRedo}
+                    onUndo = {() => this.undoSearch()}
+                    onRedo = {() => this.redoSearch()}
                     doSearch = {(searchText) => this.doSearch(searchText)}
                     initialSearchText = {this.state.initialSearchText}
                 />
                 <AppLeftNav
+                    open={this.props.searchResultsVisibility}
+                    onSearchResultsVisibilityClick = {this.props.onSearchResultsVisibilityClick}
                     onChangeSelected={(content, selected) => this.handleSelectedForWorkspace(content, selected)}
                     displayedContent={this.props.searchData.searchResultData}
                     workspaceContent={this.props.workspaceData.articles}
@@ -174,6 +189,7 @@ class Master extends React.Component {
                     searchType={this.props.searchData.searchType}
                     searchText={this.props.searchData.searchText}
                     loadItems={x => this.getSearchItems(x)}
+                    width={450}
                 />
                 <Clipboard
                     docked={true}
@@ -223,6 +239,7 @@ const mapStateToProps = (state) => {
         clipboardVisibility: state.clipboardVisibility,
         articleSnippetList: state.articleSnippetList,
         searchData: state.searchData.present,
+        searchResultsVisibility: state.searchResultsVisibility,
         workspaceData: state.workspaceData,
         articleCount: state.articleCount,
         snackbar: state.snackbar,
@@ -256,6 +273,15 @@ const mapDispatchToProps = (dispatch) => {
         },
         onAddSearchResults: (results, start, totalCount) => {
             dispatch(addSearchResults(results, start, totalCount));
+        },
+        onSearchResultsVisibilityClick: () => {
+            dispatch(toggleSearchResults());
+        },
+        onShowSearchResults: () => {
+            dispatch(showSearchResults());
+        },
+        onHideSearchResults: () => {
+            dispatch(hideSearchResults());
         },
         onClearWorkspace: () => {
             dispatch(clearWorkspace());

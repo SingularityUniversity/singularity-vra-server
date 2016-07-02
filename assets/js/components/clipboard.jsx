@@ -66,7 +66,11 @@ class Clipboard extends React.Component {
                     <ClipboardVisibilityButton
                         onClick={this.props.onClipboardVisibilityClick}
                         open={this.props.open} 
-                        tooltipPosition="bottom-left"/>
+                        tooltipPosition="bottom-left"
+                        tooltipOpenedText="Close clipboard"
+                        tooltipClosedText="Open clipboard"
+                        side="right"
+                    />
                 </div>
             <Drawer
                 containerStyle={style}
@@ -84,7 +88,10 @@ class Clipboard extends React.Component {
                     <ClipboardVisibilityButton
                         onClick={this.props.onClipboardVisibilityClick}
                         open={this.props.open}
-                        tooltipPosition="bottom-center"/>
+                        tooltipPosition="bottom-center"
+                        tooltipOpenedText="Close clipboard"
+                        tooltipClosedText="Open clipboard"
+                        side="right"/>
                 </div>
                 <div style={{paddingLeft: '10px', paddingBottom: '10px'}}>
                     <b>Clipboard</b>

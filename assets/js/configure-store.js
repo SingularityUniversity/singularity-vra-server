@@ -10,6 +10,7 @@ export const initialState = {
     clipboardVisibility: false,
     articleSnippetList: [],
     searchData: searchInitialState,
+    searchResultsVisibility: false,
     workspaceData: workspaceInitialState,
     articleCount: 0,
     snackbar: snackbarInitiateState

@@ -11,6 +11,7 @@ import ChevronRight from 'material-ui/svg-icons/navigation/chevron-right';
 import { showSnackbarMessage} from '../actions/snackbar-actions';
 import { connect } from 'react-redux';
 import ContentPreview from './content-preview';
+import ClipboardVisibilityButton from '../components/clipboard-visibility-button';
 
 let SelectableList = MakeSelectable(List);
 
@@ -146,7 +147,7 @@ class AppLeftNav extends React.Component {
         }
         const drawerWidth = this.props.muiTheme.drawer.width;
 
-        const title = (<span><span style={{fontSize: 14, lineHeight: "1em", display: "inline-block", width:drawerWidth-32-48, textOverflow: "ellipsis", maxHeight: "4em", overflow:"hidden"}}>{content.fields.extract['title']}</span>{addIcon}</span>); // 32 from padding from cardtitle, 48 for button
+        const title = (<span><span style={{fontSize: 14, lineHeight: "1em", display: "inline-block", width:this.props.width-32-48-24, textOverflow: "ellipsis", maxHeight: "4em", overflow:"hidden"}}>{content.fields.extract['title']}</span>{addIcon}</span>); // 32 from padding from cardtitle, 48 for button, 24 for collapse/open icon button
         const subtitle = (<span><div style={{fontSize: 12}}>Score: {content.score.toFixed(3)}</div> {published} <a href="#">{publisher}</a></span>);
 
 
@@ -170,13 +171,43 @@ class AppLeftNav extends React.Component {
             muiTheme,
             totalCount
         } = this.props;
-        const style = muiTheme.leftNav;
+        const style = {...muiTheme.leftNav, overflow: "visible"};
+
         return (
+            <div>
+                <div style={{
+                    position: "fixed",
+                    left: 0,
+                    top: "50%"
+                }}>
+                    <ClipboardVisibilityButton
+                        onClick={this.props.onSearchResultsVisibilityClick}
+                        open={this.props.open} 
+                        tooltipPosition="bottom-right"
+                        tooltipOpenedText="Close search results"
+                        tooltipClosedText="Open search results"
+                        side="left"/>
+                </div>
             <Drawer
                 containerStyle={style}
                 docked={true}
-                open={true}
+                open={this.props.open}
+                width={this.props.width}
                 >
+                <div style={{
+                    position: "absolute",
+                    right: 0,
+                    top: "50%",
+                    zIndex: 9999
+                }}>
+                    <ClipboardVisibilityButton
+                        onClick={this.props.onSearchResultsVisibilityClick}
+                        open={this.props.open}
+                        tooltipPosition="bottom-center"
+                        tooltipOpenedText="Close search results"
+                        tooltipClosedText="Open search results"
+                        side="left"/>
+                </div>
                 <div style={{position:"fixed", "textAlign": "center", "width": "100%"}}>
                     <p><strong>{searchType}</strong><br/>
                         {searchText ? (<span><i>'{searchText}'</i><br/></span>) : ''}
@@ -184,7 +215,7 @@ class AppLeftNav extends React.Component {
                         <i>{workspaceContent.length} in workspace</i><br/>
                     </p>
                 </div>
-                <div style={{marginTop: style.headerHeight, height: "100%"}}>
+                <div style={{marginTop: style.headerHeight, height: "100%", paddingRight: "24px"}}>
                     <InfiniteLoader
                     isRowLoaded={({index}) => !!this.props.displayedContent[index]}
                     loadMoreRows={this.props.loadItems}
@@ -213,6 +244,7 @@ class AppLeftNav extends React.Component {
                 </div>
                 <ContentPreview onClose={() => this.onPreviewClose()} content={this.state.previewContent}/>
             </Drawer>
+        </div>
         );
     }
 }

@@ -6,6 +6,9 @@ export const KEYWORD_SEARCH = 'KEYWORD_SEARCH'
 export const CLEAR_SEARCH = 'CLEAR_SEARCH'
 export const ADD_SEARCH_RESULTS = 'ADD_SEARCH_RESULTS'
 export const SIMILARITY_SEARCH = 'SIMILARITY_SEARCH'
+export const TOGGLE_SEARCH_RESULTS = 'TOGGLE_SEARCH_RESULTS'
+export const SHOW_SEARCH_RESULTS = 'SHOW_SEARCH_RESULTS'
+export const HIDE_SEARCH_RESULTS = 'HIDE_SEARCH_RESULTS'
 
 
 let keywordSearchRequests = {};
@@ -126,6 +129,24 @@ export function addSearchResults(results, start, totalCount, result_topics=[]) {
         resultTopics: result_topics,
         start: start,
         totalCount: totalCount
+    }
+}
+
+export function toggleSearchResults() {
+    return {
+        type: TOGGLE_SEARCH_RESULTS
+    }
+}
+
+export function hideSearchResults() {
+    return {
+        type: HIDE_SEARCH_RESULTS
+    }
+}
+
+export function showSearchResults() {
+    return {
+        type: SHOW_SEARCH_RESULTS
     }
 }
 

@@ -7,7 +7,7 @@ import { ActionCreators as UndoActionCreators } from 'redux-undo'
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import Snackbar from 'material-ui/Snackbar';
 
-import AppLeftNav from '../components/app-left-nav';
+import SearchResults from '../components/search-results';
 import Clipboard from '../components/clipboard';
 import AppMenuBar from '../components/app-menu-bar';
 import Workspace from '../components/workspace';
@@ -179,7 +179,7 @@ class Master extends React.Component {
                     doSearch = {(searchText) => this.doSearch(searchText)}
                     initialSearchText = {this.state.initialSearchText}
                 />
-                <AppLeftNav
+                <SearchResults
                     open={this.props.searchResultsVisibility}
                     onSearchResultsVisibilityClick = {this.props.onSearchResultsVisibilityClick}
                     onChangeSelected={(content, selected) => this.handleSelectedForWorkspace(content, selected)}

@@ -16,7 +16,7 @@ import VisibilityButton from '../components/visibility-button';
 let SelectableList = MakeSelectable(List);
 
 // XXX: This wrapState is confusing an obfuscates whats going on.
-// Propose we mergeis back into AppLeftNav
+// Propose we mergeis back into SearchResults 
 
 const wrapState = (ComposedComponent) => {
     class StateWrapper extends React.Component {
@@ -62,7 +62,7 @@ const propTypes = {
     searchText: React.PropTypes.string
 };
 
-class AppLeftNav extends React.Component {
+class SearchResults extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -249,7 +249,7 @@ class AppLeftNav extends React.Component {
     }
 }
 
-AppLeftNav.propTypes=propTypes;
+SearchResults.propTypes=propTypes;
 
 const mapDispatchToProps = (dispatch) => {
     return {
@@ -259,4 +259,4 @@ const mapDispatchToProps = (dispatch) => {
     }
 }
 
-export default connect(null, mapDispatchToProps)(muiThemeable()(AppLeftNav));
+export default connect(null, mapDispatchToProps)(muiThemeable()(SearchResults));

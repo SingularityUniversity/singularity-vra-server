@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import {Toolbar, ToolbarGroup, ToolbarTitle} from 'material-ui/Toolbar';
-import {Card, CardTitle}  from 'material-ui/Card';
+import {Card, CardTitle, CardText}  from 'material-ui/Card';
 import {colors} from 'material-ui/styles';
 import RaisedButton from 'material-ui/RaisedButton';
 
@@ -40,7 +40,31 @@ export class _Workspace extends React.Component {
         let disabled=false;
         if (contentItems.length == 0) {
             contentItems = [
-                (<Card key={"empty"}><CardTitle title="Please select content"/></Card>)
+                (<Card key={"empty"}>
+                    <CardText>
+                        <h2>Getting Started</h2>
+                        <p>
+                            Your workspace is empty. You have two ways to get started:
+                            <ol>
+                                <li>Load a workspace that has been previously saved</li>
+                                <li>Conduct a search using the search field in the upper right hand corner</li>
+                            </ol>
+                        </p>
+
+                        <p>
+                            Please note that once you put items in your workspace (from search results), you should save your workspace, including giving it a name and a description. You will need to save it again after any changes you make to it. 
+                        </p>
+                        <p>
+                            You may show most recent search results using the '&gt;' symbol on the left, and you may show the clipboard using the '&lt;' symbol on the right.
+                        </p>
+                        <p>
+                            The VRA clipboard can be used to collect snippets from content in the workspace. When you highlight content in an item in the workspace, you can save the snippet for viewing in the VRA clipboard. Additionally, the content of the VRA clipboard can be copied to the system clipboard for pasting into other applications.
+                        </p>
+
+
+                    </CardText>
+                
+                    </Card>)
             ];
             disabled=true;
         }

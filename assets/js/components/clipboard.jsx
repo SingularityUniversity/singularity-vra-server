@@ -13,7 +13,6 @@ import VisibilityButton from '../components/visibility-button';
 
 
 const propTypes = {
-    docked: React.PropTypes.bool.isRequired,
     open: React.PropTypes.bool.isRequired,
     style: React.PropTypes.object,
     muiTheme: React.PropTypes.object.isRequired,

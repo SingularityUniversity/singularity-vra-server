@@ -12,6 +12,7 @@ import { showSnackbarMessage} from '../actions/snackbar-actions';
 import { connect } from 'react-redux';
 import ContentPreview from './content-preview';
 import VisibilityButton from '../components/visibility-button';
+import Divider from 'material-ui/Divider';
 
 let SelectableList = MakeSelectable(List);
 
@@ -164,7 +165,7 @@ class SearchResults extends React.Component {
     }
 
     render() {
-        const {
+        let {
             workspaceContent,
             searchType,
             searchText,
@@ -172,7 +173,9 @@ class SearchResults extends React.Component {
             totalCount
         } = this.props;
         const style = {...muiTheme.leftNav, overflow: "visible"};
-
+        if ((searchType == '') || (searchType == null)) {
+            searchType = "Search results";
+        }
         return (
             <div>
                 <div style={{
@@ -214,6 +217,7 @@ class SearchResults extends React.Component {
                         <i>{totalCount} results</i><br/>
                         <i>{workspaceContent.length} in workspace</i><br/>
                     </p>
+                    <Divider/>
                 </div>
                 <div style={{marginTop: style.headerHeight, height: "100%", paddingRight: "24px"}}>
                     <InfiniteLoader

@@ -214,6 +214,7 @@ class Master extends React.Component {
                     workspaceChooserVisible={this.state.workspaceChooserVisible}
                     workspaceEditorVisible={this.state.workspaceEditorVisible}
                     workspaceEditorCreating={this.state.workspaceEditorCreating}
+                    handleContentAction={(content, action, params) => this.handleContentAction(content, action, params)}
                 />
                 <Snackbar
                     style={{fontFamily: styles.baseTheme.fontFamily, textAlign: "center"}}

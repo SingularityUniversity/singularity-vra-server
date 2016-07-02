@@ -29,11 +29,11 @@ export class _Workspace extends React.Component {
         let contentItems = this.props.workspaceData.articles.map(function(content, index, array) {
             if (index == array.length - 1) {
                 return (
-                    <ContentDetail ref={(c) => that._lastContent = c} isPreview={false} key={content.pk} style={styles.fullWidthSection} content={content} onAction={() => this.handleContentAction()}/>
+                    <ContentDetail ref={(c) => that._lastContent = c} isPreview={false} key={content.pk} style={styles.fullWidthSection} content={content} onAction={(content, action, params) => that.props.handleContentAction(content, action, params)}/>
                 );
             } else {
                 return (
-                    <ContentDetail isPreview={false} key={content.pk} style={styles.fullWidthSection} content={content} onAction={() => this.handleContentAction()}/>
+                    <ContentDetail isPreview={false} key={content.pk} style={styles.fullWidthSection} content={content} onAction={(content, action, params) => that.props.handleContentAction(content, action, params)}/>
                 );
             }
         });
@@ -101,7 +101,8 @@ _Workspace.propTypes = {
     findSimilarMultiple: React.PropTypes.func.isRequired,
     workspaceChooserVisible: React.PropTypes.bool.isRequired,
     workspaceEditorVisible: React.PropTypes.bool.isRequired,
-    workspaceEditorCreating: React.PropTypes.bool.isRequired
+    workspaceEditorCreating: React.PropTypes.bool.isRequired,
+    handleContentAction: React.PropTypes.func.isRequired // XXX: add testing for this
 }
 
 export default muiThemeable()(_Workspace);

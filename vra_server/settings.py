@@ -126,7 +126,8 @@ WSGI_APPLICATION = 'vra_server.wsgi.application'
 # item[1] == class name of the prep
 # item[2] == (optional, defaults to false) include in elastic_search indexing
 CONTENT_PREPROCESSORS = [
-    ('core.models.get_content_length', 'content_length', True) 
+    ('core.models.get_content_length', 'content_length', True),
+    ('text.summary.get_summary_sentences', 'summary_sentences')
 ]
 
 

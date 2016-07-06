@@ -9,16 +9,18 @@ from core.elasticsearch import index_document
 from core.s3 import put_content_to_s3
 from solo.models import SingletonModel
 from django.utils.module_loading import import_string
+from threading import Lock
 
-def get_content_length(content):
-    content_data = content.extract.get('content')
-    if content_data is None:
-        return 0
-    else:
-        return len(content_data)
+# We evaulate the preprocessor funcs lazily because it causes circular imports otherwise
+_preprocessor_funcs = None 
+_lock = Lock()
 
-preprocessor_funcs = {proc_entry[0]: import_string(proc_entry[0]) for proc_entry in settings.CONTENT_PREPROCESSORS}
-
+def get_preprocessor_funcs():
+    global _preprocessor_funcs
+    with _lock:
+        if _preprocessor_funcs is None:
+            _preprocessor_funcs = {proc_entry[0]: import_string(proc_entry[0]) for proc_entry in settings.CONTENT_PREPROCESSORS}
+    return _preprocessor_funcs
 
 class Publisher(models.Model):
     '''
@@ -76,6 +78,13 @@ class EnteredSource(models.Model):
         null=True
     )
 
+def get_content_length(content):
+    content_data = content.extract.get('content')
+    if content_data is None:
+        return 0
+    else:
+        return len(content_data)
+
 class Content(models.Model):
     entered_source = models.ForeignKey(
         'EnteredSource',
@@ -118,7 +127,7 @@ class Content(models.Model):
         '''
         pre_processed = {}
         for processor in settings.CONTENT_PREPROCESSORS:
-            func = preprocessor_funcs[processor[0]]
+            func = get_preprocessor_funcs()[processor[0]]
             key = processor[1]
             pre_processed[key] = func(self)
         return pre_processed 

@@ -1,7 +1,7 @@
 from text.common import extract_words_from_content
 from nltk.probability import FreqDist
 
-def get_summary_sentences(content, num_sentences=5):
+def get_summary_sentences(content, num_sentences=10):
     words = extract_words_from_content(content)
     word_results = extract_words_from_content(content, with_sentences=True)
 

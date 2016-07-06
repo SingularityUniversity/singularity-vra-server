@@ -225,18 +225,6 @@ class ContentViewSet(viewsets.ModelViewSet):
 
         return Response(result, status=status.HTTP_200_OK)
 
-    @detail_route(methods=['get'])
-    def summary(self, request, pk=None):
-        content = get_object_or_404(Content, pk=int(pk))
-        count = request.query_params.get('count')
-        if count is None:
-            count = 5
-        else:
-            count = int(count)
-        return Response(
-            {'summary': get_summary_sentences(content, count)},
-            status=status.HTTP_200_OK)
-
     @list_route(methods=['get'])
     def count(self, request):
         return Response({'count': Content.objects.count()})

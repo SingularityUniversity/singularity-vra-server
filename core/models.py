@@ -144,7 +144,6 @@ class Content(models.Model):
         for key in body_json['fields']['pre_processed']:
             if key in included_processor_keys:
                 body_json[key] = body_json['fields']['pre_processed'][key]
-        del body_json['fields']['pre_processed']
         return body_json
 
     def add_to_search_index(self):

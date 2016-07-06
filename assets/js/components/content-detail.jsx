@@ -22,7 +22,6 @@ class ContentDetail extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            summaries: [],
             selectedText: null
         };
     }
@@ -66,17 +65,6 @@ class ContentDetail extends React.Component {
                 this.hide(true);
             }
         });
-
-        // XXX: Refactor me into an async action
-        fetch(`/api/v1/content/${this.props.content.pk}/summary`,  {
-            credentials: 'include',
-            headers: {
-                'Accept': 'application/json'
-            }
-        })
-        .then(checkResponseAndExtractJSON)
-        .then(json => this.setState({summaries: json.summary}))
-        .catch(explanation => console.error("Error getting summary for "+this.props.content.pk+": "+explanation));
     }
 
     removeFromWorkspace() {
@@ -92,6 +80,8 @@ class ContentDetail extends React.Component {
         if (content ) {
             let fields = content.fields;
             let extract = fields.extract;
+            let preProcessed = fields.pre_processed;
+            let summarySentences = preProcessed ? preProcessed['summary_sentences'] : null;
             let publishedDate = "Unknown";
             if (extract['published']) {
                 publishedDate = Moment(parseInt(extract['published'])).
@@ -136,6 +126,9 @@ class ContentDetail extends React.Component {
                     {extract.title} {removeButton}
                 </span>);
 
+            const summaryContent = ((summarySentences != null) && (summarySentences.length > 0)) ? 
+                summarySentences.map( val => {return(<li key={val}>{val}</li>)}) :
+                "No content";
 
             return (
                 <Card initiallyExpanded={true} containerStyle={this.props.muiTheme.fullWidthSection.item}>
@@ -154,12 +147,7 @@ class ContentDetail extends React.Component {
                                 Summary:
                                 <Card>
                                     <CardText ref='summary_section'>
-                                    {
-                                        (this.state.summaries.length ==0 ) ? "No content" :
-                                            this.state.summaries.map(function(val) {
-                                                return (<li key={val}>{val}</li>);
-                                            })
-                                    }
+                                        {summaryContent}
                                     </CardText>
                                 </Card>
                             </ListItem>

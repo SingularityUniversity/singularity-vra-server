@@ -705,7 +705,8 @@ describe('Workspace functionality', () => {
                 const firstToolbar = toolbars.at(0);
                 const toolbarTitle = firstToolbar.find(ToolbarTitle);
                 expect(toolbarTitle.get(0).props['text']).toEqual("New Title");
-                expect(firstToolbar.find(ToolbarGroup).at(0).children().length).toEqual(2); // No text for "Unsaved"
+                expect(firstToolbar.find(ToolbarGroup).at(0).children().length).toEqual(4); // No text for "Unsaved", but still have count
+                expect(firstToolbar.find(ToolbarGroup).at(0).children().get(2).props['text']).toEqual('3 item(s)');
                 expect(item.children().length).toEqual(7);
                 expect(item.childAt(4).type()).toEqual(ContentDetail);
                 expect(item.childAt(5).type()).toEqual(ContentDetail);
@@ -730,7 +731,7 @@ describe('Workspace functionality', () => {
                 const title = item.find(ToolbarTitle).get(0);
                 expect(title.props['text']).toEqual('Untitled Workspace');
                 const firstToolbarGroup = item.find(ToolbarGroup).at(0);
-                expect(firstToolbarGroup.children().length).toEqual(2);
+                expect(firstToolbarGroup.children().length).toEqual(4);
                 expect(item.children().length).toEqual(5);
                 expect(item.childAt(4).type()).toEqual(Card);
             })
@@ -753,7 +754,7 @@ describe('Workspace functionality', () => {
                 const title = item.find(ToolbarTitle).get(0);
                 expect(title.props['text']).toEqual('A real title');
                 const firstToolbarGroup = item.find(ToolbarGroup).at(0);
-                expect(firstToolbarGroup.children().length).toEqual(2);
+                expect(firstToolbarGroup.children().length).toEqual(4);
                 expect(item.children().length).toEqual(5);
                 expect(item.childAt(4).type()).toEqual(Card);
 
@@ -779,9 +780,9 @@ describe('Workspace functionality', () => {
                 const firstToolbar = toolbars.at(0);
                 const toolbarTitle = firstToolbar.find(ToolbarTitle);
                 expect(toolbarTitle.get(0).props['text']).toEqual("New Title");
-                expect(firstToolbar.find(ToolbarGroup).at(0).children().length).toEqual(3); // text for "Unsaved"
+                expect(firstToolbar.find(ToolbarGroup).at(0).children().length).toEqual(5); // text for "Unsaved" + count
                 expect(firstToolbar.find(ToolbarGroup).at(0).childAt(2).type()).toEqual(ToolbarTitle);
-                expect(firstToolbar.find(ToolbarGroup).at(0).children().get(2).props['text']).toEqual('Unsaved');
+                expect(firstToolbar.find(ToolbarGroup).at(0).children().get(4).props['text']).toEqual('Unsaved');
                 expect(item.children().length).toEqual(7);
                 expect(item.childAt(4).type()).toEqual(ContentDetail);
                 expect(item.childAt(5).type()).toEqual(ContentDetail);

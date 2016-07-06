@@ -45,11 +45,11 @@ export class _Workspace extends React.Component {
                         <h2>Getting Started</h2>
                         <p>
                             Your workspace is empty. You have two ways to get started:
-                            <ol>
-                                <li>Load a workspace that has been previously saved</li>
-                                <li>Conduct a search using the search field in the upper right hand corner</li>
-                            </ol>
                         </p>
+                        <ol>
+                            <li>Load a workspace that has been previously saved</li>
+                            <li>Conduct a search using the search field in the upper right hand corner</li>
+                        </ol>
 
                         <p>
                             Please note that once you put items in your workspace (from search results), you should save your workspace, including giving it a name and a description. You will need to save it again after any changes you make to it. 

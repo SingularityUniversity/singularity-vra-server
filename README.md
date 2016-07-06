@@ -19,3 +19,7 @@ See sample.env for configuration examples
 To access the Web UI (with hot loading of both python and javascript):
 1. `$ npm run serve`
 2. `$ heroku local` (or `$ python manage.py runserver` to run only the web process)
+
+## Running Tests
+1. Client-side (javascript): Set up the environment and run `npm test`. You can also run `npm run test-coverage` to produce a somewhat-accurate coverage report for those tests.
+2. Server-side (python): Set up the environment (no live server need run though - db, elasticsearch probably do need to be running), and run `python manage.py test`2. Server-side (python): Set up the environment (no live server need run though - db, elasticsearch probably do need to be running), and run `python manage.py test`

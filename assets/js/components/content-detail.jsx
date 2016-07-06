@@ -129,7 +129,7 @@ class ContentDetail extends React.Component {
                 </span>);
 
             const summaryContent = ((summarySentences != null) && (summarySentences.length > 0)) ?
-                summarySentences.map( val => {return(<li key={val}>{val}</li>)}) :
+                summarySentences.slice(0,5).map( val => {return(<li key={val}>{val}</li>)}) :
                 "No content";
 
             const readabilityContent = readability ? (<pre>{JSON.stringify(readability, null, 2)}</pre>) : "No readability info";

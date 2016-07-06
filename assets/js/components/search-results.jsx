@@ -17,7 +17,7 @@ import Divider from 'material-ui/Divider';
 let SelectableList = MakeSelectable(List);
 
 // XXX: This wrapState is confusing an obfuscates whats going on.
-// Propose we mergeis back into SearchResults 
+// Propose we mergeis back into SearchResults
 
 const wrapState = (ComposedComponent) => {
     class StateWrapper extends React.Component {
@@ -146,8 +146,6 @@ class SearchResults extends React.Component {
                 </IconButton>
             );
         }
-        const drawerWidth = this.props.muiTheme.drawer.width;
-
         const title = (<span><span style={{fontSize: 14, lineHeight: "1em", display: "inline-block", width:this.props.width-32-48-24, textOverflow: "ellipsis", maxHeight: "4em", overflow:"hidden"}}>{content.fields.extract['title']}</span>{addIcon}</span>); // 32 from padding from cardtitle, 48 for button, 24 for collapse/open icon button
         const subtitle = (<span><div style={{fontSize: 12}}>Score: {content.score.toFixed(3)}</div> {published} <a href="#">{publisher}</a></span>);
 
@@ -166,7 +164,6 @@ class SearchResults extends React.Component {
 
     render() {
         let {
-            workspaceContent,
             searchType,
             searchText,
             muiTheme,
@@ -185,69 +182,69 @@ class SearchResults extends React.Component {
                 }}>
                     <VisibilityButton
                         onClick={this.props.onSearchResultsVisibilityClick}
-                        open={this.props.open} 
+                        open={this.props.open}
                         tooltipPosition="bottom-right"
                         tooltipOpenedText="Close search results"
                         tooltipClosedText="Open search results"
                         side="left"/>
                 </div>
-            <Drawer
-                containerStyle={style}
-                docked={true}
-                open={this.props.open}
-                width={this.props.width}
-                >
-                <div style={{
-                    position: "absolute",
-                    right: 0,
-                    top: "50%",
-                    zIndex: 9999
-                }}>
-                    <VisibilityButton
-                        onClick={this.props.onSearchResultsVisibilityClick}
-                        open={this.props.open}
-                        tooltipPosition="bottom-center"
-                        tooltipOpenedText="Close search results"
-                        tooltipClosedText="Open search results"
-                        side="left"/>
-                </div>
-                <div style={{position:"fixed", "textAlign": "center", "width": "100%"}}>
-                    <p><strong>{searchType}</strong><br/>
-                        {searchText ? (<span><i>'{searchText}'</i><br/></span>) : ''}
-                        <i>{totalCount} results</i><br/>
-                    </p>
-                    <Divider/>
-                </div>
-                <div style={{marginTop: style.headerHeight, height: "100%", paddingRight: "24px"}}>
-                    <InfiniteLoader
-                    isRowLoaded={({index}) => !!this.props.displayedContent[index]}
-                    loadMoreRows={this.props.loadItems}
-                    rowCount={totalCount}
-                    minimumBatchSize={30}
+                <Drawer
+                    containerStyle={style}
+                    docked={true}
+                    open={this.props.open}
+                    width={this.props.width}
                     >
-                        {({ onRowsRendered, registerChild }) => (
-                            <AutoSizer>
-                            {({height, width }) =>
-                                (<VirtualScroll
-                                 ref={registerChild}
-                                 width={width}
-                                 height={height-style.headerHeight}
-                                 rowHeight={120}
-                                 rowCount={totalCount}
-                                 onRowsRendered={onRowsRendered}
-                                 rowRenderer={
-                                     ({index}) => this._renderRow(index)
-                                 }
-                                 overscanRowCount={10}
-                                 />
-                                )}
-                            </AutoSizer>
-                        )}
-                    </InfiniteLoader>
-                </div>
-                <ContentPreview onClose={() => this.onPreviewClose()} content={this.state.previewContent}/>
-            </Drawer>
-        </div>
+                    <div style={{
+                        position: "absolute",
+                        right: 0,
+                        top: "50%",
+                        zIndex: 9999
+                    }}>
+                        <VisibilityButton
+                            onClick={this.props.onSearchResultsVisibilityClick}
+                            open={this.props.open}
+                            tooltipPosition="bottom-center"
+                            tooltipOpenedText="Close search results"
+                            tooltipClosedText="Open search results"
+                            side="left"/>
+                    </div>
+                    <div style={{position:"fixed", "textAlign": "center", "width": "100%"}}>
+                        <p><strong>{searchType}</strong><br/>
+                            {searchText ? (<span><i>'{searchText}'</i><br/></span>) : ''}
+                            <i>{totalCount} results</i><br/>
+                        </p>
+                        <Divider/>
+                    </div>
+                    <div style={{marginTop: style.headerHeight, height: "100%", paddingRight: "24px"}}>
+                        <InfiniteLoader
+                        isRowLoaded={({index}) => !!this.props.displayedContent[index]}
+                        loadMoreRows={this.props.loadItems}
+                        rowCount={totalCount}
+                        minimumBatchSize={30}
+                        >
+                            {({ onRowsRendered, registerChild }) => (
+                                <AutoSizer>
+                                {({height, width }) =>
+                                    (<VirtualScroll
+                                     ref={registerChild}
+                                     width={width}
+                                     height={height-style.headerHeight}
+                                     rowHeight={120}
+                                     rowCount={totalCount}
+                                     onRowsRendered={onRowsRendered}
+                                     rowRenderer={
+                                         ({index}) => this._renderRow(index)
+                                     }
+                                     overscanRowCount={10}
+                                     />
+                                    )}
+                                </AutoSizer>
+                            )}
+                        </InfiniteLoader>
+                    </div>
+                    <ContentPreview onClose={() => this.onPreviewClose()} content={this.state.previewContent}/>
+                </Drawer>
+            </div>
         );
     }
 }

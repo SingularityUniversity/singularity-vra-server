@@ -62,55 +62,55 @@ class Clipboard extends React.Component {
                 }}>
                     <VisibilityButton
                         onClick={this.props.onClipboardVisibilityClick}
-                        open={this.props.open} 
+                        open={this.props.open}
                         tooltipPosition="bottom-left"
                         tooltipOpenedText="Close clipboard"
                         tooltipClosedText="Open clipboard"
                         side="right"
                     />
                 </div>
-            <Drawer
-                containerStyle={style}
-                docked={true}
-                open={open}
-                openSecondary={true}
-                width={width}
+                <Drawer
+                    containerStyle={style}
+                    docked={true}
+                    open={open}
+                    openSecondary={true}
+                    width={width}
                 >
-                <div style={{
-                    position: "absolute",
-                    left: 0,
-                    top: "50%",
-                    zIndex: 9999
-                }}>
-                    <VisibilityButton
-                        onClick={this.props.onClipboardVisibilityClick}
-                        open={this.props.open}
-                        tooltipPosition="bottom-center"
-                        tooltipOpenedText="Close clipboard"
-                        tooltipClosedText="Open clipboard"
-                        side="right"/>
-                </div>
-                <div style={{paddingLeft: '10px', paddingBottom: '10px'}}>
-                    <b>Clipboard</b>
-                    <IconButton
-                        ref='clipboard_button'
-                        tooltip={showButtons ? 'Copy to system clipboard' : ''}
-                        disabled={!showButtons}
-                        data-clipboard-text={clipboardText}>
-                        <ContentCopy />
-                    </IconButton>
-                    <IconButton
-                        ref='clipboard_clear_button'
-                        tooltip={showButtons ? 'Clear clipboard' : ''}
-                        disabled={!showButtons}
-                        onClick={onClear}>
-                        <ContentClear />
-                    </IconButton>
-                </div>
-                <Divider />
-                <ArticleSnippetList articleSnippets={articleSnippetList}/>
-            </Drawer>
-        </div>
+                    <div style={{
+                        position: "absolute",
+                        left: 0,
+                        top: "50%",
+                        zIndex: 9999
+                    }}>
+                        <VisibilityButton
+                            onClick={this.props.onClipboardVisibilityClick}
+                            open={this.props.open}
+                            tooltipPosition="bottom-center"
+                            tooltipOpenedText="Close clipboard"
+                            tooltipClosedText="Open clipboard"
+                            side="right"/>
+                    </div>
+                    <div style={{paddingLeft: '10px', paddingBottom: '10px'}}>
+                        <b>Clipboard</b>
+                        <IconButton
+                            ref='clipboard_button'
+                            tooltip={showButtons ? 'Copy to system clipboard' : ''}
+                            disabled={!showButtons}
+                            data-clipboard-text={clipboardText}>
+                            <ContentCopy />
+                        </IconButton>
+                        <IconButton
+                            ref='clipboard_clear_button'
+                            tooltip={showButtons ? 'Clear clipboard' : ''}
+                            disabled={!showButtons}
+                            onClick={onClear}>
+                            <ContentClear />
+                        </IconButton>
+                    </div>
+                    <Divider />
+                    <ArticleSnippetList articleSnippets={articleSnippetList}/>
+                </Drawer>
+            </div>
         );
     }
 }

@@ -14,7 +14,6 @@ import { setInWorkspace } from '../actions/workspace-actions';
 import IconButton from 'material-ui/IconButton';
 import ContentRemoveCircle from 'material-ui/svg-icons/content/remove-circle';
 import {colors} from 'material-ui/styles';
-import {checkResponseAndExtractJSON} from '../actions/util';
 
 import Moment from 'moment';
 

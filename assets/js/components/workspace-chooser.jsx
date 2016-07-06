@@ -49,7 +49,6 @@ export class _WorkspaceChooser extends React.Component {
     }
 
     requestClose() {
-        console.log("Request close was called!");
         this.setState({open: false});
         this.props.onCancel();
     }

@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import {Toolbar, ToolbarGroup, ToolbarTitle} from 'material-ui/Toolbar';
-import {Card, CardTitle, CardText}  from 'material-ui/Card';
+import {Card, CardText}  from 'material-ui/Card';
 import {colors} from 'material-ui/styles';
 import RaisedButton from 'material-ui/RaisedButton';
 
@@ -52,7 +52,7 @@ export class _Workspace extends React.Component {
                         </ol>
 
                         <p>
-                            Please note that once you put items in your workspace (from search results), you should save your workspace, including giving it a name and a description. You will need to save it again after any changes you make to it. 
+                            Please note that once you put items in your workspace (from search results), you should save your workspace, including giving it a name and a description. You will need to save it again after any changes you make to it.
                         </p>
                         <p>
                             You may show most recent search results using the '&gt;' symbol on the left, and you may show the clipboard using the '&lt;' symbol on the right.
@@ -63,8 +63,8 @@ export class _Workspace extends React.Component {
 
 
                     </CardText>
-                
-                    </Card>)
+
+                </Card>)
             ];
             disabled=true;
         }

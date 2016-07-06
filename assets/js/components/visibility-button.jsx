@@ -10,7 +10,7 @@ class VisibilityButton extends React.Component {
         if (this.props.side=="right") {
             isLeft = false;
         }
-        if ((this.props.open && !isLeft) || 
+        if ((this.props.open && !isLeft) ||
                 (!this.props.open && isLeft)){
             return (<KeyboardArrowRight />);
         } else {
@@ -31,7 +31,7 @@ class VisibilityButton extends React.Component {
             <IconButton
                 style={{padding:0, border:0, margin:0, height: 24 , width: 24}}
                 tooltip={this.tooltip()}
-                onClick={this.props.onClick} 
+                onClick={this.props.onClick}
                 tooltipPosition={this.props.tooltipPosition}>
                 { this.arrow() }
             </IconButton>
@@ -44,7 +44,7 @@ VisibilityButton.propTypes={
     tooltipPosition: React.PropTypes.string.isRequired,
     tooltipClosedText: React.PropTypes.string.isRequired,
     tooltipOpenedText: React.PropTypes.string.isRequired,
-    side: React.PropTypes.string.isRequired, // "left" or "right"
+    side: React.PropTypes.string.isRequired // "left" or "right"
 }
 
 export default VisibilityButton

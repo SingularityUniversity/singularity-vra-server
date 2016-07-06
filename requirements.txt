@@ -46,6 +46,7 @@ python-dotenv==0.5.1
 python-gnupg==0.3.8
 pytz==2016.4
 PyYAML==3.11
+readability==0.2
 redis==2.10.5
 requests==2.10.0
 scipy==0.17.1

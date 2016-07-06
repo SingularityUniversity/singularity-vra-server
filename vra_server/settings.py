@@ -128,7 +128,8 @@ WSGI_APPLICATION = 'vra_server.wsgi.application'
 # used for sort in that case) 
 CONTENT_PREPROCESSORS = [
     ('core.models.get_content_length', 'content_length', True),
-    ('text.summary.get_summary_sentences', 'summary_sentences')
+    ('text.summary.get_summary_sentences', 'summary_sentences'),
+    ('text.readability.get_readability_scores', 'readability')
 ]
 
 

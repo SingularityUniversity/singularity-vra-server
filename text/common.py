@@ -68,7 +68,8 @@ def tokenize_text_block(block):
     return tokenized_text
 
 
-def extract_words_from_content(content, with_sentences=False):
+# XXX: Refactor me, kinda ugly to have different result types depending on parameters
+def extract_words_from_content(content, with_sentences=False, with_sentences_only=False):
     raw_html = content.extract['content']
 
     if (raw_html is not None):
@@ -77,7 +78,10 @@ def extract_words_from_content(content, with_sentences=False):
             unwanted_element.decompose()
         text = soup.get_text()
 
-        if with_sentences:
+        if with_sentences_only:
+            sentences = nltk.sent_tokenize(text)
+            result = sentences
+        elif with_sentences:
             sentences = nltk.sent_tokenize(text)
             result = (sentences, [tokenize_text_block(sentence) for sentence in sentences])
         else:

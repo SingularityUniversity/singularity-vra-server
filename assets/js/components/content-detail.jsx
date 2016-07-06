@@ -82,6 +82,8 @@ class ContentDetail extends React.Component {
             let extract = fields.extract;
             let preProcessed = fields.pre_processed;
             let summarySentences = preProcessed ? preProcessed['summary_sentences'] : null;
+            const readability = preProcessed ? preProcessed['readability'] : null;
+
             let publishedDate = "Unknown";
             if (extract['published']) {
                 publishedDate = Moment(parseInt(extract['published'])).
@@ -91,11 +93,12 @@ class ContentDetail extends React.Component {
             if (content.lda_similarity_topics) {
                 lda_stuff = (
                     <ListItem>
-                        LDA-Inferred Topics - Similarity to Query Candidate is {content.score.toFixed(3)}
                         <Card>
                             <CardTitle
                                 actAsExpander={true} showExpandableButton={true}
-                                subtitleStyle={{textAlign: 'center'}}/>
+                                subtitleStyle={{textAlign: 'center'}}>
+                                LDA-Inferred Topics - Similarity to Query Candidate is {content.score.toFixed(3)}
+                            </CardTitle>
                             <CardText expandable={true}>
                                 <TopicsList topics={content.lda_similarity_topics}/>
                             </CardText>
@@ -126,9 +129,11 @@ class ContentDetail extends React.Component {
                     {extract.title} {removeButton}
                 </span>);
 
-            const summaryContent = ((summarySentences != null) && (summarySentences.length > 0)) ? 
+            const summaryContent = ((summarySentences != null) && (summarySentences.length > 0)) ?
                 summarySentences.map( val => {return(<li key={val}>{val}</li>)}) :
                 "No content";
+
+            const readabilityContent = readability ? (<pre>{JSON.stringify(readability, null, 2)}</pre>) : "No readability info";
 
             return (
                 <Card initiallyExpanded={true} containerStyle={this.props.muiTheme.fullWidthSection.item}>
@@ -144,18 +149,25 @@ class ContentDetail extends React.Component {
                             <ListItem>Published on:  {`${publishedDate}`} </ListItem>
                             <ListItem>URL: <a target="vra_preview" href={extract.url}>{extract.url}</a></ListItem>
                             <ListItem>
-                                Summary:
                                 <Card>
+                                    <CardTitle>Summary</CardTitle>
                                     <CardText ref='summary_section'>
                                         {summaryContent}
                                     </CardText>
                                 </Card>
                             </ListItem>
+                            <ListItem>
+                                <Card>
+                                    <CardTitle actAsExpander={true} showExpandableButton={true}>Readability Info</CardTitle>
+                                    <CardText expandable={true}>
+                                        {readabilityContent}
+                                    </CardText>
+                                </Card>
+                            </ListItem>
                             {lda_stuff}
                             <ListItem>
-                                Content:
                                 <Card ref='content_section'>
-                                    <CardTitle actAsExpander={true} showExpandableButton={true}/>
+                                    <CardTitle actAsExpander={true} showExpandableButton={true}>Content</CardTitle>
                                     <CardText expandable={true}>
                                         <div dangerouslySetInnerHTML= {{__html: extract.content}}>
                                         </div>

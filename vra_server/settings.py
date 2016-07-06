@@ -85,7 +85,7 @@ INSTALLED_APPS = [
     'solo',
     'datetimeutc',
     'webpack_loader',
-    'core',
+    'core.apps.CoreConfig',
     'workers',
     'web',
 ]
@@ -120,6 +120,14 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'vra_server.wsgi.application'
+
+# a list of tuples. Each tuple is 2 or 3 items long
+# item[0] == key in the preprocessed dictionary in the content object
+# item[1] == class name of the prep
+# item[2] == (optional, defaults to false) include in elastic_search indexing
+CONTENT_PREPROCESSORS = [
+    ('core.models.get_content_length', 'content_length', True) 
+]
 
 
 # Database

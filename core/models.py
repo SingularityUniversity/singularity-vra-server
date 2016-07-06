@@ -8,6 +8,16 @@ from datetimeutc.fields import DateTimeUTCField
 from core.elasticsearch import index_document
 from core.s3 import put_content_to_s3
 from solo.models import SingletonModel
+from django.utils.module_loading import import_string
+
+def get_content_length(content):
+    content_data = content.extract.get('content')
+    if content_data is None:
+        return 0
+    else:
+        return len(content_data)
+
+preprocessor_funcs = {proc_entry[0]: import_string(proc_entry[0]) for proc_entry in settings.CONTENT_PREPROCESSORS}
 
 
 class Publisher(models.Model):
@@ -66,7 +76,6 @@ class EnteredSource(models.Model):
         null=True
     )
 
-
 class Content(models.Model):
     entered_source = models.ForeignKey(
         'EnteredSource',
@@ -94,16 +103,39 @@ class Content(models.Model):
         on_delete=models.CASCADE
     )
 
+    pre_processed = JSONField(
+        default={}
+    )
+
+
+    def save(self, *args, **kwargs):
+        self.pre_processed = self._get_pre_processing_data()
+        super().save(*args, **kwargs)
+
+    def _get_pre_processing_data(self):
+        '''
+        This means that to force the preprocessing, you just call .update or .save
+        '''
+        pre_processed = {}
+        for processor in settings.CONTENT_PREPROCESSORS:
+            func = preprocessor_funcs[processor[0]]
+            key = processor[1]
+            pre_processed[key] = func(self)
+        return pre_processed 
+
     def as_json_serializable(self):
         return json.loads(serializers.serialize('json', [self]))[0]
 
     def as_indexable_json(self):
         body_json = self.as_json_serializable()
         content = body_json['fields']['extract']['content']
-        if content is None:
-            body_json['content_length'] = 0
-        else:
-            body_json['content_length'] = len(content)
+        # XXX: include only pre_processed fields that should be indexed
+        included_processor_keys = [processor[1] for processor in settings.CONTENT_PREPROCESSORS if
+                                   len(processor) > 2 and processor[2]]
+        for key in body_json['fields']['pre_processed']:
+            if key in included_processor_keys:
+                body_json[key] = body_json['fields']['pre_processed'][key]
+        del body_json['fields']['pre_processed']
         return body_json
 
     def add_to_search_index(self):

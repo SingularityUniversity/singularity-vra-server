@@ -15,8 +15,9 @@ class Command(BaseCommand):
                 sys.exit(0)
 
         contents = Content.objects.all()
+        count = contents.count()
 
-        for content in tqdm(contents):
+        for content in tqdm(contents.iterator(), total=count, mininterval=2):
             content.save()
 
         self.stdout.write(self.style.SUCCESS("Re-preprocessed all documents"))

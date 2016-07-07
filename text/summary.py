@@ -1,8 +1,8 @@
 from text.common import extract_words_from_content
 from nltk.probability import FreqDist
+from itertools import chain
 
 def get_summary_sentences(content, num_sentences=10):
-    words = extract_words_from_content(content)
     word_results = extract_words_from_content(content, with_sentences=True)
 
     if word_results == []:
@@ -10,7 +10,9 @@ def get_summary_sentences(content, num_sentences=10):
     else:
         (raw_sentences, parsed_sentences) = word_results
 
-    freqdist = FreqDist(words)
+    all_words = list(chain.from_iterable(parsed_sentences))
+
+    freqdist = FreqDist(all_words)
 
     topic_sentences_words = []
     topic_sentences = []

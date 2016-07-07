@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand
+from django.core.paginator import Paginator
 from core.models import Content
 import sys
 from core.elasticsearch import bulk_index_documents
@@ -15,12 +16,13 @@ class Command(BaseCommand):
             if confirm in ('n', 'N', ''):
                 sys.exit(0)
 
-        contents = Content.objects.all()
-        total = 0
+        contents = Content.objects.all().order_by('id')
         n = 250 
         with tqdm(total=contents.count()) as pbar:
-            for chunk in [contents[i:i+n] for i in range(0, contents.count(), n)]:
-                bulk_index_documents(chunk)
-                pbar.update(len(chunk))
+            paginator = Paginator(contents, n)
+            for page_number in paginator.page_range:
+                next_contents = paginator.page(page_number).object_list
+                bulk_index_documents(next_contents)
+                pbar.update(len(next_contents))
 
         self.stdout.write(self.style.SUCCESS("Recreated elasticsearch index"))

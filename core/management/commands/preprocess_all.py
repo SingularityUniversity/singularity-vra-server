@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand
+from django.core.paginator import Paginator
 from core.models import Content
 import sys
 from tqdm import tqdm
@@ -14,10 +15,14 @@ class Command(BaseCommand):
             if confirm in ('n', 'N', ''):
                 sys.exit(0)
 
-        contents = Content.objects.all()
-        count = contents.count()
-
-        for content in tqdm(contents.iterator(), total=count, mininterval=2):
-            content.save()
+        contents = Content.objects.all().order_by('id')
+        n=250
+        with tqdm(total=contents.count()) as pbar:
+            paginator = Paginator(contents, n)
+            for page_number in paginator.page_range:
+                next_contents = paginator.page(page_number).object_list
+                for content in next_contents:
+                    content.save()
+                pbar.update(len(next_contents))
 
         self.stdout.write(self.style.SUCCESS("Re-preprocessed all documents"))

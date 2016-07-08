@@ -42,5 +42,6 @@ class PublisherTests(APITestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json()['id'], publishers[0].id)
+        self.assertEqual(response.json()['statistics'], {})
 
 

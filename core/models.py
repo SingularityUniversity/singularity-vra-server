@@ -30,6 +30,9 @@ class Publisher(models.Model):
     name = models.CharField(
         max_length=256,
     )
+    statistics = JSONField(
+        default={}
+    )
 
 
 class PublisherURL(models.Model):

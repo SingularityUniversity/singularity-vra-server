@@ -95,13 +95,29 @@ export default {
         }
     },
     fullWidthSection: {
-        item: {
-            padding: desktopGutter + 'px',
-            boxSizing: 'border-box',
-            paddingTop: desktopGutter,
-            paddingBottom: desktopGutter,
-            marginTop: desktopGutter,
-            marginBottom: desktopGutter
+        items: {
+            containerStyle: {
+                /*            padding: desktopGutter + 'px',*/
+                boxSizing: 'border-box',
+                padding: 0,
+                /*  paddingTop: desktopGutter,
+                    paddingBottom: desktopGutter,*/
+                marginTop: desktopGutter,
+                marginBottom: desktopGutter
+            },
+            style: {
+            },
+            components: {
+                containerStyle: {
+                    padding:0,
+                    margin:0
+                },
+                style: {
+                    padding:0,
+                    margin:0
+
+                }
+            }
         },
         root: {
             margin: desktopKeylineIncrement *2

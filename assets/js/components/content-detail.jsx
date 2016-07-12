@@ -133,9 +133,10 @@ class ContentDetail extends React.Component {
                 "No content";
 
             const readabilityContent = readability ? (<pre>{JSON.stringify(readability, null, 2)}</pre>) : "No readability info";
-
+            const itemsStyles = this.props.muiTheme.fullWidthSection.items;
+            const itemComponentsStyles = itemsStyles.components;
             return (
-                <Card initiallyExpanded={true} containerStyle={this.props.muiTheme.fullWidthSection.item}>
+                <Card initiallyExpanded={true} style={itemsStyles.style} containerStyle={itemsStyles.containerStyle}>
                     <CardTitle
                         showExpandableButton={true}
                         title={title}
@@ -143,12 +144,12 @@ class ContentDetail extends React.Component {
                         titleStyle={{textAlign: 'center'}}
                         subtitleStyle={{textAlign: 'center'}}>
                     </CardTitle>
-                    <CardText expandable={true}>
+                    <CardText style={{padding: 0}} expandable={true}>
                         <List>
                             <ListItem>Published on:  {`${publishedDate}`} </ListItem>
                             <ListItem>URL: <a target="vra_preview" href={extract.url}>{extract.url}</a></ListItem>
                             <ListItem>
-                                <Card>
+                                <Card style={itemComponentsStyles.style} containerStyle={itemComponentsStyles.containerStyle}>
                                     <CardTitle>Summary</CardTitle>
                                     <CardText ref='summary_section'>
                                         {summaryContent}
@@ -156,7 +157,7 @@ class ContentDetail extends React.Component {
                                 </Card>
                             </ListItem>
                             <ListItem>
-                                <Card>
+                                <Card style={itemComponentsStyles.style} containerStyle={itemComponentsStyles.containerStyle}>
                                     <CardTitle actAsExpander={true} showExpandableButton={true}>Readability Info</CardTitle>
                                     <CardText expandable={true}>
                                         {readabilityContent}
@@ -165,7 +166,7 @@ class ContentDetail extends React.Component {
                             </ListItem>
                             {lda_stuff}
                             <ListItem>
-                                <Card ref='content_section'>
+                                <Card style={itemComponentsStyles.style} containerStyle={itemComponentsStyles.containerStyle} ref='content_section'>
                                     <CardTitle actAsExpander={true} showExpandableButton={true}>Content</CardTitle>
                                     <CardText expandable={true}>
                                         <div dangerouslySetInnerHTML= {{__html: extract.content}}>

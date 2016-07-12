@@ -150,3 +150,48 @@ export function showSearchResults() {
     }
 }
 
+// This is not a reducer action, so do not call it with dispatch()
+export function getSearchStats() {
+    /*
+       return fetch('/api/v1/search/stats', {
+       credentials: 'include',
+       headers: {'Accept': 'application/json'}
+       }).
+       then(checkResponseAndExtractJSON).
+       then(json => {
+       return json.results;
+       });
+    */
+
+    const p = new Promise((resolve, reject) => resolve(
+                {
+                    top: [
+                    {
+                        query: "space", 
+                        timestamp: 1468357363.743852,
+                        count: 14,
+                        result_count: 374
+                    },
+                    {
+                        query: "space alien", 
+                        timestamp: 1468357163.743852,
+                        count: 10,
+                        result_count: 127 
+                    },
+
+                    ],
+                    recent: [
+                    {
+                        query: "space", 
+                        timestamp: 1468357363.743852,
+                        result_count: 374
+                    },
+                    {
+                        query: "space alien", 
+                        timestamp: 1468357163.743852,
+                        result_count: 127 
+                    },
+                    ]
+                }));
+    return p;
+}

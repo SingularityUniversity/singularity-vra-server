@@ -7,6 +7,7 @@ import ArrowBack from 'material-ui/svg-icons/navigation/arrow-back';
 import ArrowForward from 'material-ui/svg-icons/navigation/arrow-forward';
 import SearchHelpDialog from '../components/search-help-dialog';
 import SearchEntry from '../components/search-entry';
+import SearchStatsDialog from '../components/search-stats-dialog';
 
 
 class AppMenuBar extends React.Component {
@@ -30,6 +31,7 @@ class AppMenuBar extends React.Component {
                         initialSearchText={this.props.initialSearchText}
                         onSearch={this.props.doSearch}
                     />
+                    <SearchStatsDialog  doSearch={this.props.doSearch}/>
                     <SearchHelpDialog/>
                 </ToolbarGroup>
             </AppBar>

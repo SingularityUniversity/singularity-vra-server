@@ -4,6 +4,7 @@ from threading import Lock
 import json
 import sys
 import os.path
+import certifi
 
 _es = None
 _lock = Lock()
@@ -16,19 +17,8 @@ def get_client():
             url = settings.ELASTICSEARCH_URL
             if url is None:
                 raise ValueError("settings.ELASTICSEARCH_URL is None")
-            # XXX Hack, we shouldn't have to do this - but on heroku python buildpack, we do
-            if sys.platform == 'linux' and os.path.isfile('/etc/ssl/certs/ca-certificates.crt'):
-                ca_certs = '/etc/ssl/certs/ca-certificates.crt'
-            elif sys.platform == 'darwin':
-                if os.path.isfile('/opt/local/share/curl/curl-ca-bundle.crt'):  # macports
-                    ca_certs = '/opt/local/share/curl/curl-ca-bundle.crt'
-                elif os.path.isfile('/usr/local/etc/openssl/cert.pem'):  # brew
-                    ca_certs = '/usr/local/etc/openssl/cert.pem'
-                else:
-                    ca_certs = None
-            else:
-                ca_certs = None
-            _es = Elasticsearch([settings.ELASTICSEARCH_URL], verify_certs=True, ca_certs=ca_certs)
+            _es = Elasticsearch([settings.ELASTICSEARCH_URL], verify_certs=True,
+                                ca_certs=certifi.where())
     return _es
 
 

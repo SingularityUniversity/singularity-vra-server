@@ -85,13 +85,13 @@ export class _Workspace extends React.Component {
                         {itemCount} {dirty}
                     </ToolbarGroup>
                 </Toolbar>
-                <Toolbar>
+                <Toolbar style={{overflow:"scroll"}}>
                     <ToolbarGroup>
-                        <RaisedButton primary={true} onMouseUp={this.props.showLoadWorkspace} label="Load/Manage"/>
-                        <RaisedButton primary={true} onMouseUp={this.props.showUpdateWorkspace} disabled={this.props.workspaceData.id == null} label="Update and Save"/>
-                        <RaisedButton primary={true} onMouseUp={this.props.showCreateWorkspace} label="Save New"/>
-                        <RaisedButton primary={true} onMouseUp={this.props.unSelectAll} label="Clear" disabled={clearDisabled}/>
-                        <RaisedButton primary={true} label="Find Similar" onMouseUp={this.props.findSimilarMultiple} disabled={disabled}/>
+                        <RaisedButton primary={true} onMouseUp={this.props.showLoadWorkspace} labelStyle={{whiteSpace:"nowrap"}} label="Load/Manage"/>
+                        <RaisedButton primary={true} onMouseUp={this.props.showUpdateWorkspace} labelStyle={{whiteSpace:"nowrap"}} disabled={this.props.workspaceData.id == null} label="Update and Save"/>
+                        <RaisedButton primary={true} onMouseUp={this.props.showCreateWorkspace} labelStyle={{whiteSpace:"nowrap"}} label="Save New"/>
+                        <RaisedButton primary={true} onMouseUp={this.props.unSelectAll}  labelStyle={{whiteSpace:"nowrap"}} label="Clear" disabled={clearDisabled}/>
+                        <RaisedButton primary={true} label="Find Similar" onMouseUp={this.props.findSimilarMultiple} labelStyle={{whiteSpace:"nowrap"}} disabled={disabled}/>
                     </ToolbarGroup>
                 </Toolbar>
                 <WorkspaceChooser visible={this.props.workspaceChooserVisible}

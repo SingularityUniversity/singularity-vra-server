@@ -7,7 +7,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         result = create_query_index()
-        if result is True:
-            self.stdout.write(self.style.SUCCESS("Index and mappings created"))
+        if result[0] is True:
+            self.stdout.write(self.style.SUCCESS(result[1]))
         else:
-            self.stdout.write("Unable to create index.  Does it already exist?")
+            self.stdout.write(result[1])

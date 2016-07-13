@@ -66,7 +66,7 @@ def create_query_index():
     client = get_client()
 
     if client.indices.exists(index):
-        raise AssertionError("index exists")
+        return (False, 'Index alread exists.  Delete it before running this command.')
 
     params = {
         'index': index,
@@ -87,6 +87,6 @@ def create_query_index():
 
     result = client.indices.create(**params)
     if 'acknowledged' in result and result['acknowledged'] is True:
-        return True
+        return (True, 'Index and mappings created')
     else:
-        return False
+        return (False, 'Unknown error.  Unable to create index.')

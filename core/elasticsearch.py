@@ -63,7 +63,7 @@ def create_query_index():
     client = get_client()
 
     if client.indices.exists(index):
-        return (False, 'Index alread exists.  Delete it before running this command.')
+        return (False, 'Index already exists.  Delete it before running this command.')
 
     params = {
         'index': index,

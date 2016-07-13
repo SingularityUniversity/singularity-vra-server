@@ -57,3 +57,36 @@ def delete_index():
         raise ValueError("settings.ELASTICSEARCH_INDEX is None")
     client = get_client()
     client.indices.delete(index=index, ignore=404)
+
+
+def create_query_index():
+    index = settings.ELASTICSEARCH_SEARCH_STATS_INDEX
+    if index is None:
+        raise ValueError("settings.ELASTICSEARCH_SEARCH_STATS_INDEX is None")
+    client = get_client()
+
+    if client.indices.exists(index):
+        raise AssertionError("index exists")
+
+    params = {
+        'index': index,
+        'body': {
+            'mappings': {
+                'q': {
+                    'properties': {
+                        'timestamp': {'type': 'long'},
+                        'query': {
+                            'type': 'string',
+                            'index': 'not_analyzed'
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    result = client.indices.create(**params)
+    if 'acknowledged' in result and result['acknowledged'] is True:
+        return True
+    else:
+        return False

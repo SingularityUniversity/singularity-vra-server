@@ -152,17 +152,13 @@ export function showSearchResults() {
 
 // This is not a reducer action, so do not call it with dispatch()
 export function getSearchStats() {
-    /*
        return fetch('/api/v1/search/stats', {
        credentials: 'include',
        headers: {'Accept': 'application/json'}
        }).
-       then(checkResponseAndExtractJSON).
-       then(json => {
-       return json.results;
-       });
-    */
+       then(checkResponseAndExtractJSON);
 
+       /*
     const p = new Promise((resolve, reject) => resolve(
                 {
                     top: [
@@ -194,4 +190,5 @@ export function getSearchStats() {
                     ]
                 }));
     return p;
+    */
 }

@@ -30,9 +30,9 @@ class _TopSearches extends React.Component {
                 </TableRow>
             )
         }
-        return this.props.top.map(item => {
+        return this.props.top.map((item, index) => {
             return (
-                <TableRow displayBorder={false} key={item.timestamp} selectable={false} style={{height: 24}}>
+                <TableRow displayBorder={false} key={index} selectable={false} style={{height: 24}}>
                     <TableRowColumn style={{height: 24, width: columnWidths.one}}>
                         <a style={{cursor:"pointer"}} onClick={()=>this.props.doSearch(item.query)}>{item.query}</a>
                     </TableRowColumn>
@@ -75,9 +75,9 @@ class _RecentSearches extends React.Component {
                 </TableRow>
             )
         }
-        return this.props.recent.map(item => {
+        return this.props.recent.map((item, index) => {
             return (
-                <TableRow displayBorder={false} key={item.timestamp} selectable={false} style={{height: 24}}>
+                <TableRow displayBorder={false} key={index} selectable={false} style={{height: 24}}>
                     <TableRowColumn style={{height: 24, width: columnWidths.one+columnWidths.two}}>
                         <a style={{cursor:"pointer"}} onClick={()=>this.props.doSearch(item.query)}>{item.query}</a>
                     </TableRowColumn>

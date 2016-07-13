@@ -23,6 +23,32 @@ class PublisherViewSet(viewsets.ModelViewSet):
     serializer_class = PublisherSerializer
 
 
+def get_es_results(index, doc_type, search_params, from_=0, size=None):
+    client = get_client()
+    param_dict = {}
+    param_dict['index'] = index
+    param_dict['doc_type'] = doc_type
+    param_dict['body'] = search_params
+    param_dict['from_'] = from_
+    if size is not None:
+        param_dict['size'] = size
+    results = None
+    try:
+        results = client.search(**param_dict)
+    except RequestError as req_err:
+        if (req_err.info):
+            message = req_err.info['error']['root_cause'][0]['reason']
+        else:
+            messge = str(req_err)
+            return HttpResponse(message, status=status.HTTP_400_BAD_REQUEST,
+                                content_type="text/plain")
+    except TransportError as req_err:
+        return HttpResponse("Unknown error with Elastic Search",
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                            content_type="text/plain")
+    return results
+
+
 class SearchView(views.APIView):
     query_fields = {
         'url': 'fields.url',
@@ -90,17 +116,15 @@ class SearchView(views.APIView):
             if key in param_dict:
                 param_dict[key]=param_dict[key].split(',')
 
-        param_dict['index'] = index
-        param_dict['doc_type'] = settings.ELASTICSEARCH_TYPE
-        param_dict['from_'] = 0
+        from_ = 0
         if 'offset' in query_params:
-            param_dict['from_'] = query_params['offset']
-        param_dict['size'] = LargeResultsLimitOffsetPagination.default_limit
+            from_ = query_params['offset']
+        size = LargeResultsLimitOffsetPagination.default_limit
         if 'limit' in query_params:
-            param_dict['size'] = query_params['limit']
-        # The score boost function is 
+            size = query_params['limit']
+        # The score boost function is
         # score * (1+sigmoid((content_length-300)/100))
-        param_dict['body']= {
+        search_params = {
             "query": {
                 "function_score": {
                     "query": {
@@ -116,20 +140,78 @@ class SearchView(views.APIView):
                 }
             }
         }
-        try:
-            results = client.search(**param_dict)
-        except RequestError as req_err:
-            if (req_err.info):
-                message = req_err.info['error']['root_cause'][0]['reason']
+        results = get_es_results(index, settings.ELASTICSEARCH_TYPE,
+                                 search_params, from_=from_, size=size)
+
+        # store successful searchs
+        index_search_stats = settings.ELASTICSEARCH_SEARCH_STATS_INDEX
+        if index_search_stats is None:
+            raise ValueError("settings.ELASTICSEARCH_SEARCH_STATS_INDEX is None")
+        q =  self.map_query_to_fields(param_dict['q']).split()
+        q_lower = []
+        for keyword in q:
+            if keyword not in ['AND', 'OR', 'NOT']:
+                q_lower.append(keyword.lower())
             else:
-                messge = str(req_err)
-            return HttpResponse(message, status=status.HTTP_400_BAD_REQUEST,
-                                content_type="text/plain")
-        except TransportError as req_err:
-            return HttpResponse("Unknown error with Elastic Search",
-                                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                                content_type="text/plain")
+                q_lower.append(keyword)
+        client.index(index=index_search_stats, doc_type='q', body={
+            'query': ' '.join(q_lower),
+            'user_id': request.user.id,
+            'timestamp': arrow.utcnow().timestamp,
+            'result_count': results['hits']['total']
+        })
         return Response(results, status=status.HTTP_200_OK)
+
+
+class SearchStatsView(views.APIView):
+    def get(self, request, *args, **kwargs):
+        query_params = request.query_params
+        index_search_stats = settings.ELASTICSEARCH_SEARCH_STATS_INDEX
+        if index_search_stats is None:
+            raise ValueError("settings.ELASTICSEARCH_SEARCH_STATS_INDEX is None")
+        count = 5
+        if 'count' in request.query_params:
+            count = int(request.query_params['count'])
+
+        # Top results
+        search_params = {
+            "aggs": {
+                "group_by_query": {
+                    "terms": {
+                        "field": "query"
+                    },
+                }
+            }
+        }
+        results = get_es_results(index_search_stats, 'q', search_params, size=0)
+
+        retval = {}
+        retval['top'] = [{'query': result['key'] , 'count':result['doc_count'] } for
+                         result in results['aggregations']['group_by_query']['buckets'][:count]]
+
+        # XXX: Turn this into a multisearch?  Also, the other two queries
+        # (recent and top) could both be in the same multisearch.
+        for i, query in enumerate(retval['top']):
+            search_params = {
+                'query': {'match': {'query': query['query']}},
+                'sort': [{'timestamp': 'desc'}]
+            }
+            results = get_es_results(index_search_stats, 'q', search_params, size=1)
+            retval['top'][i]['timestamp'] = results['hits']['hits'][0]['_source']['timestamp']
+            retval['top'][i]['result_count'] = results['hits']['hits'][0]['_source']['result_count']
+
+        search_params = {
+            'query': {'match_all': {}},
+            'sort': [{'timestamp': 'desc'}]
+        }
+        results = get_es_results(index_search_stats, 'q', search_params, size=count)
+
+        retval['recent'] = [{'query': result['_source']['query'],
+                             'timestamp': result['_source']['timestamp'] ,
+                             'result_count': result['_source']['result_count'] } for
+                            result in results['hits']['hits'][:count]]
+
+        return Response(retval, status=status.HTTP_200_OK)
 
 
 class LDAView(views.APIView):
@@ -313,7 +395,7 @@ class WorkspaceViewSet(viewsets.ModelViewSet):
             instance.save()
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-        
+
     def partial_update(self, request, pk=None):
         instance = self.get_object()
         if 'id' in request.data:

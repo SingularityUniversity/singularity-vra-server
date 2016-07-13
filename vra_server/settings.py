@@ -47,6 +47,8 @@ ELASTICSEARCH_URL = os.environ.get('SEARCHBOX_SSL_URL', os.environ.get('SEARCHBO
 ELASTICSEARCH_INDEX = os.environ.get('ELASTICSEARCH_INDEX')
 ELASTICSEARCH_TYPE = "content"
 
+ELASTICSEARCH_SEARCH_STATS_INDEX = os.environ.get('ELASTICSEARCH_SEARCH_STATS_INDEX')
+
 S3_ACCESS_KEY_ID = os.environ.get('S3_ACCESS_KEY_ID')
 S3_ACCESS_KEY_SECRET = os.environ.get('S3_ACCESS_KEY_SECRET')
 S3_BUCKET = os.environ.get('S3_BUCKET')
@@ -125,7 +127,7 @@ WSGI_APPLICATION = 'vra_server.wsgi.application'
 # item[0] == key in the preprocessed dictionary in the content object
 # item[1] == class name of the prep
 # item[2] == (optional, defaults to false) include in elastic_search *top-level* doc field (can be
-# used for sort in that case) 
+# used for sort in that case)
 CONTENT_PREPROCESSORS = [
     ('core.models.get_content_length', 'content_length', True),
     ('text.summary.get_summary_sentences', 'summary_sentences'),

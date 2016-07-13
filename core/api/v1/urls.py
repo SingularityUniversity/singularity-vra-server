@@ -29,4 +29,5 @@ urlpatterns = [
     url(r'^', include(entered_source_router.urls)),
     url(r'^search$', views.SearchView.as_view(), name='search'),
     url(r'^similar$', views.LDAView.as_view(), name='similar'),
+    url(r'^search/stats$', views.SearchStatsView.as_view(), name='search_stats')
 ]

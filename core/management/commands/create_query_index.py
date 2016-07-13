@@ -10,4 +10,4 @@ class Command(BaseCommand):
         if result[0] is True:
             self.stdout.write(self.style.SUCCESS(result[1]))
         else:
-            self.stdout.write(result[1])
+            self.stdout.write(self.style.ERROR(result[1]))

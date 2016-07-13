@@ -9,11 +9,19 @@
 
 See sample.env for configuration examples
 
-## Setup
+## System Setup
 1. create/enter virtual environment
 2. `$ pip install -r requirements.txt`
 3. `$ npm install`
 4. `$ (cd node_modules/material-ui; npm install)`
+
+## Environment Setup
+1. Get content (cp/sync from aws)
+2. Load content into database (`$ python manage.py import_content`)
+3. Recreate the document index (`$ python manage.py recreate_index`)
+4. Create the LDA data (`$ python manage.py create_and_upload_lda`)
+5. Install the LDA data (`$ python manage.py fetch_lda`)
+6. Create query index and mappings (`$ python manage.py create_query_index`)
 
 ## Running server locally
 To access the Web UI (with hot loading of both python and javascript):

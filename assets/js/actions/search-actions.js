@@ -79,18 +79,24 @@ function resetKeywordSearch(text) {
     }
 }
 
-export function similaritySearch(contentIDs) {
+export function similaritySearch(contentIDs, since_timestamp) {
     return function(dispatch) {
-        dispatch(startSimilaritySearch(contentIDs));
+        dispatch(startSimilaritySearch(contentIDs, since_timestamp));
         dispatch(showSnackbarMessage("Doing a similarity search"));
-        fetch('/api/v1/similar', {
+        let postContent = {
+            'ids': contentIDs
+        }
+        if (since_timestamp) {
+            postContent['since'] = since_timestamp
+        }
+        const finished = fetch('/api/v1/similar', {
             credentials: 'include',
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({'ids': contentIDs})
+            body: JSON.stringify(postContent)
         })
         .then(checkResponseAndExtractJSON)
         .then(json => {
@@ -108,13 +114,15 @@ export function similaritySearch(contentIDs) {
             dispatch(showSnackbarMessage("Error doing a similarity search"));
             console.error(error);
         });
+        return finished;
     }
 }
 
-export function startSimilaritySearch(contentIDs) {
+export function startSimilaritySearch(contentIDs, since_timestamp) {
     return {
         type: SIMILARITY_SEARCH,
-        contentIDs: contentIDs
+        contentIDs: contentIDs,
+        since: since_timestamp
     }
 }
 

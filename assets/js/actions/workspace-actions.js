@@ -1,5 +1,9 @@
 import {showSnackbarMessage} from './snackbar-actions';
+import {showSearchResults, similaritySearch} from './search-actions';
 import {checkResponseAndExtractJSON, checkResponse} from './util';
+
+import Moment from 'moment';
+
 export const CLEAR_WORKSPACE = 'CLEAR_WORKSPACE'
 export const SET_IN_WORKSPACE = 'SET_IN_WORKSPACE'
 export const REPLACE_WORKSPACE = 'REPLACE_WORKSPACE'
@@ -27,6 +31,7 @@ function replaceWorkspace(workspace) {
 
 export function loadWorkspace(workspaceId) {
     return (dispatch => {
+        dispatch(showSnackbarMessage("Loading workspace"));
         return fetch('/api/v1/workspace/'+workspaceId, {
             credentials: 'include',
             headers: {'Accept': 'application/json'}
@@ -48,9 +53,10 @@ export function loadWorkspace(workspaceId) {
                 title: json.title,
                 description: json.description
             }))
-        }).
-        then(()=>{
+            dispatch(similaritySearch(json.articles.map(raw_article => raw_article.id),
+                Moment(json.created).unix()));
             dispatch(showSnackbarMessage("Loaded workspace"));
+            dispatch(showSearchResults());
         })
     });
 }

@@ -166,12 +166,17 @@ class SearchResults extends React.Component {
         let {
             searchType,
             searchText,
+            searchSince,
             muiTheme,
             totalCount
         } = this.props;
         const style = {...muiTheme.leftNav, overflow: "visible"};
         if ((searchType == '') || (searchType == null)) {
             searchType = "Search results";
+        }
+        let sinceDescription = "";
+        if (searchSince) {
+            sinceDescription = (<span><br/><em>New since {Moment.unix(searchSince).fromNow()}</em></span>);
         }
         return (
             <div>
@@ -209,8 +214,8 @@ class SearchResults extends React.Component {
                             side="left"/>
                     </div>
                     <div style={{position:"fixed", "textAlign": "center", "width": "100%"}}>
-                        <p><strong>{searchType}</strong><br/>
-                            {searchText ? (<span><i>'{searchText}'</i><br/></span>) : ''}
+                        <p><strong>{searchType}</strong>{sinceDescription}<br/>
+                            {searchText ? (<span><i>{searchText}</i><br/></span>) : ''}
                             <i>{totalCount} results</i><br/>
                         </p>
                         <Divider/>

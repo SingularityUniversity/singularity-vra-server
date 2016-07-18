@@ -188,6 +188,7 @@ class Master extends React.Component {
                     totalCount={this.props.searchData.searchResultTotalCount}
                     searchType={this.props.searchData.searchType}
                     searchText={this.props.searchData.searchText}
+                    searchSince={this.props.searchData.since}
                     loadItems={x => this.getSearchItems(x)}
                     width={450}
                 />

@@ -1,3 +1,4 @@
+import Moment from 'moment'
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
 import expect from 'expect'
@@ -5,6 +6,7 @@ import FetchMock from 'fetch-mock'
 import {CLEAR_WORKSPACE, SET_IN_WORKSPACE, REPLACE_WORKSPACE, clearWorkspace, setInWorkspace, loadWorkspace, getWorkspaces,
     updateWorkspace, createWorkspace, deleteWorkspace} from '../assets/js/actions/workspace-actions';
 import {SNACKBAR_SHOW_MESSAGE} from '../assets/js/actions/snackbar-actions'
+import {SIMILARITY_SEARCH, SHOW_SEARCH_RESULTS} from '../assets/js/actions/search-actions'
 import {workspaceReducer} from '../assets/js/reducers/workspace-reducer'
 import TestUtils from 'react-addons-test-utils'
 import React from 'react'
@@ -57,6 +59,8 @@ describe('Workspace functionality', () => {
         describe('async action: loadInWorkspace', () => {
             beforeEach(() => FetchMock.restore()),
             it('Dispatches load correctly', (done) => {
+                const created = Moment("1999-12-31T00:00:00+00:00");
+                const timestamp = created.unix();
                 let matcher = /.*/;
                 let mocked_http_results = {
                     id: 1,
@@ -71,19 +75,25 @@ describe('Workspace functionality', () => {
                             id: 101,
                             other_fields: 'other_fields_2'
                         }
-                    ]
+                    ],
+                    created: created
                 }
                 FetchMock.mock(matcher, mocked_http_results);
                 const store = mockStore({});
                 loadWorkspace(678)(store.dispatch).then(() => {
                     let calls = FetchMock.calls();
-                    expect(calls.matched.length).toEqual(1);
+                    expect(calls.matched.length).toEqual(2);
                     expect(calls.unmatched.length).toEqual(0);
-                    expect(FetchMock.lastUrl()).toEqual('/api/v1/workspace/678');
+                    expect(calls.matched[0][0]).toEqual('/api/v1/workspace/678');
+                    // XXX: Probably this stuff should be tested in test-search, but we haven't gotten 
+                    // other similarity search tests written, so leave it here for now
+                    expect(calls.matched[1][0]).toEqual('/api/v1/similar');
+                    expect(JSON.parse(calls.matched[1][1].body).since).toEqual(timestamp);
 
                     let storeActions = store.getActions();
-                    expect(storeActions.length).toEqual(2);
-                    expect(storeActions[0]).toEqual( {
+                    expect(storeActions.length).toEqual(6);
+                    expect(storeActions[0].type).toEqual(SNACKBAR_SHOW_MESSAGE);
+                    expect(storeActions[1]).toEqual( {
                         type: REPLACE_WORKSPACE,
                         workspace: {
                             id: 1,
@@ -106,7 +116,15 @@ describe('Workspace functionality', () => {
 
                         }
                     })
-                    expect(storeActions[1].type).toEqual(SNACKBAR_SHOW_MESSAGE);
+                    expect(storeActions[2].type).toEqual(SIMILARITY_SEARCH);
+                    expect(storeActions[2]).toEqual({
+                        type: SIMILARITY_SEARCH,
+                        contentIDs: [100, 101],
+                        since: timestamp
+                    });
+                    expect(storeActions[3].type).toEqual(SNACKBAR_SHOW_MESSAGE);
+                    expect(storeActions[4].type).toEqual(SNACKBAR_SHOW_MESSAGE);
+                    expect(storeActions[5].type).toEqual(SHOW_SEARCH_RESULTS);
 
                 }).then(done).catch(done);
             })

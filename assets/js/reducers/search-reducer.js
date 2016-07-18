@@ -1,6 +1,7 @@
 import { KEYWORD_SEARCH, SIMILARITY_SEARCH, CLEAR_SEARCH, ADD_SEARCH_RESULTS,
          TOGGLE_SEARCH_RESULTS, SHOW_SEARCH_RESULTS, HIDE_SEARCH_RESULTS} from '../actions/search-actions'
 import undoable from 'redux-undo'
+import Moment from 'moment';
 
 export const initialState= {
     searchResultData: [],
@@ -8,7 +9,8 @@ export const initialState= {
     searchResultTotalCount: 0,
     searchType: "",
     searchText: "",
-    searchContentIDs: []
+    searchContentIDs: [],
+    since: null
 }
 
 export const initialHistory= {
@@ -24,21 +26,24 @@ function _searchReducer(state=initialState, action) {
         return Object.assign({}, state,
             {
                 searchType:"Keyword Search",
-                searchText: action.text,
+                searchText: "'"+action.text+"'",
                 searchResultData: [],
                 searchResultTopics: [],
                 searchResultTotalCount: 0,
-                searchContentIDs: []
+                searchContentIDs: [],
+                since: null
             });
     case SIMILARITY_SEARCH:
+        let searchText = '';
         return Object.assign({}, state,
             {
                 searchType:"Similarity Search",
-                searchText: "",
+                searchText: '',
                 searchResultData: [],
                 searchResultTopics: [],
                 searchResultTotalCount: 0,
-                searchContentIDs: action.contentIDs
+                searchContentIDs: action.contentIDs,
+                since: action.since
             });
 
     case CLEAR_SEARCH:

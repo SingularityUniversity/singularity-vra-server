@@ -94,7 +94,8 @@ describe('Search functionality', () => {
                 searchResultTotalCount: expected_docs.length,
                 searchContentIDs: [],
                 searchText: "",
-                searchType: ""
+                searchType: "",
+                since: null
             }
 
             expect(searchReducer(
@@ -128,7 +129,8 @@ describe('Search functionality', () => {
                 searchResultTotalCount: 7,
                 searchContentIDs: [],
                 searchText: "",
-                searchType: ""
+                searchType: "",
+                since: null
             }
             let prevState = Object.assign({},initialState);
             prevState.searchResultData = [{score:0, field_one:0},{score:1, field_one:1},null, null, null];

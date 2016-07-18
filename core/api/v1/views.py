@@ -1,5 +1,6 @@
 import json
 import logging
+from datetime import datetime
 import numpy as np
 from django.conf import settings
 from rest_framework import viewsets, status, views
@@ -218,59 +219,87 @@ class LDAView(views.APIView):
     permission_classes = []
     def post(self, request, *args, **kwargs):
         data = request.data
+        # XXX: check for correct type -- int
+        since_timestamp = data.get('since')
+        if since_timestamp is not None:
+            since_timestamp = int(since_timestamp)
         if 'text' in data:
             text = data['text']
-            result = get_lda_results(tokenize_text_block(text))
+            result = get_lda_results(tokenize_text_block(text), since_timestamp)
         elif 'ids' in data:
             ids = data['ids']
             words = []
             for pk in ids:
                 content = get_object_or_404(Content, pk=int(pk))
                 words.extend(extract_words_from_content(content))
-            result = get_lda_results(words)
+            result = get_lda_results(words, since_timestamp)
 
         return Response(result, status=status.HTTP_200_OK)
 
+def _extract_lda_result_from_content(match_content, weight):
+    ndict, lda_model, lda_sims, id_map = get_lda_data()
 
-def get_lda_results(text_tokens):
+    match_words = extract_words_from_content(match_content)
+    match_bow = ndict.doc2bow(match_words)
+    match_terms = lda_model[match_bow]
+    match_lda_topics = [(describe_topic(key), weight) for (key, weight) in match_terms]
+    match_lda_topics.sort(key=lambda x: -x[1])
+    new_result = {
+        'id': match_content.id,
+        'title': match_content.extract['title'],
+        'url': match_content.url,
+        'topics': match_lda_topics,
+        'source': match_content.as_json_serializable(),
+        'weight': weight 
+    }
+    return new_result
+
+def describe_topic(topic_id):
+    ndict, lda_model, lda_sims, id_map = get_lda_data()
+    result = [(topic, weight) for (topic, weight) in lda_model.show_topic(topic_id)]
+    result.sort(key=lambda x: -x[1])
+    return result
+
+def get_lda_results(text_tokens, since_timestamp=None):
     ndict, lda_model, lda_sims, id_map = get_lda_data()
     bow = ndict.doc2bow(text_tokens)
     vec_lda = lda_model[bow]
 
-    def describe_topic(topic_id):
-        result = [(topic, weight) for (topic, weight) in lda_model.show_topic(topic_id)]
-        result.sort(key=lambda x: -x[1])
-        return result
 
     doc_topics = [(describe_topic(topic), weight) for (topic, weight) in vec_lda]
     doc_topics.sort(key=lambda x: -x[1])
 
     matches = lda_sims[vec_lda]
-    ind = matches.argpartition(-10)[-10:]
-    sorted_ind = ind[np.argsort(matches[ind])]
-    sorted_matches = matches[sorted_ind[::-1]]  # ::-1 returns a reversed view/stride
-    top_matches = list(zip(sorted_ind[::-1], sorted_matches))
     results = []
 
-    for match in top_matches:
+    if since_timestamp is None:
+        ind = matches.argpartition(-10)[-10:]
+        sorted_ind = ind[np.argsort(matches[ind])]
+        sorted_matches = matches[sorted_ind[::-1]]  # ::-1 returns a reversed view/stride
+        top_matches = list(zip(sorted_ind[::-1], sorted_matches))
+        for match in top_matches:
+            match_id = match[0]
+            orig_id = id_map[match_id]
+            match_content = Content.objects.filter(pk=orig_id).first()
+            new_result = _extract_lda_result_from_content(match_content, match[1])
+            results.append(new_result)
+    else:
+        ind = matches.argpartition(-100)[-100:]
+        sorted_ind = ind[np.argsort(matches[ind])]
+        sorted_matches = matches[sorted_ind[::-1]]  # ::-1 returns a reversed view/stride
 
-        match_id = match[0]
-        orig_id = id_map[match_id]
-        match_content = Content.objects.filter(pk=orig_id).first()
-        match_words = extract_words_from_content(match_content)
-        match_bow = ndict.doc2bow(match_words)
-        match_terms = lda_model[match_bow]
-        match_lda_topics = [(describe_topic(key), weight) for (key, weight) in match_terms]
-        match_lda_topics.sort(key=lambda x: -x[1])
-        new_result = {
-            'id': orig_id,
-            'title': match_content.extract['title'],
-            'url': match_content.url,
-            'topics': match_lda_topics,
-            'source': match_content.as_json_serializable(),
-            'weight': match[1]
-        }
-        results.append(new_result)
+
+        top_matches = list(zip(sorted_ind[::-1], sorted_matches))
+        new_objects = (Content.objects.filter(id__in=[id_map[x[0]] for x in top_matches]).
+                             filter(created__gt=arrow.get(since_timestamp).datetime)
+                            [:10] 
+                       )
+        for (index, match_object) in enumerate(new_objects): 
+            new_result = _extract_lda_result_from_content(match_object, top_matches[index][1])
+            results.append(new_result)
+        
+
+
     result = {
         'results': results,
         'query_topics': doc_topics

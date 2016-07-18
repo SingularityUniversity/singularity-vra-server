@@ -21,6 +21,7 @@ class ContentDetail extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            fullSummaries: false,
             selectedText: null
         };
     }
@@ -29,6 +30,14 @@ class ContentDetail extends React.Component {
         if (this.props.onAction) {
             this.props.onAction(this.props.content, 'similar');
         }
+    }
+
+    clickedMoreSummaries() {
+        this.setState({fullSummaries: true});
+    }
+
+    clickedLessSummaries()  {
+        this.setState({fullSummaries: false});
     }
 
     handleSelectionMenu(e, text) {
@@ -128,8 +137,20 @@ class ContentDetail extends React.Component {
                     {extract.title} {removeButton}
                 </span>);
 
+            let moreOrLess = ""; 
+            if ((summarySentences != null) && (summarySentences.length > 5)) { 
+                moreOrLess = this.state.fullSummaries ? 
+                (<a onClick={() => this.clickedLessSummaries()}>Less</a>) : 
+                (<a onClick={() => this.clickedMoreSummaries()}>More</a>);
+            }
             const summaryContent = ((summarySentences != null) && (summarySentences.length > 0)) ?
-                summarySentences.slice(0,5).map( val => {return(<li key={val}>{val}</li>)}) :
+                (<div>
+                    {
+                        summarySentences.slice(0,this.state.fullSummaries?10:5).map( val => {return(<li key={val}>{val}</li>)})
+                    }
+                    {moreOrLess}
+                </div>
+                ):
                 "No content";
 
             const readabilityContent = readability ? (<pre>{JSON.stringify(readability, null, 2)}</pre>) : "No readability info";

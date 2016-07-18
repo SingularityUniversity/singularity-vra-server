@@ -137,10 +137,10 @@ class ContentDetail extends React.Component {
                     {extract.title} {removeButton}
                 </span>);
 
-            let moreOrLess = ""; 
-            if ((summarySentences != null) && (summarySentences.length > 5)) { 
-                moreOrLess = this.state.fullSummaries ? 
-                (<a onClick={() => this.clickedLessSummaries()}>Less</a>) : 
+            let moreOrLess = "";
+            if ((summarySentences != null) && (summarySentences.length > 5)) {
+                moreOrLess = this.state.fullSummaries ?
+                (<a onClick={() => this.clickedLessSummaries()}>Less</a>) :
                 (<a onClick={() => this.clickedMoreSummaries()}>More</a>);
             }
             const summaryContent = ((summarySentences != null) && (summarySentences.length > 0)) ?

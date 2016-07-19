@@ -124,14 +124,15 @@ TEMPLATES = [
 WSGI_APPLICATION = 'vra_server.wsgi.application'
 
 # a list of tuples. Each tuple is 2 or 3 items long
-# item[0] == key in the preprocessed dictionary in the content object
-# item[1] == class name of the prep
+# item[0] == fully qualified function name of the prep
+# item[1] == key in the preprocessed dictionary in the content object
 # item[2] == (optional, defaults to false) include in elastic_search *top-level* doc field (can be
 # used for sort in that case)
 CONTENT_PREPROCESSORS = [
     ('core.models.get_content_length', 'content_length', True),
     ('text.summary.get_summary_sentences', 'summary_sentences'),
-    ('text.readability.get_readability_scores', 'readability')
+    ('text.readability.get_readability_scores', 'readability'),
+    ('text.summary.get_quote_sentences', 'quote_sentences')
 ]
 
 

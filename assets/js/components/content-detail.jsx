@@ -90,6 +90,7 @@ class ContentDetail extends React.Component {
             let extract = fields.extract;
             let preProcessed = fields.pre_processed;
             let summarySentences = preProcessed ? preProcessed['summary_sentences'] : null;
+            let quoteSentences = preProcessed ? preProcessed['quote_sentences'] : null;
             const readability = preProcessed ? preProcessed['readability'] : null;
 
             let publishedDate = "Unknown";
@@ -153,6 +154,16 @@ class ContentDetail extends React.Component {
                 ):
                 "No content";
 
+            const quoteContent = ((quoteSentences != null) && (quoteSentences.length > 0)) ?
+                (<div>
+                    {
+                        quoteSentences.map( val => {return(<li key={val}>{val}</li>)})
+                    }
+                </div>
+                ):
+                "No content";
+
+
             const readabilityContent = readability ? (<pre>{JSON.stringify(readability, null, 2)}</pre>) : "No readability info";
             const itemsStyles = this.props.muiTheme.fullWidthSection.items;
             const itemComponentsStyles = itemsStyles.components;
@@ -177,6 +188,15 @@ class ContentDetail extends React.Component {
                                     </CardText>
                                 </Card>
                             </ListItem>
+                            <ListItem>
+                                <Card style={itemComponentsStyles.style} containerStyle={itemComponentsStyles.containerStyle}>
+                                    <CardTitle>Quotes</CardTitle>
+                                    <CardText ref='quotes_section'>
+                                        {quoteContent}
+                                    </CardText>
+                                </Card>
+                            </ListItem>
+
                             <ListItem>
                                 <Card style={itemComponentsStyles.style} containerStyle={itemComponentsStyles.containerStyle}>
                                     <CardTitle actAsExpander={true} showExpandableButton={true}>Readability Info</CardTitle>

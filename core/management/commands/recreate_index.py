@@ -17,7 +17,7 @@ class Command(BaseCommand):
                 sys.exit(0)
 
         contents = Content.objects.all().order_by('id')
-        n = 250 
+        n = 100 
         with tqdm(total=contents.count()) as pbar:
             paginator = Paginator(contents, n)
             for page_number in paginator.page_range:

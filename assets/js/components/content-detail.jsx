@@ -47,8 +47,7 @@ class ContentDetail extends React.Component {
                     text
                     );
         } else if (e.target.id == 'search-text') {
-            this.props.onSearch(text);
-
+            this.props.onSearch(`"${text}"`);
         } else {
             console.error(`SelectionMenu: unknown action (${e.target.id})`);
         }

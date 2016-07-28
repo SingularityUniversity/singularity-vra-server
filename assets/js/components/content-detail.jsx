@@ -66,6 +66,15 @@ class ContentDetail extends React.Component {
         });
 
         new SelectionMenu({
+            container: findDOMNode(this.refs.quotes_section),
+            content: '<div class="selection-menu"> <ul> <li id="clip-text" class="shortcut" style="padding-left: .5em; padding-right: .5em">Clip&nbsp;Text</li> <li id="search-text" class="shortcut">Search</li> </ul> </div>',
+            handler: function(e) { // Not using es6 => because we want to bind to the SelectionMenu Object
+                that.handleSelectionMenu(e, this.selectedText);
+                this.hide(true);
+            }
+        });
+
+        new SelectionMenu({
             container: findDOMNode(this.refs.content_section),
             content: '<div class="selection-menu"> <ul> <li id="clip-text" class="shortcut" style="padding-left: .5em; padding-right: .5em">Clip&nbsp;Text</li> <li id="search-text" class="shortcut">Search</li> </ul> </div>',
             handler: function(e) { // Not using es6 => because we want to bind to the SelectionMenu Object

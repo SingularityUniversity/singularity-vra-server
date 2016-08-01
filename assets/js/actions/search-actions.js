@@ -55,8 +55,7 @@ export function keywordSearch(query, offset, limit) {
             })
             .catch(error => {
                 delete keywordSearchRequests[data];
-                dispatch(showSnackbarMessage(error));
-                console.error(`search error: ${error}`);
+                dispatch(showSnackbarMessage(error.message));
                 reject(error);
             })
         })

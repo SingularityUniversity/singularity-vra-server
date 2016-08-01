@@ -263,7 +263,7 @@ const mapDispatchToProps = (dispatch) => {
             dispatch(startKeywordSearch(text));
         },
         onKeywordSearch: (text, reset, offset, limit) => {
-            dispatch(keywordSearch(text, offset, limit));
+            dispatch(keywordSearch(text, offset, limit)).catch(() => {}); // We're displaying error, so don't do anything else
         },
         onSimilaritySearch: (content_ids) => {
             dispatch(similaritySearch(content_ids));

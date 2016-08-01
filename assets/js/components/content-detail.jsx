@@ -255,7 +255,7 @@ const mapDispatchToProps = (dispatch) => {
         },
         onSearch: (text) => {
             dispatch(startKeywordSearch(text));
-            dispatch(keywordSearch(text));
+            dispatch(keywordSearch(text)).catch(() => {}); // We're displaying error, so don't do anything else
             dispatch(showSearchResults());
         },
         onSetInWorkspace: (content, inWorkspace) => {

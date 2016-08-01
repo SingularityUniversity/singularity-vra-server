@@ -26,7 +26,7 @@ function _searchReducer(state=initialState, action) {
         return Object.assign({}, state,
             {
                 searchType:"Keyword Search",
-                searchText: "'"+action.text+"'",
+                searchText: action.text, 
                 searchResultData: [],
                 searchResultTopics: [],
                 searchResultTotalCount: 0,

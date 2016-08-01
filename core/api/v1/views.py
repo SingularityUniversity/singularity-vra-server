@@ -1,3 +1,4 @@
+import traceback
 import json
 import logging
 from datetime import datetime
@@ -6,7 +7,7 @@ from django.conf import settings
 from rest_framework import viewsets, status, views
 from core.models import *
 from core.api.v1.serializers import *
-from core.elasticsearch import get_client
+from core.elasticsearch import get_client, ElasticException
 from rest_framework.decorators import detail_route, list_route
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
@@ -40,13 +41,10 @@ def get_es_results(index, doc_type, search_params, from_=0, size=None):
         if (req_err.info):
             message = req_err.info['error']['root_cause'][0]['reason']
         else:
-            messge = str(req_err)
-            return HttpResponse(message, status=status.HTTP_400_BAD_REQUEST,
-                                content_type="text/plain")
+            message = str(req_err)
+        raise ElasticException(message)
     except TransportError as req_err:
-        return HttpResponse("Unknown error with Elastic Search",
-                            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                            content_type="text/plain")
+        raise ElasticException("Transport error with Elastic Search")
     return results
 
 

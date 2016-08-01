@@ -1,4 +1,5 @@
 from django.conf import settings
+from rest_framework.exceptions import APIException
 from elasticsearch import Elasticsearch, helpers
 from threading import Lock
 import json
@@ -8,6 +9,9 @@ import certifi
 
 _es = None
 _lock = Lock()
+
+class ElasticException(APIException):
+    status_code = 400
 
 
 def get_client():

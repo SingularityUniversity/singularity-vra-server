@@ -8,7 +8,7 @@ import muiThemeable from 'material-ui/styles/muiThemeable';
 import SelectionMenu from 'selection-menu';
 import TopicsList from './lda_topics';
 import { connect } from 'react-redux';
-import { startKeywordSearch, keywordSearch } from '../actions/search-actions';
+import { showSearchResults, startKeywordSearch, keywordSearch } from '../actions/search-actions';
 import { addSnippetToClipboard } from '../actions/clipboard-actions';
 import { setInWorkspace } from '../actions/workspace-actions';
 import IconButton from 'material-ui/IconButton';
@@ -256,6 +256,7 @@ const mapDispatchToProps = (dispatch) => {
         onSearch: (text) => {
             dispatch(startKeywordSearch(text));
             dispatch(keywordSearch(text));
+            dispatch(showSearchResults());
         },
         onSetInWorkspace: (content, inWorkspace) => {
             dispatch(setInWorkspace(content, inWorkspace));

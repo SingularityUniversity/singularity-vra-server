@@ -1,5 +1,5 @@
 # Required Components
-1) Django
+1) Django (currenly stuck at 1.9 as celery isn't yet compatible with 1.10 -- see https://github.com/celery/django-celery/issues/460)
 2) Postgres
 3) Redis
 4) EmbedLy account

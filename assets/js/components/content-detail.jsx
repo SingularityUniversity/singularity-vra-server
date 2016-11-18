@@ -213,7 +213,7 @@ class ContentDetail extends React.Component {
                                     </CardText>
                                 </Card>
                             </ListItem>
-
+                            {/* Comment out the readability card for the time being
                             <ListItem>
                                 <Card style={itemComponentsStyles.style} containerStyle={itemComponentsStyles.containerStyle}>
                                     <CardTitle actAsExpander={true} showExpandableButton={true}>Readability Info</CardTitle>
@@ -223,6 +223,7 @@ class ContentDetail extends React.Component {
                                 </Card>
                             </ListItem>
                             {lda_stuff}
+                            */}
                             <ListItem>
                                 <Card style={itemComponentsStyles.style} containerStyle={itemComponentsStyles.containerStyle} ref='content_section'>
                                     <CardTitle actAsExpander={true} showExpandableButton={true}>Content</CardTitle>

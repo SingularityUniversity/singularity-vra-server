@@ -14,6 +14,8 @@ import { setInWorkspace } from '../actions/workspace-actions';
 import IconButton from 'material-ui/IconButton';
 import ContentRemoveCircle from 'material-ui/svg-icons/content/remove-circle';
 import {colors} from 'material-ui/styles';
+import { wordCountToTag, ariToGradeLevel, round } from '../util/readability';
+import { authorListToString } from '../util/text';
 
 import Moment from 'moment';
 
@@ -100,6 +102,13 @@ class ContentDetail extends React.Component {
             let summarySentences = preProcessed ? preProcessed['summary_sentences'] : null;
             let quoteSentences = preProcessed ? preProcessed['quote_sentences'] : null;
             const readability = preProcessed ? preProcessed['readability'] : null;
+            let readabilityLength = readability ? readability['sentence_info']['words'] : null;
+            let readabilityARI = readability ? readability['readability_grades']['ARI'] : null;
+            let author = '';
+            if (extract['authors'] && extract['authors'].length > 0) {
+                author = authorListToString(extract['authors']);
+                author += ' ';
+            }
 
             let publishedDate = "Unknown";
             if (extract['published']) {
@@ -180,13 +189,13 @@ class ContentDetail extends React.Component {
                     <CardTitle
                         showExpandableButton={true}
                         title={title}
-                        subtitle={"From: "+extract.provider_name}
+                        subtitle={author}
                         titleStyle={{textAlign: 'center'}}
                         subtitleStyle={{textAlign: 'center'}}>
                     </CardTitle>
                     <CardText style={{padding: 0}} expandable={true}>
                         <List>
-                            <ListItem>Published on:  {`${publishedDate}`} </ListItem>
+                            <ListItem><div>Publisher: {extract.provider_name} &nbsp;&nbsp;&nbsp; Published on:  {`${publishedDate}`}</div><div>Article Length: {wordCountToTag(readabilityLength)} &nbsp;&nbsp;&nbsp; ARI: {round(readabilityARI, 2)} ({ariToGradeLevel(readabilityARI)})</div></ListItem>
                             <ListItem>URL: <a target="vra_preview" href={extract.url}>{extract.url}</a></ListItem>
                             <ListItem>
                                 <Card style={itemComponentsStyles.style} containerStyle={itemComponentsStyles.containerStyle}>

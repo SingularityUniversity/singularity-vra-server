@@ -13,6 +13,8 @@ import { connect } from 'react-redux';
 import ContentPreview from './content-preview';
 import VisibilityButton from '../components/visibility-button';
 import Divider from 'material-ui/Divider';
+import { wordCountToTag, ariToGradeLevel, round } from '../util/readability';
+import { authorListToString } from '../util/text';
 
 let SelectableList = MakeSelectable(List);
 
@@ -121,20 +123,49 @@ class SearchResults extends React.Component {
     }
 
     _renderRow(index) {
+        let titleText = '';
         let published = '';
         let publisher = '';
+        let author = '';
+        let summary = '';
         let cardStyle ={cursor: "pointer", whiteSpace: "inherit", boxShadow: 0, backgroundColor:null, height:120} ;
 
         let content = this.props.displayedContent[index];
+        let readabilityLength = content.fields.pre_processed ? 
+            content.fields.pre_processed['readability']['sentence_info']['words'] : null;
+         let readabilityARI = content.fields.pre_processed ? 
+            content.fields.pre_processed['readability']['readability_grades']['ARI'] : null;
+
         if (!content) {
             return (<Card key={'empty-'+index} style={cardStyle}></Card> );
 
         }
+
+        titleText = content.fields.extract['title'];
+        const MAX_TITLE_LENGTH = 45;
+        if (titleText.length > MAX_TITLE_LENGTH) {
+            titleText = titleText.slice(0,MAX_TITLE_LENGTH+1) + '...';
+        }
+
         if (content.fields.extract['published']) {
             published = (<div style={{fontSize:12}}>Published on {Moment(parseInt(content.fields.extract['published'])).format('YYYY-MM-DD')}</div>);
         }
         if (content.fields.extract['provider_name']) {
             publisher = content.fields.extract['provider_name'];
+        }
+        // build up the list of authors (assuming one exists)
+        if (content.fields.extract['authors'] && content.fields.extract['authors'].length > 0) {
+            author = authorListToString(content.fields.extract['authors']);
+        }
+        const MAX_SUMMARY_LENGTH = 135;
+        if (content.fields.pre_processed['summary_sentences'] && content.fields.pre_processed['summary_sentences'].length > 0) {
+            // get the first N characters (if there are that many)
+            for (let i=0; i<content.fields.pre_processed['summary_sentences'].length; i++) {
+                summary += content.fields.pre_processed['summary_sentences'][i] + ' ';
+                if (summary.length >= MAX_SUMMARY_LENGTH) break;
+            }
+            summary = summary.slice(0, MAX_SUMMARY_LENGTH+1);
+            summary += "..."
         }
         let addIcon="";
         if (this.state.selectedPKIDs.indexOf(content.pk) >=0 ) {
@@ -146,8 +177,8 @@ class SearchResults extends React.Component {
                 </IconButton>
             );
         }
-        const title = (<span><span style={{fontSize: 14, lineHeight: "1em", display: "inline-block", width:this.props.width-32-48-24, textOverflow: "ellipsis", maxHeight: "4em", overflow:"hidden"}}>{content.fields.extract['title']}</span>{addIcon}</span>); // 32 from padding from cardtitle, 48 for button, 24 for collapse/open icon button
-        const subtitle = (<span><div style={{fontSize: 12}}>Score: {content.score.toFixed(3)}</div> {published} <a href="#">{publisher}</a></span>);
+        const title = (<span><span style={{fontSize: 14, lineHeight: "1em", display: "inline-block", width:this.props.width-32-48-24, textOverflow: "ellipsis", maxHeight: "4em", overflow:"hidden"}}>{titleText}</span>{addIcon}</span>); // 32 from padding from cardtitle, 48 for button, 24 for collapse/open icon button
+const subtitle = (<span><div className="search-summary">{summary}</div><div style={{fontSize: 12}}>{author}</div><div style={{fontSize: 12}}>Score: {content.score.toFixed(3)} &nbsp;&nbsp;&nbsp; Length: {wordCountToTag(readabilityLength)} &nbsp;&nbsp;&nbsp; ARI: {round(readabilityARI, 2)} ({ariToGradeLevel(readabilityARI)})</div> {published} <a href="#">{publisher}</a></span>);
 
 
         return (

@@ -1,7 +1,7 @@
 import json
 import logging
 from core.models import Publisher, EnteredSource, Content, PublisherURL, \
-    Workspace
+    Workspace, WorkspaceArticle
 from rest_framework import serializers
 from django.forms.models import model_to_dict
 from rest_framework.fields import CurrentUserDefault
@@ -76,10 +76,19 @@ class DynamicFieldsModelSerializer(serializers.ModelSerializer):
                     self.fields.pop(field_name)
 
 
+class WorkspaceArticleSerializer(serializers.ModelSerializer):
+    article = ContentSerializer()
+
+    class Meta:
+        model = WorkspaceArticle
+        fields = '__all__'
+
+
 class WorkspaceSerializer(DynamicFieldsModelSerializer):
     user = serializers.PrimaryKeyRelatedField(read_only=True,
                                               default=serializers.CurrentUserDefault())
-    articles = ContentSerializer(many=True, read_only=True)
+    articles = WorkspaceArticleSerializer(source='workspacearticle_set', many=True,
+                                          read_only=True)
 
     class Meta:
         model = Workspace

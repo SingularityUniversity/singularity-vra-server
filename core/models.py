@@ -12,7 +12,7 @@ from django.utils.module_loading import import_string
 from threading import Lock
 
 # We evaulate the preprocessor funcs lazily because it causes circular imports otherwise
-_preprocessor_funcs = None 
+_preprocessor_funcs = None
 _lock = Lock()
 
 def get_preprocessor_funcs():
@@ -133,7 +133,7 @@ class Content(models.Model):
             func = get_preprocessor_funcs()[processor[0]]
             key = processor[1]
             pre_processed[key] = func(self)
-        return pre_processed 
+        return pre_processed
 
     def as_json_serializable(self):
         return json.loads(serializers.serialize('json', [self]))[0]
@@ -236,5 +236,11 @@ class Workspace(models.Model):
     )
     articles = models.ManyToManyField(
         Content,
-        blank=True
+        blank=True,
+        through='WorkspaceArticle'
     )
+
+class WorkspaceArticle(models.Model):
+    article = models.ForeignKey(Content, on_delete=models.CASCADE)
+    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE)
+    date_added = models.DateTimeField(auto_now_add=True)

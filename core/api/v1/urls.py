@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, url, include
+from django.conf.urls import url, include
 from core.api.v1 import views
 from rest_framework_nested import routers
 

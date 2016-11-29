@@ -1,5 +1,5 @@
 import web.views as views
-from django.conf.urls import patterns, url, include
+from django.conf.urls import url, include
 
 
 app_name = 'web'

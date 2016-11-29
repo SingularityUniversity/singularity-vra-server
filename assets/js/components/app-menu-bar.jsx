@@ -26,7 +26,7 @@ class AppMenuBar extends React.Component {
                     <IconButton disabled={!this.props.canUndoSearch} onClick={this.props.onUndo}><ArrowBack/></IconButton>
                     <IconButton disabled={!this.props.canRedoSearch} onClick={this.props.onRedo}><ArrowForward/></IconButton>
                 </ToolbarGroup>
-                <ToolbarGroup float='right'>
+                <ToolbarGroup >
                     <SearchEntry
                         initialSearchText={this.props.initialSearchText}
                         onSearch={this.props.doSearch}

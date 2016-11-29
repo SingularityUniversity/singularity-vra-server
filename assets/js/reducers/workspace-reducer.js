@@ -1,3 +1,5 @@
+import Moment from 'moment'
+import $ from 'jquery'
 import {REPLACE_WORKSPACE, CLEAR_WORKSPACE, SET_IN_WORKSPACE} from '../actions/workspace-actions'
 
 export const initialState = {
@@ -39,7 +41,13 @@ export function workspaceReducer(state=initialState, action) {
 
         if (!alreadyInWorkspace) {
             let newInWorkspace = state.articles.slice();
-            newInWorkspace.push(content);
+            let article = $.extend({}, content);
+            let article_content = {
+                article: article.fields,
+                date_added: Moment()
+            };
+            article.fields = article_content;
+            newInWorkspace.push(article);
             return Object.assign({}, state, {dirty: true, articles: newInWorkspace});
         } else {
             return state;

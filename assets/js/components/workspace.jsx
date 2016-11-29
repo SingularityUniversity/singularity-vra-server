@@ -6,6 +6,8 @@ import {Toolbar, ToolbarGroup, ToolbarTitle} from 'material-ui/Toolbar';
 import {Card, CardText}  from 'material-ui/Card';
 import {colors} from 'material-ui/styles';
 import RaisedButton from 'material-ui/RaisedButton';
+import SelectField from 'material-ui/SelectField';
+import MenuItem from 'material-ui/MenuItem';
 
 import WorkspaceChooser from '../components/workspace-chooser';
 import WorkspaceEditor from '../components/workspace-editor';
@@ -82,7 +84,17 @@ export class _Workspace extends React.Component {
                     <ToolbarGroup>
                         <ToolbarTitle style={{color:colors.black, fontWeight: "bold", fontFamily:this.props.muiTheme.baseTheme.fontFamily}}
                             text={this.props.workspaceData.title? this.props.workspaceData.title : "Untitled Workspace"}/><br/>
-                        {itemCount} {dirty}
+                        {itemCount} {dirty} 
+                    </ToolbarGroup>
+                    <ToolbarGroup >
+                        <SelectField 
+                            value={0}
+                            style={{customWidth: 50}}
+                            floatingLabelText="Sort Order">
+                            <MenuItem value={0} primaryText="Publication Date" />
+                            <MenuItem value={1} primaryText="Relevance (Score)" />
+                            <MenuItem value={2} primaryText="Date Added" />
+                        </SelectField>
                     </ToolbarGroup>
                 </Toolbar>
                 <Toolbar style={{overflow:"scroll"}}>

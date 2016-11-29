@@ -131,10 +131,13 @@ class SearchResults extends React.Component {
         let cardStyle ={cursor: "pointer", whiteSpace: "inherit", boxShadow: 0, backgroundColor:null, height:120} ;
 
         let content = this.props.displayedContent[index];
-        let readabilityLength = content.fields.pre_processed ? 
-            content.fields.pre_processed['readability']['sentence_info']['words'] : null;
-         let readabilityARI = content.fields.pre_processed ? 
-            content.fields.pre_processed['readability']['readability_grades']['ARI'] : null;
+        let readabilityLength = null;
+        let readabilityARI = null;
+        if (content.fields.pre_processed && content.fields.pre_processed['readability']['sentence_info']) {
+            let sentenceInfo = content.fields.pre_processed['readability']['sentence_info'];
+            readabilityLength = sentenceInfo['words'];
+            readabilityARI = content.fields.pre_processed['readability']['readability_grades']['ARI'];
+        }
 
         if (!content) {
             return (<Card key={'empty-'+index} style={cardStyle}></Card> );
@@ -142,7 +145,7 @@ class SearchResults extends React.Component {
         }
 
         titleText = content.fields.extract['title'];
-        const MAX_TITLE_LENGTH = 45;
+        const MAX_TITLE_LENGTH = 90;
         if (titleText.length > MAX_TITLE_LENGTH) {
             titleText = titleText.slice(0,MAX_TITLE_LENGTH+1) + '...';
         }
@@ -260,7 +263,7 @@ const subtitle = (<span><div className="search-summary">{summary}</div><div styl
                         >
                             {({ onRowsRendered, registerChild }) => (
                                 <AutoSizer>
-                                {({height, width }) =>
+                                {({height, width }) => 
                                     (<VirtualScroll
                                      ref={registerChild}
                                      width={width}

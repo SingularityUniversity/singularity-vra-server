@@ -45,7 +45,7 @@ export function loadWorkspace(workspaceId) {
                 articles: json.articles.map((raw_article) => {
                     return {
                         fields: raw_article,
-                        pk: raw_article.id,
+                        pk: raw_article.article.id,
                         model: "core.content",
                         score: 1
                     }

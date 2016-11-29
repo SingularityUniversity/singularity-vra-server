@@ -96,14 +96,18 @@ class ContentDetail extends React.Component {
         } = this.props;
 
         if (content ) {
-            let fields = content.fields;
+            let fields = content.fields.article;
             let extract = fields.extract;
             let preProcessed = fields.pre_processed;
             let summarySentences = preProcessed ? preProcessed['summary_sentences'] : null;
             let quoteSentences = preProcessed ? preProcessed['quote_sentences'] : null;
             const readability = preProcessed ? preProcessed['readability'] : null;
-            let readabilityLength = readability ? readability['sentence_info']['words'] : null;
-            let readabilityARI = readability ? readability['readability_grades']['ARI'] : null;
+            let readabilityLength = null;
+            let readabilityARI = null;
+            if (readability && readability['sentence_info']) {
+                readabilityLength = readability['sentence_info']['words'];
+                readabilityARI = readability['readability_grades']['ARI'];
+            }
             let author = '';
             if (extract['authors'] && extract['authors'].length > 0) {
                 author = authorListToString(extract['authors']);

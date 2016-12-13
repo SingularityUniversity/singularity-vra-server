@@ -243,4 +243,4 @@ class Workspace(models.Model):
 class WorkspaceArticle(models.Model):
     article = models.ForeignKey(Content, on_delete=models.CASCADE)
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE)
-    date_added = models.DateTimeField(auto_now_add=True)
+    date_added = models.DateTimeField()

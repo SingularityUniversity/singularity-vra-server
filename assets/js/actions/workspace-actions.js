@@ -7,6 +7,7 @@ import Moment from 'moment';
 export const CLEAR_WORKSPACE = 'CLEAR_WORKSPACE'
 export const SET_IN_WORKSPACE = 'SET_IN_WORKSPACE'
 export const REPLACE_WORKSPACE = 'REPLACE_WORKSPACE'
+export const SORT_WORKSPACE = 'SORT_WORKSPACE'
 
 export function clearWorkspace() {
     return {
@@ -92,7 +93,12 @@ export function updateWorkspace(workspaceData) {
         let workspaceId = workspaceData.id;
         let patchWorkspaceData = {
             title: workspaceData.title,
-            ids: workspaceData.articles.map(article => article.pk),
+            ids: workspaceData.articles.map(article => {
+                return {
+                    id: article.pk,
+                    date_added: article.fields.date_added
+                }
+            }),
             description: workspaceData.description
         }
         dispatch(showSnackbarMessage(`Saving workspace ${workspaceData.title}`));
@@ -121,10 +127,14 @@ export function createWorkspace(workspaceData) {
         dispatch(showSnackbarMessage(`Saving new workspace ${workspaceData.title}`));
         let postWorkspaceData = {
             title: workspaceData.title,
-            ids: workspaceData.articles.map(article => article.pk),
+            ids: workspaceData.articles.map(article => {
+                return {
+                    id: article.pk,
+                    date_added: article.fields.date_added
+                }
+            }),
             description: workspaceData.description
         }
-
         return fetch('/api/v1/workspace', {
             credentials: 'include',
             method: 'POST',
@@ -144,3 +154,11 @@ export function createWorkspace(workspaceData) {
         })
     }
 }
+
+export function sortWorkspace(type) {
+    return  {
+        type: SORT_WORKSPACE,
+        sortType: type
+    };
+}
+

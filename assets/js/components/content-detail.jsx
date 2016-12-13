@@ -119,6 +119,8 @@ class ContentDetail extends React.Component {
                 publishedDate = Moment(parseInt(extract['published'])).
                     format('YYYY-MM-DD');
             }
+            let addedDate = (content.fields['date_added']) ? 
+                    Moment(content.fields['date_added']).format('YYYY-MM-DD') : '';
             var lda_stuff = null;
             if (content.lda_similarity_topics) {
                 lda_stuff = (
@@ -199,7 +201,7 @@ class ContentDetail extends React.Component {
                     </CardTitle>
                     <CardText style={{padding: 0}} expandable={true}>
                         <List>
-                            <ListItem><div>Publisher: {extract.provider_name} &nbsp;&nbsp;&nbsp; Published on:  {`${publishedDate}`}</div><div>Article Length: {wordCountToTag(readabilityLength)} &nbsp;&nbsp;&nbsp; ARI: {round(readabilityARI, 2)} ({ariToGradeLevel(readabilityARI)})</div></ListItem>
+                            <ListItem><div>Publisher: {extract.provider_name} &nbsp;&nbsp;&nbsp; Published on:  {`${publishedDate}`}</div><div>Article Length: {wordCountToTag(readabilityLength)} &nbsp;&nbsp;&nbsp; ARI: {round(readabilityARI, 2)} ({ariToGradeLevel(readabilityARI)})</div><div>Added on: {addedDate}</div></ListItem>
                             <ListItem>URL: <a target="vra_preview" href={extract.url}>{extract.url}</a></ListItem>
                             <ListItem>
                                 <Card style={itemComponentsStyles.style} containerStyle={itemComponentsStyles.containerStyle}>

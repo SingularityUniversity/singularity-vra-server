@@ -16,7 +16,8 @@ import { addSnippetToClipboard, toggleClipboard, clearClipboard } from '../actio
 import { similaritySearch, startKeywordSearch, keywordSearch,
     clearSearch, addSearchResults, toggleSearchResults, showSearchResults, hideSearchResults } from '../actions/search-actions';
 import { createWorkspace, updateWorkspace, getWorkspaces, loadWorkspace,
-    clearWorkspace, setInWorkspace, deleteWorkspace} from '../actions/workspace-actions';
+    clearWorkspace, setInWorkspace, deleteWorkspace, sortWorkspace} from 
+    '../actions/workspace-actions';
 import { getArticleCount } from '../actions/article-count-actions';
 import { showSnackbarMessage, closeSnackbar} from '../actions/snackbar-actions';
 
@@ -111,6 +112,10 @@ class Master extends React.Component {
             .catch(error => this.props.onShowSnackbarMessage("There was an error deleting workspace: "+error));
     }
 
+    sortWorkspace(type) {
+        this.props.onSortWorkspace(type);
+    }
+
     showUpdateWorkspace() {
         this.setState({
             workspaceEditorVisible: true,
@@ -202,6 +207,7 @@ class Master extends React.Component {
                 <Workspace
                     chooseWorkspace={(id) => this.chooseWorkspace(id)}
                     deleteWorkspace={(id) => this.deleteWorkspace(id)}
+                    sortWorkspace={(type) => this.sortWorkspace(type)}
                     workspacesOnServer={this.state.workspacesOnServer}
                     submitWorkspace={(id) => this.submitWorkspace(id)}
                     workspaceData={this.props.workspaceData}
@@ -304,7 +310,8 @@ const mapDispatchToProps = (dispatch) => {
         onDeleteWorkspace: (workspaceId) => dispatch(deleteWorkspace(workspaceId)),
         onGetWorkspaces: () => getWorkspaces(), // Yes, this is kind of silly
         onCreateWorkspace: (workspaceData) => dispatch(createWorkspace(workspaceData)),
-        onUpdateWorkspace: (workspaceData) => dispatch(updateWorkspace(workspaceData))
+        onUpdateWorkspace: (workspaceData) => dispatch(updateWorkspace(workspaceData)),
+        onSortWorkspace: (type) => dispatch(sortWorkspace(type))
     }
 }
 

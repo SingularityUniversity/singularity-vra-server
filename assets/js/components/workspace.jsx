@@ -8,6 +8,7 @@ import {colors} from 'material-ui/styles';
 import RaisedButton from 'material-ui/RaisedButton';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
+import {SortType, getSortTypeString, getSortDirectionString} from '../constants/enums'
 
 import WorkspaceChooser from '../components/workspace-chooser';
 import WorkspaceEditor from '../components/workspace-editor';
@@ -15,7 +16,7 @@ import ContentDetail from '../components/content-detail';
 
 
 export class _Workspace extends React.Component {
-
+    
     componentDidUpdate(prevProps, prevState) { // eslint-disable-line no-unused-vars
         if ((prevProps.workspaceData.articles.length) < (this.props.workspaceData.articles.length)) {
             if (this._lastContent) {
@@ -23,6 +24,18 @@ export class _Workspace extends React.Component {
                 domNode.scrollIntoView();
             }
         }
+    }
+
+    sortText(field) {
+        let direction = (this.props.workspaceData.sortType == field) ?
+            getSortDirectionString(this.props.workspaceData.sortDirection) :
+            '';
+        return getSortTypeString(field) + " " + direction;
+    }
+
+    sortWorkspace(evt, index, value) {
+        evt.stopPropagation();
+        this.props.sortWorkspace(value);
     }
 
     render() {
@@ -88,12 +101,14 @@ export class _Workspace extends React.Component {
                     </ToolbarGroup>
                     <ToolbarGroup >
                         <SelectField 
-                            value={0}
+                            ref="sortType"
+                            value={this.props.workspaceData.sortType}
                             style={{customWidth: 50}}
-                            floatingLabelText="Sort Order">
-                            <MenuItem value={0} primaryText="Publication Date" />
-                            <MenuItem value={1} primaryText="Relevance (Score)" />
-                            <MenuItem value={2} primaryText="Date Added" />
+                            floatingLabelText="Sort Order"
+                            onChange={this.sortWorkspace.bind(this)}>
+                            <MenuItem value={SortType.PUBLICATION_DATE} primaryText={this.sortText(SortType.PUBLICATION_DATE)} />
+                            <MenuItem value={SortType.RELEVANCE} primaryText={this.sortText(SortType.RELEVANCE)} />
+                            <MenuItem value={SortType.ADDED_DATE} primaryText={this.sortText(SortType.ADDED_DATE)} />
                         </SelectField>
                     </ToolbarGroup>
                 </Toolbar>
@@ -129,6 +144,7 @@ _Workspace.propTypes = {
     deleteWorkspace: React.PropTypes.func.isRequired,
     workspacesOnServer: React.PropTypes.array.isRequired,
     submitWorkspace: React.PropTypes.func.isRequired,
+    sortWorkspace: React.PropTypes.func.isRequired,
     workspaceData: React.PropTypes.object.isRequired,
     showLoadWorkspace: React.PropTypes.func.isRequired,
     showUpdateWorkspace: React.PropTypes.func.isRequired,

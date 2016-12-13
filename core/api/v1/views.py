@@ -412,37 +412,47 @@ class WorkspaceViewSet(viewsets.ModelViewSet):
         # self.perform_create(serializer)
         if 'id' in request.data:
             # XXX: check for correct type -- int
-            article = get_object_or_404(Content, pk=request.data['id'])
+            article = get_object_or_404(Content, pk=request.data['id']['id'])
             workspace_article = WorkspaceArticle(article=article,
-                                                 workspace=instance)
+                                                 workspace=instance,
+                                                 date_added=arrow.get(request.data['id']['date_added']).datetime)
             workspace_article.save()
         elif 'ids' in request.data:
             # XXX: check for correct type -- list
-            for article in [get_object_or_404(Content, pk=id) for id in request.data['ids']]:
+            for id in request.data['ids']:
+                article = get_object_or_404(Content, pk=id['id'])
                 workspace_article = WorkspaceArticle(article=article,
-                                                     workspace=instance)
+                                                     workspace=instance,
+                                                     date_added=arrow.get(id['date_added']).datetime)
                 workspace_article.save()
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    def update_workspace(self, ids):
+        instance = self.get_object()
+        articles = list(instance.articles.all())
+        # delete articles that should be removed
+        for article in articles:
+            if article.pk not in [id['id'] for id in ids]:
+                WorkspaceArticle.objects.filter(workspace=instance).filter(article=article).delete()
+        # add new articles
+        for id in ids:
+            if id['id'] not in [article.pk for article in articles]:
+                article = Content.objects.get(pk=id['id'])
+                workspace_article = WorkspaceArticle(article=article,
+                                                     workspace=instance,
+                                                     date_added=arrow.get(id['date_added']).datetime)
+                workspace_article.save()
 
     def partial_update(self, request, pk=None):
         instance = self.get_object()
         if 'id' in request.data:
             # XXX: check for correct type -- int
-            article = get_object_or_404(Content, pk=request.data['id'])
-            WorkspaceArticle.objects.filter(workspace=instance).delete()
-            workspace_article = WorkspaceArticle(article=article,
-                                                 workspace=instance)
-            workspace_article.save()
+            self.update_workspace([request.data['id']])
             request.data.pop('id')
         elif 'ids' in request.data:
             # XXX: check for correct type -- list
-            articles = [get_object_or_404(Content, pk=id) for id in request.data['ids']]
-            WorkspaceArticle.objects.filter(workspace=instance).delete()
-            for article in [get_object_or_404(Content, pk=id) for id in request.data['ids']]:
-                workspace_article = WorkspaceArticle(article=article,
-                                                     workspace=instance)
-                workspace_article.save()
+            self.update_workspace(request.data['ids'])
             request.data.pop('ids')
         serializer = self.get_serializer(instance, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
@@ -456,18 +466,21 @@ class WorkspaceViewSet(viewsets.ModelViewSet):
             return Response('Not authorized.', status=status.HTTP_403_FORBIDDEN)
         if 'id' in request.data:
             # XXX: check for correct type -- int
-            article = get_object_or_404(Content, pk=request.data['id'])
+            article = get_object_or_404(Content, pk=request.data['id']['id'])
             if not WorkspaceArticle.objects.filter(workspace=workspace).filter(article=article).exists():
                 workspace_article = WorkspaceArticle(article=article,
-                                                    workspace=workspace)
+                                                     workspace=workspace,
+                                                     date_added=arrow.get(request.data['id']['date_added']).datetime)
                 workspace_article.save()
         elif 'ids' in request.data:
             # XXX: check for correct type -- list
-            articles = [get_object_or_404(Content, pk=id) for id in request.data['ids']]
-            for article in [get_object_or_404(Content, pk=id) for id in request.data['ids']]:
+            articles = [get_object_or_404(Content, pk=id['id']) for id in request.data['ids']]
+            for id in request.data['ids']:
+                article = get_object_or_404(Content, pk=id['id'])
                 if not WorkspaceArticle.objects.filter(workspace=workspace).filter(article=article).exists():
                     workspace_article = WorkspaceArticle(article=article,
-                                                        workspace=workspace)
+                                                        workspace=workspace,
+                                                        date_added=arrow.get(id['date_added']).datetime)
                     workspace_article.save()
         return Response('Success', status=status.HTTP_204_NO_CONTENT)
 

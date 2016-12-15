@@ -159,6 +159,15 @@ class SearchView(views.APIView):
                     "fields.extract.published": {"order": "asc" if order[0] == "+" else "desc"}
                 }
             }
+        elif order[1:] == "added":
+            search_params = {
+                "query": {
+                    "query_string": {"query":self.map_query_to_fields(param_dict['q'])}
+                },
+                "sort": {
+                    "fields.created": {"order": "asc" if order[0] == "+" else "desc"}
+                }
+            }
 
         results = get_es_results(index, settings.ELASTICSEARCH_TYPE,
                                  search_params, from_=from_, size=size)

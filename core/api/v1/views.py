@@ -415,7 +415,8 @@ class WorkspaceViewSet(viewsets.ModelViewSet):
             article = get_object_or_404(Content, pk=request.data['id']['id'])
             workspace_article = WorkspaceArticle(article=article,
                                                  workspace=instance,
-                                                 date_added=arrow.get(request.data['id']['date_added']).datetime)
+                                                 date_added=arrow.get(request.data['id']['date_added']).datetime,
+                                                 favorite=request.data['id']['favorite'])
             workspace_article.save()
         elif 'ids' in request.data:
             # XXX: check for correct type -- list
@@ -423,7 +424,8 @@ class WorkspaceViewSet(viewsets.ModelViewSet):
                 article = get_object_or_404(Content, pk=id['id'])
                 workspace_article = WorkspaceArticle(article=article,
                                                      workspace=instance,
-                                                     date_added=arrow.get(id['date_added']).datetime)
+                                                     date_added=arrow.get(id['date_added']).datetime,
+                                                     favorite=id['favorite'])
                 workspace_article.save()
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
@@ -434,15 +436,25 @@ class WorkspaceViewSet(viewsets.ModelViewSet):
         # delete articles that should be removed
         for article in articles:
             if article.pk not in [id['id'] for id in ids]:
-                WorkspaceArticle.objects.filter(workspace=instance).filter(article=article).delete()
-        # add new articles
+                WorkspaceArticle.objects.filter(workspace=instance).filter(
+                    workspace=instance, article=article).delete()
         for id in ids:
+            article = Content.objects.get(pk=id['id'])
             if id['id'] not in [article.pk for article in articles]:
-                article = Content.objects.get(pk=id['id'])
+                # add new articles
                 workspace_article = WorkspaceArticle(article=article,
                                                      workspace=instance,
-                                                     date_added=arrow.get(id['date_added']).datetime)
+                                                     date_added=arrow.get(id['date_added']).datetime,
+                                                     favorite=id['favorite'])
                 workspace_article.save()
+            else:
+               # update favorite as necessary on existing articles
+               workspace_article = WorkspaceArticle.objects.get(article=article,
+                                                                workspace=instance)
+               if id['favorite'] != workspace_article.favorite:
+                   workspace_article.favorite = id['favorite']
+                   workspace_article.save()
+
 
     def partial_update(self, request, pk=None):
         instance = self.get_object()
@@ -470,7 +482,8 @@ class WorkspaceViewSet(viewsets.ModelViewSet):
             if not WorkspaceArticle.objects.filter(workspace=workspace).filter(article=article).exists():
                 workspace_article = WorkspaceArticle(article=article,
                                                      workspace=workspace,
-                                                     date_added=arrow.get(request.data['id']['date_added']).datetime)
+                                                     date_added=arrow.get(request.data['id']['date_added']).datetime,
+                                                     favorite=request.data['id']['favorite'])
                 workspace_article.save()
         elif 'ids' in request.data:
             # XXX: check for correct type -- list
@@ -479,8 +492,9 @@ class WorkspaceViewSet(viewsets.ModelViewSet):
                 article = get_object_or_404(Content, pk=id['id'])
                 if not WorkspaceArticle.objects.filter(workspace=workspace).filter(article=article).exists():
                     workspace_article = WorkspaceArticle(article=article,
-                                                        workspace=workspace,
-                                                        date_added=arrow.get(id['date_added']).datetime)
+                                                         workspace=workspace,
+                                                         date_added=arrow.get(id['date_added']).datetime,
+                                                         favorite=id['favorite'])
                     workspace_article.save()
         return Response('Success', status=status.HTTP_204_NO_CONTENT)
 

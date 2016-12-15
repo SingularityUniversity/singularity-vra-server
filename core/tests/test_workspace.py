@@ -100,7 +100,8 @@ class WorkspaceTests(APITestCase):
         url = reverse('workspace-detail', kwargs={'pk': workspace1.id})
         self.client.force_authenticate(user=self.user1)
         data = {'title': 'New Title', 'id': {'id': article.id,
-                                             'date_added': arrow.now().format()}}
+                                             'date_added': arrow.now().format(),
+                                             'favorite': False}}
         response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json()['title'], data['title'])
@@ -117,8 +118,10 @@ class WorkspaceTests(APITestCase):
         url = reverse('workspace-detail', kwargs={'pk': workspace1.id})
         self.client.force_authenticate(user=self.user1)
         data = {'title': 'New Title',
-                'ids': [{'id': article1.id, 'date_added': arrow.now().format()},
-                        {'id': article2.id, 'date_added': arrow.now().format()}]}
+                'ids': [{'id': article1.id, 'date_added': arrow.now().format(),
+                         'favorite': False},
+                        {'id': article2.id, 'date_added': arrow.now().format(),
+                         'favorite': False}]}
         response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json()['title'], data['title'])
@@ -159,7 +162,8 @@ class WorkspaceTests(APITestCase):
         workspace = SequenceWorkspaceFactory.create(user=self.user1)
         url = reverse('workspace-add', kwargs={'pk': workspace.id})
         self.client.force_authenticate(user=self.user1)
-        data = {'id': {'id': article.id, 'date_added': arrow.now().format()}}
+        data = {'id': {'id': article.id, 'date_added': arrow.now().format(),
+                       'favorite': False}}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertTrue(article.id in
@@ -171,7 +175,8 @@ class WorkspaceTests(APITestCase):
         workspace = SequenceWorkspaceFactory.create(user=self.user1)
         url = reverse('workspace-add', kwargs={'pk': workspace.id})
         self.client.force_authenticate(user=self.user1)
-        data = {'id': {'id': article.id, 'date_added': arrow.now().format()}}
+        data = {'id': {'id': article.id, 'date_added': arrow.now().format(),
+                       'favorite': False}}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertTrue(article.id in
@@ -192,7 +197,8 @@ class WorkspaceTests(APITestCase):
         self.assertTrue(bad_workspace_id != workspace.id)
         url = reverse('workspace-add', kwargs={'pk': bad_workspace_id})
         self.client.force_authenticate(user=self.user1)
-        data = {'id': {'id': article.id, 'date_added': arrow.now().format()}}
+        data = {'id': {'id': article.id, 'date_added': arrow.now().format(),
+                       'favorite': False}}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -202,7 +208,8 @@ class WorkspaceTests(APITestCase):
         workspace2= SequenceWorkspaceFactory.create(user=self.user2)
         url = reverse('workspace-add', kwargs={'pk': workspace2.id})
         self.client.force_authenticate(user=self.user1)
-        data = {'id': {'id': article.id, 'date_added': arrow.now().format()}}
+        data = {'id': {'id': article.id, 'date_added': arrow.now().format(),
+                       'favorite': False}}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(Workspace.objects.get(pk=workspace1.id).articles.all().count(),
@@ -217,7 +224,8 @@ class WorkspaceTests(APITestCase):
         workspace = SequenceWorkspaceFactory.create(user=self.user1)
         url = reverse('workspace-add', kwargs={'pk': workspace.id})
         self.client.force_authenticate(user=self.user1)
-        data = {'id': {'id': bad_article_id, 'date_added': arrow.now().format()}}
+        data = {'id': {'id': bad_article_id, 'date_added': arrow.now().format(),
+                       'favorite': False}}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -227,8 +235,10 @@ class WorkspaceTests(APITestCase):
         workspace = SequenceWorkspaceFactory.create(user=self.user1)
         url = reverse('workspace-add', kwargs={'pk': workspace.id})
         self.client.force_authenticate(user=self.user1)
-        data = {'ids': [{'id': article1.id, 'date_added': arrow.now().format()},
-                        {'id': article2.id, 'date_added': arrow.now().format()}]}
+        data = {'ids': [{'id': article1.id, 'date_added': arrow.now().format(),
+                         'favorite': False},
+                        {'id': article2.id, 'date_added': arrow.now().format(),
+                         'favorite': False}]}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(Workspace.objects.get(pk=workspace.id).articles.all().count(),
@@ -246,7 +256,8 @@ class WorkspaceTests(APITestCase):
         for i in range(count):
             article = SequenceContentFactory.create()
             articles.append(article)
-            article_ids.append({'id': article.id, 'date_added': arrow.now().format()})
+            article_ids.append({'id': article.id, 'date_added': arrow.now().format(),
+                                'favorite': False})
         url = reverse('workspace-add', kwargs={'pk': workspace.id})
         self.client.force_authenticate(user=workspace.user)
         data = {'ids': article_ids}
@@ -287,7 +298,8 @@ class WorkspaceTests(APITestCase):
         self.assertTrue(bad_workspace_id != workspace.id)
         url = reverse('workspace-remove', kwargs={'pk': bad_workspace_id})
         self.client.force_authenticate(user=self.user1)
-        data = {'id': {'id': article.id, 'date_added': arrow.now().format()}}
+        data = {'id': {'id': article.id, 'date_added': arrow.now().format(),
+                       'favorite': False}}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -303,7 +315,8 @@ class WorkspaceTests(APITestCase):
                         1)
         url = reverse('workspace-remove', kwargs={'pk': workspace2.id})
         self.client.force_authenticate(user=self.user1)
-        data = {'id': {'id': articles2[0].id, 'date_added': arrow.now().format()}}
+        data = {'id': {'id': articles2[0].id, 'date_added': arrow.now().format(),
+                       'favorite': False}}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(Workspace.objects.get(pk=workspace1.id).articles.all().count(),
@@ -347,7 +360,8 @@ class WorkspaceTests(APITestCase):
         new_article = SequenceContentFactory.create()
         url = reverse('workspace-detail', kwargs={'pk': workspace.id})
         self.client.force_authenticate(user=self.user1)
-        data={'id': {'id': new_article.id, 'date_added': arrow.now().format()}}
+        data={'id': {'id': new_article.id, 'date_added': arrow.now().format(),
+                     'favorite': False}}
         response = self.client.patch(url, data, format='json')
         workspace_all_articles = Workspace.objects.get(pk=workspace.id).articles.all()
         self.assertEqual([new_article.id], [x.id for x in workspace_all_articles])
@@ -359,8 +373,10 @@ class WorkspaceTests(APITestCase):
         new_article2 = SequenceContentFactory.create()
         url = reverse('workspace-detail', kwargs={'pk': workspace.id})
         self.client.force_authenticate(user=self.user1)
-        data = {'ids': [{'id': new_article1.id, 'date_added': arrow.now().format()},
-                        {'id': new_article2.id, 'date_added': arrow.now().format()}]}
+        data = {'ids': [{'id': new_article1.id, 'date_added': arrow.now().format(),
+                         'favorite': False},
+                        {'id': new_article2.id, 'date_added': arrow.now().format(),
+                         'favorite': False}]}
         response = self.client.patch(url, data, format='json')
         workspace_all_articles = Workspace.objects.get(pk=workspace.id).articles.all()
         self.assertEqual([new_article1.id, new_article2.id], [x.id for x in workspace_all_articles])
@@ -370,7 +386,8 @@ class WorkspaceTests(APITestCase):
         url = reverse('workspace-list')
         self.client.force_authenticate(user=self.user1)
         data = {'title': 'New Workspace', 'description': 'Description',
-                'id': {'id': new_article.id, 'date_added': arrow.now().format()}}
+                'id': {'id': new_article.id, 'date_added': arrow.now().format(),
+                       'favorite': False}}
         response = self.client.post(url, data, format='json')
         workspace_id = response.json()['id']
         workspace_all_articles = Workspace.objects.get(pk=workspace_id).articles.all()
@@ -382,8 +399,10 @@ class WorkspaceTests(APITestCase):
         url = reverse('workspace-list')
         self.client.force_authenticate(user=self.user1)
         data = {'title': 'New Workspace', 'description': 'Description',
-                'ids': [{'id': new_article1.id, 'date_added': arrow.now().format()},
-                        {'id': new_article2.id, 'date_added': arrow.now().format()}]}
+                'ids': [{'id': new_article1.id, 'date_added': arrow.now().format(),
+                         'favorite': False},
+                        {'id': new_article2.id, 'date_added': arrow.now().format(),
+                         'favorite': False}]}
         response = self.client.post(url, data, format='json')
         workspace_id = response.json()['id']
         workspace_all_articles = Workspace.objects.get(pk=workspace_id).articles.all()

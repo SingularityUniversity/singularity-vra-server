@@ -39,7 +39,9 @@ export class WorkspaceEditorInternal extends React.Component {
         let workspaceData = {
             articles: this.props.workspaceData.articles.slice(),
             title: this.titleField.getValue(),
-            description: this.descriptionField.getValue()
+            description: this.descriptionField.getValue(),
+            sortType: this.props.workspaceData.sortType,
+            sortDirection: this.props.workspaceData.sortDirection
         }
         if (!this.props.isCreating) {
             workspaceData.id = this.props.workspaceData.id;

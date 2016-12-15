@@ -244,3 +244,4 @@ class WorkspaceArticle(models.Model):
     article = models.ForeignKey(Content, on_delete=models.CASCADE)
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE)
     date_added = models.DateTimeField()
+    favorite = models.BooleanField(default=False)

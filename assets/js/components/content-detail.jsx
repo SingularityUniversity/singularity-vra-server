@@ -10,12 +10,15 @@ import TopicsList from './lda_topics';
 import { connect } from 'react-redux';
 import { showSearchResults, startKeywordSearch, keywordSearch } from '../actions/search-actions';
 import { addSnippetToClipboard } from '../actions/clipboard-actions';
-import { setInWorkspace } from '../actions/workspace-actions';
+import { setInWorkspace, setFavorite } from '../actions/workspace-actions';
 import IconButton from 'material-ui/IconButton';
+import FontIcon from 'material-ui/FontIcon'
 import ContentRemoveCircle from 'material-ui/svg-icons/content/remove-circle';
 import {colors} from 'material-ui/styles';
 import { wordCountToTag, ariToGradeLevel, round } from '../util/readability';
 import { authorListToString } from '../util/text';
+import ActionFavorite from 'material-ui/svg-icons/action/favorite'
+import ActionFavoriteBorder  from 'material-ui/svg-icons/action/favorite-border'
 
 import Moment from 'moment';
 
@@ -41,6 +44,11 @@ class ContentDetail extends React.Component {
     clickedLessSummaries()  {
         this.setState({fullSummaries: false});
     }
+
+    clickedSetFavorite() {
+        this.props.onFavorite(this.props.content);
+    }
+
 
     handleSelectionMenu(e, text) {
         if (e.target.id == 'clip-text') {
@@ -185,11 +193,14 @@ class ContentDetail extends React.Component {
                 </div>
                 ):
                 "No content";
+            let favoriteIcon = (content.fields.favorite) ? (<ActionFavorite />) :
+                (<ActionFavoriteBorder />);
 
 
             const readabilityContent = readability ? (<pre>{JSON.stringify(readability, null, 2)}</pre>) : "No readability info";
             const itemsStyles = this.props.muiTheme.fullWidthSection.items;
             const itemComponentsStyles = itemsStyles.components;
+
             return (
                 <Card initiallyExpanded={true} style={itemsStyles.style} containerStyle={itemsStyles.containerStyle}>
                     <CardTitle
@@ -199,6 +210,12 @@ class ContentDetail extends React.Component {
                         titleStyle={{textAlign: 'center'}}
                         subtitleStyle={{textAlign: 'center'}}>
                     </CardTitle>
+                    <IconButton
+                       tooltip="Favorite" 
+                        onClick={this.clickedSetFavorite.bind(this)}
+                        style={{marginLeft:24}}>
+                        {favoriteIcon}
+                    </IconButton>
                     <CardText style={{padding: 0}} expandable={true}>
                         <List>
                             <ListItem><div>Publisher: {extract.provider_name} &nbsp;&nbsp;&nbsp; Published on:  {`${publishedDate}`}</div><div>Article Length: {wordCountToTag(readabilityLength)} &nbsp;&nbsp;&nbsp; ARI: {round(readabilityARI, 2)} ({ariToGradeLevel(readabilityARI)})</div><div>Added on: {addedDate}</div></ListItem>
@@ -276,7 +293,10 @@ const mapDispatchToProps = (dispatch) => {
         },
         onSetInWorkspace: (content, inWorkspace) => {
             dispatch(setInWorkspace(content, inWorkspace));
-        }
+        },
+        onFavorite: (content) => {
+            dispatch(setFavorite(content));
+        },
     };
 }
 

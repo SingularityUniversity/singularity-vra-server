@@ -8,6 +8,7 @@ export const CLEAR_WORKSPACE = 'CLEAR_WORKSPACE'
 export const SET_IN_WORKSPACE = 'SET_IN_WORKSPACE'
 export const REPLACE_WORKSPACE = 'REPLACE_WORKSPACE'
 export const SORT_WORKSPACE = 'SORT_WORKSPACE'
+export const SET_FAVORITE = 'SET_FAVORITE'
 
 export function clearWorkspace() {
     return {
@@ -52,7 +53,9 @@ export function loadWorkspace(workspaceId) {
                     }
                 }),
                 title: json.title,
-                description: json.description
+                description: json.description,
+                sortType: SortType.PUBLISHED_DATE,
+                sortDirection: SortDirection.DESCENDING
             }))
             dispatch(similaritySearch(json.articles.map(raw_article => raw_article.id),
                 Moment(json.created).unix()));
@@ -96,7 +99,8 @@ export function updateWorkspace(workspaceData) {
             ids: workspaceData.articles.map(article => {
                 return {
                     id: article.pk,
-                    date_added: article.fields.date_added
+                    date_added: article.fields.date_added,
+                    favorite: article.fields.favorite,
                 }
             }),
             description: workspaceData.description
@@ -130,7 +134,8 @@ export function createWorkspace(workspaceData) {
             ids: workspaceData.articles.map(article => {
                 return {
                     id: article.pk,
-                    date_added: article.fields.date_added
+                    date_added: article.fields.date_added,
+                    favorite: article.fields.favorite,
                 }
             }),
             description: workspaceData.description
@@ -147,7 +152,7 @@ export function createWorkspace(workspaceData) {
         .then(checkResponseAndExtractJSON)
         .then(json => {
             // Update the workspace in the store with the id
-            let newWorkspace = {...workspaceData, dirty:false,  id:json.id};
+            let newWorkspace = {...workspaceData, dirty:false,  id:json.id}
             dispatch(replaceWorkspace(newWorkspace));
             dispatch(showSnackbarMessage(`Saved new workspace ${workspaceData.title}`));
             return json.id;
@@ -160,5 +165,12 @@ export function sortWorkspace(type) {
         type: SORT_WORKSPACE,
         sortType: type
     };
+}
+
+export function setFavorite(content) {
+    return {
+        type: SET_FAVORITE,
+        content: content
+    }
 }
 

@@ -109,7 +109,7 @@ class SearchView(views.APIView):
 
         # These should only have single values
         param_dict = {key:query_params[key] for key in query_params
-                      if key not in ['limit', 'offset']}
+                      if key not in ['limit', 'offset', 'order']}
 
         for key in ('_source_include', '_source_exclude'):
             if key in param_dict:
@@ -121,24 +121,45 @@ class SearchView(views.APIView):
         size = LargeResultsLimitOffsetPagination.default_limit
         if 'limit' in query_params:
             size = query_params['limit']
-        # The score boost function is
-        # score * (1+sigmoid((content_length-300)/100))
-        search_params = {
-            "query": {
-                "function_score": {
-                    "query": {
-                        "query_string": {"query":self.map_query_to_fields(param_dict['q'])}
-                    },
-                    "functions": [
-                        {
-                            "script_score": {
-                                "script" : "_score * (1 + (1/(1+Math.exp(-((doc.content_length.value-300) / 100.0)))))"
+        order = "+relevance"
+        if 'order' in query_params:
+            order = query_params['order']
+        if order[0] not in ('-', '+'):
+            order = "+"+order
+
+        if order[1:] == "relevance":
+            if order[0] == "-":
+                multiplier = " * -1 "
+            else:
+                multiplier = ""
+            # The score boost function is
+            # score * (1+sigmoid((content_length-300)/100))
+            search_params = {
+                "query": {
+                    "function_score": {
+                        "query": {
+                            "query_string": {"query":self.map_query_to_fields(param_dict['q'])}
+                        },
+                        "functions": [
+                            {
+                                "script_score": {
+                                    "script" : "_score "+multiplier+"* (1 + (1/(1+Math.exp(-((doc.content_length.value-300) / 100.0)))))"
+                                }
                             }
-                        }
-                    ]
+                        ]
+                    }
                 }
             }
-        }
+        elif order[1:] == "published":
+            search_params = {
+                "query": {
+                    "query_string": {"query":self.map_query_to_fields(param_dict['q'])}
+                },
+                "sort": {
+                    "fields.extract.published": {"order": "asc" if order[0] == "+" else "desc"}
+                }
+            }
+
         results = get_es_results(index, settings.ELASTICSEARCH_TYPE,
                                  search_params, from_=from_, size=size)
 

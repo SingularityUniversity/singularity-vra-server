@@ -17,11 +17,15 @@ export const initialState = {
 function sortByKey(articles, key, direction) {
     let sortOrder = (direction == SortDirection.ASCENDING) ? 1 : -1;
     return articles.sort(function(x, y) {
+        let xFavorite = x['fields']['favorite'];
+        let yFavorite = y['fields']['favorite'];
         for (let i=0; i < key.length; i++) {
           x = x[key[i]];
           y = y[key[i]];
         }
-        return sortOrder * ((x < y) ? -1 : ((x > y) ? 1 : 0));
+        if (xFavorite == true && yFavorite == false) return -1
+        else if (xFavorite == false && yFavorite == true) return 1
+        else return sortOrder * ((x < y) ? -1 : ((x > y) ? 1 : 0));
     });}
 
 function sortWorkspace(articles, type, direction) {

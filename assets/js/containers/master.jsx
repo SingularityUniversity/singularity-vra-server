@@ -20,6 +20,7 @@ import { createWorkspace, updateWorkspace, getWorkspaces, loadWorkspace,
     '../actions/workspace-actions';
 import { getArticleCount } from '../actions/article-count-actions';
 import { showSnackbarMessage, closeSnackbar} from '../actions/snackbar-actions';
+import {SortType, SortDirection} from '../constants/enums'
 
 class Master extends React.Component {
 
@@ -69,9 +70,9 @@ class Master extends React.Component {
         this.props.onKeywordSearch(this.props.searchData.searchText, startIndex, stopIndex-startIndex);
     }
 
-    doSearch(searchText) {
+    doSearch(searchText, sortType, sortOrder) {
         this.props.onShowSearchResults();
-        this.props.onStartKeywordSearch(searchText);
+        this.props.onStartKeywordSearch(searchText, sortType, sortOrder);
         this.props.onKeywordSearch(searchText, 0);
     }
 
@@ -181,7 +182,7 @@ class Master extends React.Component {
                     canRedoSearch = {this.props.canRedoSearch}
                     onUndo = {() => this.undoSearch()}
                     onRedo = {() => this.redoSearch()}
-                    doSearch = {(searchText) => this.doSearch(searchText)}
+                    doSearch = {(searchText) => this.doSearch(searchText, SortType.RELEVANCE, SortDirection.DESCENDING)}
                     initialSearchText = {this.state.initialSearchText}
                 />
                 <SearchResults
@@ -193,6 +194,8 @@ class Master extends React.Component {
                     totalCount={this.props.searchData.searchResultTotalCount}
                     searchType={this.props.searchData.searchType}
                     searchText={this.props.searchData.searchText}
+                    searchSortType={this.props.searchData.searchSortType}
+                    searchSortDirection={this.props.searchData.searchSortDirection}
                     searchSince={this.props.searchData.since}
                     loadItems={x => this.getSearchItems(x)}
                     width={450}
@@ -265,8 +268,8 @@ const mapDispatchToProps = (dispatch) => {
         onClearClipboard: () => {
             dispatch(clearClipboard());
         },
-        onStartKeywordSearch: (text) => {
-            dispatch(startKeywordSearch(text));
+        onStartKeywordSearch: (text, sortType, sortOrder) => {
+            dispatch(startKeywordSearch(text, sortType, sortOrder));
         },
         onKeywordSearch: (text, reset, offset, limit) => {
             dispatch(keywordSearch(text, offset, limit)).catch(() => {}); // We're displaying error, so don't do anything else

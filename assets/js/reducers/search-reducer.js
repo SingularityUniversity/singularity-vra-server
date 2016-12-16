@@ -2,6 +2,7 @@ import { KEYWORD_SEARCH, SIMILARITY_SEARCH, CLEAR_SEARCH, ADD_SEARCH_RESULTS,
          TOGGLE_SEARCH_RESULTS, SHOW_SEARCH_RESULTS, HIDE_SEARCH_RESULTS} from '../actions/search-actions'
 import undoable from 'redux-undo'
 import Moment from 'moment';
+import {SortType, SortDirection} from '../constants/enums';
 
 export const initialState= {
     searchResultData: [],
@@ -10,6 +11,8 @@ export const initialState= {
     searchType: "",
     searchText: "",
     searchContentIDs: [],
+    searchSortType: SortType.RELEVANCE,
+    searchSortDirection: SortDirection.ASCENDING,
     since: null
 }
 
@@ -31,6 +34,8 @@ function _searchReducer(state=initialState, action) {
                 searchResultTopics: [],
                 searchResultTotalCount: 0,
                 searchContentIDs: [],
+                searchSortType: action.sortType,
+                searchSortOrder: action.sortOrder,
                 since: null
             });
     case SIMILARITY_SEARCH:

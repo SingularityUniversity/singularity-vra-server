@@ -19,6 +19,7 @@ import { wordCountToTag, ariToGradeLevel, round } from '../util/readability';
 import { authorListToString } from '../util/text';
 import ActionFavorite from 'material-ui/svg-icons/action/favorite'
 import ActionFavoriteBorder  from 'material-ui/svg-icons/action/favorite-border'
+import {SortType, SortDirection} from '../constants/enums'
 
 import Moment from 'moment';
 
@@ -287,7 +288,7 @@ const mapDispatchToProps = (dispatch) => {
             dispatch(addSnippetToClipboard(content, text));
         },
         onSearch: (text) => {
-            dispatch(startKeywordSearch(text));
+            dispatch(startKeywordSearch(text, SortType.RELEVANCE, SortDirection.DESCENDING));
             dispatch(keywordSearch(text)).catch(() => {}); // We're displaying error, so don't do anything else
             dispatch(showSearchResults());
         },

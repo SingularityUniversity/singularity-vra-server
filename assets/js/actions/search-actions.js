@@ -2,6 +2,8 @@ import React from 'react';
 import {showSnackbarMessage} from './snackbar-actions';
 import URLSearchParams from 'url-search-params';
 import {checkResponseAndExtractJSON} from './util';
+import {SortType, SortDirection} from '../constants/enums'
+
 export const KEYWORD_SEARCH = 'KEYWORD_SEARCH'
 export const CLEAR_SEARCH = 'CLEAR_SEARCH'
 export const ADD_SEARCH_RESULTS = 'ADD_SEARCH_RESULTS'
@@ -10,10 +12,15 @@ export const TOGGLE_SEARCH_RESULTS = 'TOGGLE_SEARCH_RESULTS'
 export const SHOW_SEARCH_RESULTS = 'SHOW_SEARCH_RESULTS'
 export const HIDE_SEARCH_RESULTS = 'HIDE_SEARCH_RESULTS'
 
+const SortMapper = { 
+    [SortType.PUBLICATION_DATE]: "published", 
+    [SortType.RELEVANCE]:"relevance",
+    [SortType.ADDED_DATE]: "created"
+};
 
 let keywordSearchRequests = {};
 
-export function keywordSearch(query, offset, limit) {
+export function keywordSearch(query, offset, limit, sort_type, sort_direction) {
 
     return function(dispatch) {
         let promise = new Promise((resolve, reject) => {
@@ -23,9 +30,19 @@ export function keywordSearch(query, offset, limit) {
             if (!limit) {
                 limit=50;
             }
+            if (!sort_type) {
+                sort_type = SortType.RELEVANCE; 
+            }
+            if (!sort_direction) {
+                sort_direction = SortDirection.DESCENDING;
+            }
+
+            let sort_param = ( sort_direction == SortDirection.DESCENDING  ? "-" : "") +
+                SortMapper[sort_type];
+
 
             // 'data' is *just* a key to keep us from doing multiple requests at the same time
-            let data = `q=${query}&offset=${offset}&limit=${limit}`;
+            let data = `q=${query}&offset=${offset}&limit=${limit}&sort=${sort_param}`;
             if (data in keywordSearchRequests) {
                 return;
             }
@@ -34,6 +51,7 @@ export function keywordSearch(query, offset, limit) {
             params.set('q', query);
             params.set('offset', offset);
             params.set('limit', limit);
+            params.set('sort', sort_param);
 
             fetch(`/api/v1/search?${params.toString()}`, {
                 credentials: 'include',
@@ -63,18 +81,20 @@ export function keywordSearch(query, offset, limit) {
     }
 }
 
-export function startKeywordSearch(text) {
+export function startKeywordSearch(text, sortType, sortOrder) {
     return function(dispatch) {
         let msg = ( <span> Doing a content search with <em>{text}</em> </span>);
-        dispatch(resetKeywordSearch(text));
+        dispatch(resetKeywordSearch(text, sortType, sortOrder));
         dispatch(showSnackbarMessage(msg));
     }
 }
 
-function resetKeywordSearch(text) {
+function resetKeywordSearch(text, sortType, sortOrder) {
     return {
         type: KEYWORD_SEARCH,
-        text: text
+        text: text,
+        sortType: sortType,
+        sortOrder: sortOrder
     }
 }
 

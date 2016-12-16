@@ -271,7 +271,7 @@ const mapDispatchToProps = (dispatch) => {
         onStartKeywordSearch: (text, sortType, sortOrder) => {
             dispatch(startKeywordSearch(text, sortType, sortOrder));
         },
-        onKeywordSearch: (text, reset, offset, limit) => {
+        onKeywordSearch: (text, offset, limit) => {
             dispatch(keywordSearch(text, offset, limit)).catch(() => {}); // We're displaying error, so don't do anything else
         },
         onSimilaritySearch: (content_ids) => {

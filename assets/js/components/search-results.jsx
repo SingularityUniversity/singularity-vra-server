@@ -133,15 +133,15 @@ class SearchResults extends React.Component {
         let content = this.props.displayedContent[index];
         let readabilityLength = null;
         let readabilityARI = null;
-        if (content.fields.pre_processed && content.fields.pre_processed['readability']['sentence_info']) {
-            let sentenceInfo = content.fields.pre_processed['readability']['sentence_info'];
-            readabilityLength = sentenceInfo['words'];
-            readabilityARI = content.fields.pre_processed['readability']['readability_grades']['ARI'];
-        }
 
         if (!content) {
             return (<Card key={'empty-'+index} style={cardStyle}></Card> );
 
+        }
+        if (content.fields.pre_processed && content.fields.pre_processed['readability']['sentence_info']) {
+            let sentenceInfo = content.fields.pre_processed['readability']['sentence_info'];
+            readabilityLength = sentenceInfo['words'];
+            readabilityARI = content.fields.pre_processed['readability']['readability_grades']['ARI'];
         }
 
         titleText = content.fields.extract['title'];

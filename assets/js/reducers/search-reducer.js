@@ -1,5 +1,6 @@
 import { KEYWORD_SEARCH, SIMILARITY_SEARCH, CLEAR_SEARCH, ADD_SEARCH_RESULTS,
-         TOGGLE_SEARCH_RESULTS, SHOW_SEARCH_RESULTS, HIDE_SEARCH_RESULTS} from '../actions/search-actions'
+         TOGGLE_SEARCH_RESULTS, SHOW_SEARCH_RESULTS, HIDE_SEARCH_RESULTS,
+        SEARCH_TYPE_SIMILARITY, SEARCH_TYPE_KEYWORD} from '../actions/search-actions'
 import undoable from 'redux-undo'
 import Moment from 'moment';
 import {SortType, SortDirection} from '../constants/enums';
@@ -28,26 +29,28 @@ function _searchReducer(state=initialState, action) {
     case KEYWORD_SEARCH:
         return Object.assign({}, state,
             {
-                searchType:"Keyword Search",
+                searchType: SEARCH_TYPE_KEYWORD,
                 searchText: action.text, 
                 searchResultData: [],
                 searchResultTopics: [],
                 searchResultTotalCount: 0,
                 searchContentIDs: [],
                 searchSortType: action.sortType,
-                searchSortOrder: action.sortOrder,
+                searchSortDirection: action.sortOrder,
                 since: null
             });
     case SIMILARITY_SEARCH:
         let searchText = '';
         return Object.assign({}, state,
             {
-                searchType:"Similarity Search",
+                searchType: SEARCH_TYPE_SIMILARITY,
                 searchText: '',
                 searchResultData: [],
                 searchResultTopics: [],
                 searchResultTotalCount: 0,
                 searchContentIDs: action.contentIDs,
+                searchSortType: SortType.RELEVANCE, // Unused for similarity, for now
+                searchSortDirection: SortDirection.DESCENDING, // Unused for similarity, for now
                 since: action.since
             });
 

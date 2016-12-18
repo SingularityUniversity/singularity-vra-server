@@ -8,7 +8,7 @@ import muiThemeable from 'material-ui/styles/muiThemeable';
 import SelectionMenu from 'selection-menu';
 import TopicsList from './lda_topics';
 import { connect } from 'react-redux';
-import { showSearchResults, startKeywordSearch, keywordSearch } from '../actions/search-actions';
+import { showSearchResults, setupKeywordSearch, keywordSearch } from '../actions/search-actions';
 import { addSnippetToClipboard } from '../actions/clipboard-actions';
 import { setInWorkspace, setFavorite } from '../actions/workspace-actions';
 import IconButton from 'material-ui/IconButton';
@@ -288,7 +288,7 @@ const mapDispatchToProps = (dispatch) => {
             dispatch(addSnippetToClipboard(content, text));
         },
         onSearch: (text) => {
-            dispatch(startKeywordSearch(text, SortType.RELEVANCE, SortDirection.DESCENDING));
+            dispatch(setupKeywordSearch(text, SortType.RELEVANCE, SortDirection.DESCENDING));
             dispatch(keywordSearch(text)).catch(() => {}); // We're displaying error, so don't do anything else
             dispatch(showSearchResults());
         },

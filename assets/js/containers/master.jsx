@@ -13,7 +13,7 @@ import AppMenuBar from '../components/app-menu-bar';
 import Workspace from '../components/workspace';
 
 import { addSnippetToClipboard, toggleClipboard, clearClipboard } from '../actions/clipboard-actions';
-import { similaritySearch, startKeywordSearch, keywordSearch,
+import { similaritySearch, setupKeywordSearch, keywordSearch,
     clearSearch, addSearchResults, toggleSearchResults, showSearchResults, hideSearchResults } from '../actions/search-actions';
 import { createWorkspace, updateWorkspace, getWorkspaces, loadWorkspace,
     clearWorkspace, setInWorkspace, deleteWorkspace, sortWorkspace} from 
@@ -67,13 +67,14 @@ class Master extends React.Component {
 
     getSearchItems({startIndex, stopIndex}) {
         // XXX: We are assuming we are getting more searchItems for paging, This is probably a bad assumption moving forward
-        this.props.onKeywordSearch(this.props.searchData.searchText, startIndex, stopIndex-startIndex);
+        this.props.onKeywordSearch(this.props.searchData.searchText, startIndex, stopIndex-startIndex, this.props.searchData.searchSortType, this.props.searchData.searchSortOrder);
     }
 
     doSearch(searchText, sortType, sortOrder) {
         this.props.onShowSearchResults();
-        this.props.onStartKeywordSearch(searchText, sortType, sortOrder);
-        this.props.onKeywordSearch(searchText, 0);
+        this.props.onSetupKeywordSearch(searchText, sortType, sortOrder);
+        this.props.onKeywordSearch(searchText, 0, 50, sortType, sortOrder);
+//        this.props.onKeywordSearch(searchText, 0, 50, null, this.props.searchData.searchSortType, this.props.searchData.searchSortOrder);
     }
 
     clearSearch() {
@@ -189,6 +190,7 @@ class Master extends React.Component {
                     open={this.props.searchResultsVisibility}
                     onSearchResultsVisibilityClick = {this.props.onSearchResultsVisibilityClick}
                     onChangeSelected={(content, selected) => this.handleSelectedForWorkspace(content, selected)}
+                    onKeywordSearch ={(searchText, sortType, sortOrder) => this.doSearch(searchText, sortType, sortOrder)}
                     displayedContent={this.props.searchData.searchResultData}
                     workspaceContent={this.props.workspaceData.articles}
                     totalCount={this.props.searchData.searchResultTotalCount}
@@ -268,11 +270,11 @@ const mapDispatchToProps = (dispatch) => {
         onClearClipboard: () => {
             dispatch(clearClipboard());
         },
-        onStartKeywordSearch: (text, sortType, sortOrder) => {
-            dispatch(startKeywordSearch(text, sortType, sortOrder));
+        onSetupKeywordSearch: (text, sortType, sortOrder) => {
+            dispatch(setupKeywordSearch(text, sortType, sortOrder));
         },
-        onKeywordSearch: (text, offset, limit) => {
-            dispatch(keywordSearch(text, offset, limit)).catch(() => {}); // We're displaying error, so don't do anything else
+        onKeywordSearch: (text, offset, limit, sortType, sortOrder) => {
+            dispatch(keywordSearch(text, offset, limit, sortType, sortOrder)).catch(() => {}); // We're displaying error, so don't do anything else
         },
         onSimilaritySearch: (content_ids) => {
             dispatch(similaritySearch(content_ids));

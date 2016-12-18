@@ -5,6 +5,8 @@ import Moment from 'moment';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import {Card, CardTitle} from 'material-ui/Card';
 import {spacing, colors} from 'material-ui/styles';
+import SelectField from 'material-ui/SelectField';
+import MenuItem from 'material-ui/MenuItem';
 import {AutoSizer,VirtualScroll, InfiniteLoader } from 'react-virtualized';
 import IconButton from 'material-ui/IconButton';
 import ChevronRight from 'material-ui/svg-icons/navigation/chevron-right';
@@ -15,6 +17,8 @@ import VisibilityButton from '../components/visibility-button';
 import Divider from 'material-ui/Divider';
 import { wordCountToTag, ariToGradeLevel, round } from '../util/readability';
 import { authorListToString } from '../util/text';
+import {SortType, SortDirection, getSortTypeString, getSortDirectionString} from '../constants/enums';
+import {SEARCH_TYPE_KEYWORD, SEARCH_TYPE_SIMILARITY} from  '../actions/search-actions';
 
 let SelectableList = MakeSelectable(List);
 
@@ -60,9 +64,12 @@ const propTypes = {
     workspaceContent: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
     totalCount: React.PropTypes.number.isRequired,
     onChangeSelected: React.PropTypes.func.isRequired, // function(content, isSelected)
+    onKeywordSearch: React.PropTypes.func,
     loadItems: React.PropTypes.func,
     searchType: React.PropTypes.string,
-    searchText: React.PropTypes.string
+    searchText: React.PropTypes.string,
+    searchSortType: React.PropTypes.number,
+    searchSortDirection: React.PropTypes.number,
 };
 
 class SearchResults extends React.Component {
@@ -120,6 +127,36 @@ class SearchResults extends React.Component {
 
     onPreviewClose() {
         this.setState({previewContent: null});
+    }
+
+    reverseSortDirection(direction) {
+        if (direction == SortDirection.ASCENDING) {
+            return SortDirection.DESCENDING;
+        } else {
+            return SortDirection.ASCENDING;
+        }
+    }
+
+    sortSearchResults(evt, index, value) {
+        console.log("Search: ", index, value);
+        if (this.props.searchType == SEARCH_TYPE_KEYWORD) { 
+            let direction = this.props.searchSortDirection;
+            // If they click on the same item, reverse the order
+            if (value == this.props.searchSortType) {
+                direction = this.reverseSortDirection(direction);
+            } else { // set default orderings for each type to DESCENDING
+                direction = SortDirection.DESCENDING;
+            }
+            console.log("Doing onkeywordsearch with ", this.props.searchText, value, direction);
+            this.props.onKeywordSearch(this.props.searchText, value, direction);
+        }
+    }
+
+    sortText(field) {
+        let direction = (this.props.searchSortType == field) ?
+            getSortDirectionString(this.props.searchSortDirection) :
+            '';
+        return getSortTypeString(field) + " " + direction;
     }
 
     _renderRow(index) {
@@ -180,8 +217,13 @@ class SearchResults extends React.Component {
                 </IconButton>
             );
         }
+        let scoreblock="";
+        if (content.score) {
+            scoreblock = (<span>Score: {content.score.toFixed(3)} &nbsp;&nbsp;&nbsp;</span>);
+        };  
         const title = (<span><span style={{fontSize: 14, lineHeight: "1em", display: "inline-block", width:this.props.width-32-48-24, textOverflow: "ellipsis", maxHeight: "4em", overflow:"hidden"}}>{titleText}</span>{addIcon}</span>); // 32 from padding from cardtitle, 48 for button, 24 for collapse/open icon button
-const subtitle = (<span><div className="search-summary">{summary}</div><div style={{fontSize: 12}}>{author}</div><div style={{fontSize: 12}}>Score: {content.score.toFixed(3)} &nbsp;&nbsp;&nbsp; Length: {wordCountToTag(readabilityLength)} &nbsp;&nbsp;&nbsp; ARI: {round(readabilityARI, 2)} ({ariToGradeLevel(readabilityARI)})</div> {published} <a href="#">{publisher}</a></span>);
+const subtitle = (<span><div className="search-summary">{summary}</div><div style={{fontSize: 12}}>{author}</div>
+    <div style={{fontSize: 12}}>{scoreblock}Length: {wordCountToTag(readabilityLength)} &nbsp;&nbsp;&nbsp; ARI: {round(readabilityARI, 2)} ({ariToGradeLevel(readabilityARI)})</div> {published} <a href="#">{publisher}</a></span>);
 
 
         return (
@@ -248,10 +290,26 @@ const subtitle = (<span><div className="search-summary">{summary}</div><div styl
                             side="left"/>
                     </div>
                     <div style={{position:"fixed", "textAlign": "center", "width": "100%"}}>
+                        <div>
                         <p><strong>{searchType}</strong>{sinceDescription}<br/>
                             {searchText ? (<span><i>{searchText}</i><br/></span>) : ''}
                             <i>{totalCount} results</i><br/>
                         </p>
+                       
+                        <div style={{position: "absolute", top:0, right:0, 
+                                     visibility:this.props.searchType==SEARCH_TYPE_KEYWORD? "visible" : "hidden"}}>
+                            <SelectField 
+                                ref="sortType"
+                                value={this.props.searchSortType}
+                                style={{customWidth: 50}}
+                                floatingLabelText="Sort Order"
+                                onChange={this.sortSearchResults.bind(this)}>
+                                <MenuItem value={SortType.PUBLICATION_DATE} primaryText={this.sortText(SortType.PUBLICATION_DATE)} />
+                                <MenuItem value={SortType.RELEVANCE} primaryText={this.sortText(SortType.RELEVANCE)} />
+                                <MenuItem value={SortType.ADDED_DATE} primaryText={this.sortText(SortType.ADDED_DATE)} />
+                            </SelectField>
+                        </div>
+                    </div>
                         <Divider/>
                     </div>
                     <div style={{marginTop: style.headerHeight, height: "100%", paddingRight: "24px"}}>

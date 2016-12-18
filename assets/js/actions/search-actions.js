@@ -12,37 +12,29 @@ export const TOGGLE_SEARCH_RESULTS = 'TOGGLE_SEARCH_RESULTS'
 export const SHOW_SEARCH_RESULTS = 'SHOW_SEARCH_RESULTS'
 export const HIDE_SEARCH_RESULTS = 'HIDE_SEARCH_RESULTS'
 
+export const SEARCH_TYPE_KEYWORD = "Keyword Search"
+export const SEARCH_TYPE_SIMILARITY = "Similarity Search"
+
 const SortMapper = { 
     [SortType.PUBLICATION_DATE]: "published", 
     [SortType.RELEVANCE]:"relevance",
-    [SortType.ADDED_DATE]: "created"
+    [SortType.ADDED_DATE]: "added"
 };
 
 let keywordSearchRequests = {};
 
-export function keywordSearch(query, offset, limit, sort_type, sort_direction) {
+export function keywordSearch(query, offset=0, limit=50, sort_type=SortType.RELEVANCE, 
+    sort_direction=SortDirection.DESCENDING) {
+    console.log("Got to keywordSearch with ", query, offset, limit, sort_type, sort_direction);
 
     return function(dispatch) {
         let promise = new Promise((resolve, reject) => {
-            if (!offset) {
-                offset=0;
-            }
-            if (!limit) {
-                limit=50;
-            }
-            if (!sort_type) {
-                sort_type = SortType.RELEVANCE; 
-            }
-            if (!sort_direction) {
-                sort_direction = SortDirection.DESCENDING;
-            }
-
             let sort_param = ( sort_direction == SortDirection.DESCENDING  ? "-" : "") +
                 SortMapper[sort_type];
 
 
             // 'data' is *just* a key to keep us from doing multiple requests at the same time
-            let data = `q=${query}&offset=${offset}&limit=${limit}&sort=${sort_param}`;
+            let data = `q=${query}&offset=${offset}&limit=${limit}&order=${sort_param}`;
             if (data in keywordSearchRequests) {
                 return;
             }
@@ -51,7 +43,7 @@ export function keywordSearch(query, offset, limit, sort_type, sort_direction) {
             params.set('q', query);
             params.set('offset', offset);
             params.set('limit', limit);
-            params.set('sort', sort_param);
+            params.set('order', sort_param);
 
             fetch(`/api/v1/search?${params.toString()}`, {
                 credentials: 'include',
@@ -81,7 +73,10 @@ export function keywordSearch(query, offset, limit, sort_type, sort_direction) {
     }
 }
 
-export function startKeywordSearch(text, sortType, sortOrder) {
+// This function "setups" keyword search by displaying a snackbar message
+// and updating the search state. Probably doesn't need sortType and sortOrder
+// but pass it in for now for symmetry to the actual keywordSearch method
+export function setupKeywordSearch(text, sortType, sortOrder) {
     return function(dispatch) {
         let msg = ( <span> Doing a content search with <em>{text}</em> </span>);
         dispatch(resetKeywordSearch(text, sortType, sortOrder));

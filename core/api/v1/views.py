@@ -124,14 +124,12 @@ class SearchView(views.APIView):
         order = "+relevance"
         if 'order' in query_params:
             order = query_params['order']
+            if order[0] == ' ':
+                order = '+' + order[1:]  # A hack to allow use of ' ' -> '+'
         if order[0] not in ('-', '+'):
             order = "+"+order
 
         if order[1:] == "relevance":
-            if order[0] == "-":
-                multiplier = " * -1 "
-            else:
-                multiplier = ""
             # The score boost function is
             # score * (1+sigmoid((content_length-300)/100))
             search_params = {
@@ -143,11 +141,14 @@ class SearchView(views.APIView):
                         "functions": [
                             {
                                 "script_score": {
-                                    "script" : "_score "+multiplier+"* (1 + (1/(1+Math.exp(-((doc.content_length.value-300) / 100.0)))))"
+                                    "script" : "_score * (1 + (1/(1+Math.exp(-((doc.content_length.value-300) / 100.0)))))"
                                 }
                             }
                         ]
                     }
+                },
+                "sort": {
+                    "_score": {"order": "asc" if order[0] == "+" else "desc" }
                 }
             }
         elif order[1:] == "published":
@@ -159,7 +160,7 @@ class SearchView(views.APIView):
                     "fields.extract.published": {"order": "asc" if order[0] == "+" else "desc"}
                 }
             }
-        elif order[1:] == "added":
+        else:  # order[1:] == "added" or anything else
             search_params = {
                 "query": {
                     "query_string": {"query":self.map_query_to_fields(param_dict['q'])}

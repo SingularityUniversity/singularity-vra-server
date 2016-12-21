@@ -160,6 +160,9 @@ class SearchResults extends React.Component {
     }
 
     _renderRow(index) {
+        const MAX_TITLE_LENGTH = 90;
+        const MAX_SUMMARY_LENGTH = 135;
+        const MAX_AUTHOR_LENGTH = 100;
         let titleText = '';
         let published = '';
         let publisher = '';
@@ -182,7 +185,6 @@ class SearchResults extends React.Component {
         }
 
         titleText = content.fields.extract['title'];
-        const MAX_TITLE_LENGTH = 90;
         titleText = (titleText === null) ? '' : titleText;
         if (titleText.length > MAX_TITLE_LENGTH) {
             titleText = titleText.slice(0,MAX_TITLE_LENGTH+1) + '...';
@@ -197,8 +199,10 @@ class SearchResults extends React.Component {
         // build up the list of authors (assuming one exists)
         if (content.fields.extract['authors'] && content.fields.extract['authors'].length > 0) {
             author = authorListToString(content.fields.extract['authors']);
+            if (author.length > MAX_AUTHOR_LENGTH) {
+                author = author.slice(0, MAX_AUTHOR_LENGTH+1) + '...';
+            }
         }
-        const MAX_SUMMARY_LENGTH = 135;
         if (content.fields.pre_processed['summary_sentences'] && content.fields.pre_processed['summary_sentences'].length > 0) {
             // get the first N characters (if there are that many)
             for (let i=0; i<content.fields.pre_processed['summary_sentences'].length; i++) {

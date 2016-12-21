@@ -76,7 +76,7 @@ class SearchResults extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            listHeight: window.innerHeight - this.props.muiTheme.leftNav.headerHeight - spacing.desktopGutter,
+            listHeight: window.innerHeight - this.props.muiTheme.leftNav.headerHeight * 1.5 - spacing.desktopGutter,
             selectedPKIDs: [],
             previewContent: null
         };
@@ -85,7 +85,7 @@ class SearchResults extends React.Component {
     }
 
     handleResize() {
-        this.setState({listHeight: window.innerHeight - this.props.muiTheme.leftNav.headerHeight - spacing.desktopGutter});
+        this.setState({listHeight: window.innerHeight - this.props.muiTheme.leftNav.headerHeight * 1.5 - spacing.desktopGutter});
     }
 
     componentWillMount() {
@@ -296,8 +296,7 @@ const subtitle = (<span><div className="search-summary">{summary}</div><div styl
                             <i>{totalCount} results</i><br/>
                         </p>
                        
-                        <div style={{position: "absolute", top:0, right:0, 
-                                     visibility:this.props.searchType==SEARCH_TYPE_KEYWORD? "visible" : "hidden"}}>
+                        <div style={{ visibility:this.props.searchType==SEARCH_TYPE_KEYWORD? "visible" : "hidden"}}>
                             <SelectField 
                                 ref="sortType"
                                 value={this.props.searchSortType}

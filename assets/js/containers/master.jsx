@@ -200,7 +200,7 @@ class Master extends React.Component {
                     searchSortDirection={this.props.searchData.searchSortDirection}
                     searchSince={this.props.searchData.since}
                     loadItems={x => this.getSearchItems(x)}
-                    width={450}
+                    width={650}
                 />
                 <Clipboard
                     open={this.props.clipboardVisibility}

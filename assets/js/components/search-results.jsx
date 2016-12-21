@@ -183,6 +183,7 @@ class SearchResults extends React.Component {
 
         titleText = content.fields.extract['title'];
         const MAX_TITLE_LENGTH = 90;
+        titleText = (titleText === null) ? '' : titleText;
         if (titleText.length > MAX_TITLE_LENGTH) {
             titleText = titleText.slice(0,MAX_TITLE_LENGTH+1) + '...';
         }
@@ -305,7 +306,6 @@ const subtitle = (<span><div className="search-summary">{summary}</div><div styl
                                 onChange={this.sortSearchResults.bind(this)}>
                                 <MenuItem value={SortType.PUBLICATION_DATE} primaryText={this.sortText(SortType.PUBLICATION_DATE)} />
                                 <MenuItem value={SortType.RELEVANCE} primaryText={this.sortText(SortType.RELEVANCE)} />
-                                <MenuItem value={SortType.ADDED_DATE} primaryText={this.sortText(SortType.ADDED_DATE)} />
                             </SelectField>
                         </div>
                     </div>

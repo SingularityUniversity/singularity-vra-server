@@ -1,6 +1,7 @@
 import {showSnackbarMessage} from './snackbar-actions';
 import {showSearchResults, similaritySearch} from './search-actions';
 import {checkResponseAndExtractJSON, checkResponse} from './util';
+import {SortType, SortDirection} from '../constants/enums';
 
 import Moment from 'moment';
 

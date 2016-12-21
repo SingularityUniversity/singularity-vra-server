@@ -83,8 +83,14 @@ export function workspaceReducer(state=initialState, action) {
             return state;
         }
     case REPLACE_WORKSPACE:
+        if (!action.workspace.sortType) {
+            action.workspace.sortType = SortType.PUBLICATION_DATE;
+        }
+        if (!action.workspace.sortDirection) {
+            action.workspace.sortDirection = SortDirection.DESCENDING;
+        }
         action.workspace.articles = sortWorkspace(action.workspace.articles, 
-            action.workspace.sortType, action.workspace.sortDirection)
+            action.workspace.sortType, action.workspace.sortDirection);
         return Object.assign({}, {dirty: false}, action.workspace);
     case SORT_WORKSPACE:
         let sortDirection = SortDirection.DESCENDING;

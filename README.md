@@ -1,11 +1,15 @@
 # Required Components
-1) Django (currenly stuck at 1.9 as celery isn't yet compatible with 1.10 -- see https://github.com/celery/django-celery/issues/460)
-2) Postgres
-3) Redis
-4) EmbedLy account
-5) ElasticSearch (you'll need to add `script.inline: true` and `script.indexed: true` to the elasticsearch.yml file locally
-6) AWS S3 account
-7) Node
+1. Django (currenly stuck at 1.9 as celery isn't yet compatible with 1.10 -- see 
+   https://github.com/celery/django-celery/issues/460)
+2. Postgres (tested with 9.5.2 and 9.5.5)
+3. Redis (tested with 3.2.4 and 3.2.6)
+4. EmbedLy account
+5. ElasticSearch  (tested with 2.3.3 and 2.4.0)
+    - you'll need to add `script.inline: true` and `script.indexed: true` to the 
+      elasticsearch.yml file locally
+6. AWS S3 account
+7. Node (7.4.0)
+8. SMTP server/service
 
 See sample.env for configuration examples
 
@@ -16,6 +20,7 @@ See sample.env for configuration examples
 4. `$ (cd node_modules/material-ui; npm install)`
 
 ## Environment Setup
+### Using an Existing Installation
 1. Get content (cp/sync from aws)
 2. Load content into database (`$ python manage.py import_content`)
 3. Recreate the document index (`$ python manage.py recreate_index`)
@@ -23,11 +28,22 @@ See sample.env for configuration examples
 5. Install the LDA data (`$ python manage.py fetch_lda`)
 6. Create query index and mappings (`$ python manage.py create_query_index`)
 
+### Using a New Feed
+1. Configure feed (`$ python manage.py add_rss <url>`)
+2. Wait for content to be loaded (this is done every 24 hours during the night)
+   or ingest documents manually (`$ python manage.py refresh_rss`)
+
+
 ## Running server locally
 To access the Web UI (with hot loading of both python and javascript):
 1. `$ npm run serve`
-2. `$ heroku local` (or `$ python manage.py runserver` to run only the web process)
+2. `$ heroku local` (or `$ python manage.py runserver` to run only the web 
+   process)
 
 ## Running Tests
-1. Client-side (javascript): Set up the environment and run `npm test`. You can also run `npm run test-coverage` to produce a somewhat-accurate coverage report for those tests.
-2. Server-side (python): Set up the environment (no live server need run though - db, elasticsearch probably do need to be running), and run `python manage.py test`2. Server-side (python): Set up the environment (no live server need run though - db, elasticsearch probably do need to be running), and run `python manage.py test`
+1. Client-side (javascript): Set up the environment and run `npm test`. You can 
+   also run `npm run test-coverage` to produce a somewhat-accurate coverage 
+   report for those tests.
+2. Server-side (python): Set up the environment (no live server need run though 
+   database and elasticsearch probably do need to be running), and run 
+   `python manage.py test`

@@ -1,6 +1,5 @@
 # Required Components
-1. Django (currenly stuck at 1.9 as celery isn't yet compatible with 1.10 -- see 
-   https://github.com/celery/django-celery/issues/460)
+1. Django (1.10.5)
 2. Postgres (tested with 9.5.2 and 9.5.5)
 3. Redis (tested with 3.2.4 and 3.2.6)
 4. EmbedLy account
@@ -8,10 +7,12 @@
     - you'll need to add `script.inline: true` and `script.indexed: true` to the 
       elasticsearch.yml file locally
 6. AWS S3 account
-7. Node (7.4.0)
-8. SMTP server/service
+7. SMTP server/service
+8. Node (7.4.0)
+9. Python (tested with 3.5 and 3.6)
 
-See sample.env for configuration examples
+See requirements.txt and package.json for all libraries and modules that are 
+used and see sample.env for configuration examples
 
 ## System Setup
 1. create/enter virtual environment

@@ -7,7 +7,7 @@ import {Card, CardTitle} from 'material-ui/Card';
 import {spacing, colors} from 'material-ui/styles';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
-import {AutoSizer,VirtualScroll, InfiniteLoader } from 'react-virtualized';
+import {AutoSizer, List as RVList, InfiniteLoader} from 'react-virtualized';
 import IconButton from 'material-ui/IconButton';
 import ChevronRight from 'material-ui/svg-icons/navigation/chevron-right';
 import { showSnackbarMessage} from '../actions/snackbar-actions';
@@ -138,7 +138,6 @@ class SearchResults extends React.Component {
     }
 
     sortSearchResults(evt, index, value) {
-        console.log("Search: ", index, value);
         if (this.props.searchType == SEARCH_TYPE_KEYWORD) { 
             let direction = this.props.searchSortDirection;
             // If they click on the same item, reverse the order
@@ -147,7 +146,6 @@ class SearchResults extends React.Component {
             } else { // set default orderings for each type to DESCENDING
                 direction = SortDirection.DESCENDING;
             }
-            console.log("Doing onkeywordsearch with ", this.props.searchText, value, direction);
             this.props.onKeywordSearch(this.props.searchText, value, direction);
         }
     }
@@ -325,7 +323,7 @@ const subtitle = (<span><div className="search-summary">{summary}</div><div styl
                             {({ onRowsRendered, registerChild }) => (
                                 <AutoSizer>
                                 {({height, width }) => 
-                                    (<VirtualScroll
+                                    (<RVList
                                      ref={registerChild}
                                      width={width}
                                      height={height-style.headerHeight}

@@ -47,7 +47,9 @@ export function loadWorkspace(workspaceId) {
                 // layer that can contain metadata about search results, etc
                 articles: json.articles.map((raw_article) => {
                     return {
-                        fields: raw_article,
+                        fields: raw_article.article,
+                        favorite: raw_article.favorite,
+                        date_added: raw_article.date_added,
                         pk: raw_article.article.id,
                         model: "core.content",
                         score: 1
@@ -100,8 +102,8 @@ export function updateWorkspace(workspaceData) {
             ids: workspaceData.articles.map(article => {
                 return {
                     id: article.pk,
-                    date_added: article.fields.date_added,
-                    favorite: article.fields.favorite,
+                    date_added: article.date_added,
+                    favorite: article.favorite,
                 }
             }),
             description: workspaceData.description
@@ -135,8 +137,8 @@ export function createWorkspace(workspaceData) {
             ids: workspaceData.articles.map(article => {
                 return {
                     id: article.pk,
-                    date_added: article.fields.date_added,
-                    favorite: article.fields.favorite,
+                    date_added: article.date_added,
+                    favorite: article.favorite,
                 }
             }),
             description: workspaceData.description

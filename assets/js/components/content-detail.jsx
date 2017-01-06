@@ -105,9 +105,9 @@ class ContentDetail extends React.Component {
         } = this.props;
 
         if (content ) {
-            let fields = content.fields.article;
+            let fields = content.fields;
             let extract = fields.extract;
-            let preProcessed = fields.pre_processed;
+            let preProcessed = content.fields.pre_processed;
             let summarySentences = preProcessed ? preProcessed['summary_sentences'] : null;
             let quoteSentences = preProcessed ? preProcessed['quote_sentences'] : null;
             const readability = preProcessed ? preProcessed['readability'] : null;
@@ -128,8 +128,8 @@ class ContentDetail extends React.Component {
                 publishedDate = Moment(parseInt(extract['published'])).
                     format('YYYY-MM-DD');
             }
-            let addedDate = (content.fields['date_added']) ? 
-                    Moment(content.fields['date_added']).format('YYYY-MM-DD') : '';
+            let addedDate = (content['date_added']) ? 
+                    Moment(content['date_added']).format('YYYY-MM-DD') : '';
             var lda_stuff = null;
             if (content.lda_similarity_topics) {
                 lda_stuff = (
@@ -194,7 +194,7 @@ class ContentDetail extends React.Component {
                 </div>
                 ):
                 "No content";
-            let favoriteIcon = (content.fields.favorite) ? (<ActionFavorite />) :
+            let favoriteIcon = (content.favorite) ? (<ActionFavorite />) :
                 (<ActionFavoriteBorder />);
 
 

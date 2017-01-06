@@ -17,8 +17,8 @@ export const initialState = {
 function sortByKey(articles, key, direction) {
     let sortOrder = (direction == SortDirection.ASCENDING) ? 1 : -1;
     return articles.sort(function(x, y) {
-        let xFavorite = x['fields']['favorite'];
-        let yFavorite = y['fields']['favorite'];
+        let xFavorite = x['favorite'];
+        let yFavorite = y['favorite'];
         for (let i=0; i < key.length; i++) {
           x = x[key[i]];
           y = y[key[i]];
@@ -31,9 +31,9 @@ function sortByKey(articles, key, direction) {
 function sortWorkspace(articles, type, direction) {
     let articlesCopy = articles.slice();
     let keyMapping = [];
-    keyMapping[SortType.PUBLICATION_DATE] = ['fields', 'article', 'extract', 'published'];
+    keyMapping[SortType.PUBLICATION_DATE] = ['fields', 'extract', 'published'];
     keyMapping[SortType.RELEVANCE] = ['score'];
-    keyMapping[SortType.ADDED_DATE] = ['fields', 'date_added'];
+    keyMapping[SortType.ADDED_DATE] = ['date_added'];
     return sortByKey(articlesCopy, keyMapping[type], direction);
 }
 
@@ -70,12 +70,8 @@ export function workspaceReducer(state=initialState, action) {
         if (!alreadyInWorkspace) {
             let newInWorkspace = state.articles.slice();
             let article = $.extend({}, content);
-            let article_content = {
-                article: article.fields,
-                date_added: Moment().format('YYYY-MM-DDTHH:mm:ssZ'),
-                favorite: false
-            };
-            article.fields = article_content;
+            article.date_added =  Moment().format('YYYY-MM-DDTHH:mm:ssZ');
+            article.favorite = false;
             newInWorkspace.push(article);
             sortedArticles = sortWorkspace(newInWorkspace, state.sortType, state.SortDirection);
             return Object.assign({}, state, {dirty: true, articles: sortedArticles});
@@ -109,7 +105,7 @@ export function workspaceReducer(state=initialState, action) {
             return obj.pk !== action.content.pk;
         });
         let newContent = JSON.parse(JSON.stringify(action.content));
-        newContent['fields']['favorite'] = !newContent['fields']['favorite'];
+        newContent['favorite'] = !newContent['favorite'];
         newArticles.push(newContent);
         sortedArticles = sortWorkspace(newArticles, state.sortType, state.sortDirection);
         return Object.assign({}, state, {articles: sortedArticles});

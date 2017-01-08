@@ -22,6 +22,9 @@ used and see sample.env for configuration examples
 5. create database
 6. edit .env and update database URL
 7. create tables (`python manage.py migrate`)
+8. create elasticsearch indices
+    - main index: `curl -XPUT <SEARCHBOX_URL>/<ELASTICSEARCH_INDEX>`
+    - query index: `curl -XPUT <SEARCHBOX_URL>/<ELASTICSEARCH_SEARCH_STATS_INDEX>`
 
 ## Environment Setup
 ### Using an Existing Installation

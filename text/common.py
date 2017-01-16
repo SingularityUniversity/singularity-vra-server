@@ -70,6 +70,7 @@ def tokenize_text_block(block):
 
 # XXX: Refactor me, kinda ugly to have different result types depending on parameters
 def extract_words_from_content(content, with_sentences=False, with_sentences_only=False):
+    print('extract_words_from_content')
     raw_html = content.extract['content']
 
     if (raw_html is not None):

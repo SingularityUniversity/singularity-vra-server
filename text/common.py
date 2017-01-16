@@ -21,6 +21,7 @@ from text.stopwords import stopwords
 from contexttimer import timer
 from threading import Lock
 from os import path
+from tqdm import tqdm
 
 from core.models import Content, LDAConfiguration
 from tempfile import mkdtemp
@@ -101,18 +102,18 @@ def make_nbow_and_dict(content_iterator):
     '''
     print('make_nbow_and_dict')
     # The elements in doc_words and id_map have to correspond one-one in the same order
-    #doc_words = [extract_words_from_content(content) for content in tqdm(content_iterator)
-    #             if content.extract['content'] not in (None, '')]
-    count = 0
-    doc_words = []
-    for content in content_iterator:
-        if count%1000==0:
-            print('+', end='', flush=True)
-        if content.extract['content'] not in (None, ''):
-            doc_words.append(extract_words_from_content(content))
-            count += 1
-            if count % 1000 == 0:
-                print('.', end='', flush=True)
+    doc_words = [extract_words_from_content(content) for content in tqdm(content_iterator)
+                 if content.extract['content'] not in (None, '')]
+    #count = 0
+    #doc_words = []
+    #for content in content_iterator:
+    #    count += 1
+    #    if count%1000==0:
+    #        print('+', end='', flush=True)
+    #    if content.extract['content'] not in (None, ''):
+    #        doc_words.append(extract_words_from_content(content))
+    #        if count % 1000 == 0:
+    #            print('.', end='', flush=True)
 
 
     print('made doc_words', flush=True)
@@ -157,7 +158,7 @@ def make_all_lda():
     '''
     print('loading docs', flush=True)
     all_docs = Content.objects.all()
-    print('docs loaded ({})'.format(all_docs.count()), flush=True)
+    print('docs loaded', flush=True)
     nbow, ndict, id_map = make_nbow_and_dict(all_docs)
     print('completed make_nbow_and_dict', flush=True)
     lda_model = make_lda_model(nbow, ndict)

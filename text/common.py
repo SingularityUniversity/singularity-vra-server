@@ -106,6 +106,8 @@ def make_nbow_and_dict(content_iterator):
     count = 0
     doc_words = []
     for content in content_iterator:
+        if count%1000==0:
+            print('+', end='')
         if content.extract['content'] not in (None, ''):
             doc_words.append(extract_words_from_content(content))
             count += 1

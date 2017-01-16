@@ -21,7 +21,6 @@ from text.stopwords import stopwords
 from contexttimer import timer
 from threading import Lock
 from os import path
-from tqdm import tqdm
 
 from core.models import Content, LDAConfiguration
 from tempfile import mkdtemp
@@ -105,10 +104,12 @@ def make_nbow_and_dict(content_iterator):
     #             if content.extract['content'] not in (None, '')]
     count = 0
     doc_words = []
-    for content in tqdm(content_iterator):
+    for content in content_iterator:
         if content.extract['content'] not in (None, ''):
             doc_words.append(extract_words_from_content(content))
-            #count += 1
+            count += 1
+            if count % 1000 == 0:
+                print('.', end='')
 
 
     print('made doc_words')

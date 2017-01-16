@@ -101,8 +101,15 @@ def make_nbow_and_dict(content_iterator):
     '''
     print('make_nbow_and_dict')
     # The elements in doc_words and id_map have to correspond one-one in the same order
-    doc_words = [extract_words_from_content(content) for content in tqdm(content_iterator)
-                 if content.extract['content'] not in (None, '')]
+    #doc_words = [extract_words_from_content(content) for content in tqdm(content_iterator)
+    #             if content.extract['content'] not in (None, '')]
+    count = 0
+    doc_words = []
+    for content in tqdm(content_iterator):
+        if content.extract['content'] not in (None, ''):
+            doc_words.append(extract_words_from_content(content))
+            #count += 1
+
 
     print('made doc_words')
     # XXX: not efficient to go through content_iterator again?

@@ -140,10 +140,13 @@ def make_all_lda():
     '''
     print('loading docs')
     all_docs = Content.objects.all()
-    print('docs loaded')
+    print('docs loaded ({})'.format(all_docs.count()))
     nbow, ndict, id_map = make_nbow_and_dict(all_docs)
+    print('completed make_nbow_and_dict')
     lda_model = make_lda_model(nbow, ndict)
+    print('completed make_lda_model')
     lda_similarities = make_lda_similarities(nbow, lda_model)
+    print('completed make_lda_similarities')
 
     return (nbow, ndict, lda_model, lda_similarities, id_map)
 

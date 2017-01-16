@@ -138,7 +138,9 @@ def make_all_lda():
     '''
     Just for testing - probably don't want to keep everything in memory?
     '''
+    print('loading docs')
     all_docs = Content.objects.all()
+    print('docs loaded')
     nbow, ndict, id_map = make_nbow_and_dict(all_docs)
     lda_model = make_lda_model(nbow, ndict)
     lda_similarities = make_lda_similarities(nbow, lda_model)

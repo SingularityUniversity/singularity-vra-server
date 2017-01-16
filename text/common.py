@@ -154,6 +154,7 @@ def make_and_store():
     XXX: Make this scale
     '''
     nbow, ndict, lda_model, lda_similarities, id_map = make_all_lda()
+    print((nbow, ndict, lda_model, lda_similarities, id_map))
 
     temp_dir = mkdtemp()
     with open(path.join(temp_dir, "id_map.gensim"), "wb") as id_map_file:

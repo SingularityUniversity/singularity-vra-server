@@ -106,26 +106,26 @@ def make_nbow_and_dict(content_iterator):
     count = 0
     doc_words = []
     for content in content_iterator:
-        print('*')
+        print('*', flush=True)
         if count%1000==0:
-            print('+', end='')
+            print('+', end='', flush=True)
         if content.extract['content'] not in (None, ''):
             doc_words.append(extract_words_from_content(content))
             count += 1
             if count % 1000 == 0:
-                print('.', end='')
+                print('.', end='', flush=True)
 
 
-    print('made doc_words')
+    print('made doc_words', flush=True)
     # XXX: not efficient to go through content_iterator again?
     id_map = [content.id for content in content_iterator
               if content.extract['content'] not in (None, '')]
-    print('made id_map')
+    print('made id_map', flush=True)
     ndict = corpora.Dictionary([word_list for word_list in doc_words])
-    print('made ndict')
+    print('made ndict', flush=True)
     nbow = [ndict.doc2bow(doc) for doc in doc_words]
-    print('made nbow')
-    print('returning...')
+    print('made nbow', flush=True)
+    print('returning...', flush=True)
     return (nbow, ndict, id_map)
 
 
@@ -156,15 +156,15 @@ def make_all_lda():
     '''
     Just for testing - probably don't want to keep everything in memory?
     '''
-    print('loading docs')
+    print('loading docs', flush=True)
     all_docs = Content.objects.all()
-    print('docs loaded ({})'.format(all_docs.count()))
+    print('docs loaded ({})'.format(all_docs.count()), flush=True)
     nbow, ndict, id_map = make_nbow_and_dict(all_docs)
-    print('completed make_nbow_and_dict')
+    print('completed make_nbow_and_dict', flush=True)
     lda_model = make_lda_model(nbow, ndict)
-    print('completed make_lda_model')
+    print('completed make_lda_model', flush=True)
     lda_similarities = make_lda_similarities(nbow, lda_model)
-    print('completed make_lda_similarities')
+    print('completed make_lda_similarities', flush=True)
 
     return (nbow, ndict, lda_model, lda_similarities, id_map)
 
@@ -177,7 +177,7 @@ def make_and_store():
     XXX: Make this scale
     '''
     nbow, ndict, lda_model, lda_similarities, id_map = make_all_lda()
-    print((nbow, ndict, lda_model, lda_similarities, id_map))
+    print((nbow, ndict, lda_model, lda_similarities, id_map), flush=True)
 
     temp_dir = mkdtemp()
     with open(path.join(temp_dir, "id_map.gensim"), "wb") as id_map_file:

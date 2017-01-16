@@ -11,19 +11,20 @@ vec_lda = lda_model[bow]
 lda_sims[vec_lda]
 '''
 import re
-from bs4 import BeautifulSoup
-
+import pickle
 import nltk
+
+from bs4 import BeautifulSoup
 from nltk.stem import PorterStemmer
 from gensim import corpora, models, similarities
 from text.stopwords import stopwords
 from contexttimer import timer
 from threading import Lock
+from os import path
+from tqdm import tqdm
 
 from core.models import Content, LDAConfiguration
 from tempfile import mkdtemp
-import pickle
-from os import path
 
 nltk.data.path.append('data/nltk')
 
@@ -100,8 +101,9 @@ def make_nbow_and_dict(content_iterator):
     '''
     print('make_nbow_and_dict')
     # The elements in doc_words and id_map have to correspond one-one in the same order
-    doc_words = [extract_words_from_content(content) for content in content_iterator
+    doc_words = [extract_words_from_content(content) for content in tqdm(content_iterator)
                  if content.extract['content'] not in (None, '')]
+
     print('made doc_words')
     # XXX: not efficient to go through content_iterator again?
     id_map = [content.id for content in content_iterator

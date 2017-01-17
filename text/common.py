@@ -22,6 +22,7 @@ from contexttimer import timer
 from threading import Lock
 from os import path
 from tqdm import tqdm
+from django.core.paginator import Paginator
 
 from core.models import Content, LDAConfiguration
 from tempfile import mkdtemp
@@ -71,7 +72,6 @@ def tokenize_text_block(block):
 
 # XXX: Refactor me, kinda ugly to have different result types depending on parameters
 def extract_words_from_content(content, with_sentences=False, with_sentences_only=False):
-    print('extract_words_from_content')
     raw_html = content.extract['content']
 
     if (raw_html is not None):
@@ -94,27 +94,31 @@ def extract_words_from_content(content, with_sentences=False, with_sentences_onl
         return []  # XXX: Some docs have no content
 
 
+def get_documents_with_paging(content_iterator, size=1000):
+    '''
+    Get documents efficiently.  Previously, the whole list of documents was being
+    loaded into memory -- this became a problem when the number of documents
+    was > 100k.
+    '''
+    paginator = Paginator(content_iterator, size)
+    doc_count = 0
+    for current_page in paginator.page_range:
+        for document in paginator.page(current_page).object_list:
+            doc_count += 1
+            yield document
+
+
 @timer()
 def make_nbow_and_dict(content_iterator):
     '''
     Given an ordered list of content, create a bow list (index == index from iterator)
     and a corpora.Dictionary, and also return a mapping from nbow index to content.id (id_map)
     '''
-    print('make_nbow_and_dict')
     # The elements in doc_words and id_map have to correspond one-one in the same order
-    doc_words = [extract_words_from_content(content) for content in tqdm(content_iterator)
+    doc_words = [extract_words_from_content(content) for content in
+                 tqdm(get_documents_with_paging(content_iterator),
+                      total=content_iterator.count())
                  if content.extract['content'] not in (None, '')]
-    #count = 0
-    #doc_words = []
-    #for content in content_iterator:
-    #    count += 1
-    #    if count%1000==0:
-    #        print('+', end='', flush=True)
-    #    if content.extract['content'] not in (None, ''):
-    #        doc_words.append(extract_words_from_content(content))
-    #        if count % 1000 == 0:
-    #            print('.', end='', flush=True)
-
 
     print('made doc_words', flush=True)
     # XXX: not efficient to go through content_iterator again?
@@ -156,9 +160,7 @@ def make_all_lda():
     '''
     Just for testing - probably don't want to keep everything in memory?
     '''
-    print('loading docs', flush=True)
     all_docs = Content.objects.all()
-    print('docs loaded', flush=True)
     nbow, ndict, id_map = make_nbow_and_dict(all_docs)
     print('completed make_nbow_and_dict', flush=True)
     lda_model = make_lda_model(nbow, ndict)

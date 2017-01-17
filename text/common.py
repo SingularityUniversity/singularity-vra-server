@@ -120,16 +120,12 @@ def make_nbow_and_dict(content_iterator):
                       total=content_iterator.count())
                  if content.extract['content'] not in (None, '')]
 
-    print('made doc_words', flush=True)
     # XXX: not efficient to go through content_iterator again?
-    id_map = [content.id for content in content_iterator
+    id_map = [content.id for content in tqdm(get_documents_with_paging(content_iterator),
+                                             total=content_iterator.count())
               if content.extract['content'] not in (None, '')]
-    print('made id_map', flush=True)
     ndict = corpora.Dictionary([word_list for word_list in doc_words])
-    print('made ndict', flush=True)
     nbow = [ndict.doc2bow(doc) for doc in doc_words]
-    print('made nbow', flush=True)
-    print('returning...', flush=True)
     return (nbow, ndict, id_map)
 
 
@@ -162,11 +158,8 @@ def make_all_lda():
     '''
     all_docs = Content.objects.all()
     nbow, ndict, id_map = make_nbow_and_dict(all_docs)
-    print('completed make_nbow_and_dict', flush=True)
     lda_model = make_lda_model(nbow, ndict)
-    print('completed make_lda_model', flush=True)
     lda_similarities = make_lda_similarities(nbow, lda_model)
-    print('completed make_lda_similarities', flush=True)
 
     return (nbow, ndict, lda_model, lda_similarities, id_map)
 
@@ -179,7 +172,6 @@ def make_and_store():
     XXX: Make this scale
     '''
     nbow, ndict, lda_model, lda_similarities, id_map = make_all_lda()
-    print((nbow, ndict, lda_model, lda_similarities, id_map), flush=True)
 
     temp_dir = mkdtemp()
     with open(path.join(temp_dir, "id_map.gensim"), "wb") as id_map_file:

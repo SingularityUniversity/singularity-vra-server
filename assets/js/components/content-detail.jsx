@@ -159,8 +159,10 @@ class ContentDetail extends React.Component {
                 );
                 cardActions = (
                     <CardActions expandable={true}>
+                    {/*}
                         <RaisedButton primary={true} onMouseUp={() => this.clickedFindSimilar()} label="Find similar documents"/>
                         <RaisedButton primary={true} label="Action2"/>
+                    {*/}
                     </CardActions>
                 );
             }

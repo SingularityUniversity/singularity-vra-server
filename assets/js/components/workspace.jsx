@@ -118,7 +118,9 @@ export class _Workspace extends React.Component {
                         <RaisedButton primary={true} onMouseUp={this.props.showUpdateWorkspace} labelStyle={{whiteSpace:"nowrap"}} disabled={this.props.workspaceData.id == null} label="Update and Save"/>
                         <RaisedButton primary={true} onMouseUp={this.props.showCreateWorkspace} labelStyle={{whiteSpace:"nowrap"}} label="Save New"/>
                         <RaisedButton primary={true} onMouseUp={this.props.unSelectAll}  labelStyle={{whiteSpace:"nowrap"}} label="Clear" disabled={clearDisabled}/>
+                        {/*}
                         <RaisedButton primary={true} label="Find Similar" onMouseUp={this.props.findSimilarMultiple} labelStyle={{whiteSpace:"nowrap"}} disabled={disabled}/>
+                        {*/}
                     </ToolbarGroup>
                 </Toolbar>
                 <WorkspaceChooser visible={this.props.workspaceChooserVisible}

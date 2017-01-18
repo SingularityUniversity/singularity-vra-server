@@ -21,7 +21,7 @@ from text.stopwords import stopwords
 from contexttimer import timer
 from threading import Lock
 from os import path
-from tqdm import tqdm
+#from tqdm import tqdm
 from django.core.paginator import Paginator
 
 from core.models import Content, LDAConfiguration
@@ -116,13 +116,15 @@ def make_nbow_and_dict(content_iterator):
     '''
     # The elements in doc_words and id_map have to correspond one-one in the same order
     doc_words = [extract_words_from_content(content) for content in
-                 tqdm(get_documents_with_paging(content_iterator),
-                      total=content_iterator.count())
+    #             tqdm(get_documents_with_paging(content_iterator),
+    #                  total=content_iterator.count())
+                 get_documents_with_paging(content_iterator)
                  if content.extract['content'] not in (None, '')]
 
     # XXX: not efficient to go through content_iterator again?
-    id_map = [content.id for content in tqdm(get_documents_with_paging(content_iterator),
-                                             total=content_iterator.count())
+    #id_map = [content.id for content in tqdm(get_documents_with_paging(content_iterator),
+    #                                         total=content_iterator.count())
+    id_map = [content.id for content in get_documents_with_paging(content_iterator)
               if content.extract['content'] not in (None, '')]
     ndict = corpora.Dictionary([word_list for word_list in doc_words])
     nbow = [ndict.doc2bow(doc) for doc in doc_words]
@@ -156,9 +158,13 @@ def make_all_lda():
     '''
     Just for testing - probably don't want to keep everything in memory?
     '''
+    print('fetching all content')
     all_docs = Content.objects.all()
+    print('running make_nbow_and_dict')
     nbow, ndict, id_map = make_nbow_and_dict(all_docs)
+    print('running make_lda_model')
     lda_model = make_lda_model(nbow, ndict)
+    print('running make_lda_similarities')
     lda_similarities = make_lda_similarities(nbow, lda_model)
 
     return (nbow, ndict, lda_model, lda_similarities, id_map)

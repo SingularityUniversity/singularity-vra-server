@@ -3,6 +3,7 @@ from readability import getmeasures
 from django.db.models import Avg
 from django.db.models.expressions import RawSQL
 from core.models import Content, Publisher
+from django.forms.models import model_to_dict
 
 def get_readability_scores(content):
     # XXX: We actually apparently only use the sentences, not the tokenized_sentencs
@@ -15,8 +16,8 @@ def get_readability_scores(content):
         results = {
             key.replace(' ', '_'): value for (key, value) in getmeasures(sentences).items()
         }
-        return results 
-    
+        return results
+
 def build_publisher_readability_stats():
     readability =  {
         'readability_grades': (
@@ -82,6 +83,7 @@ def update_publisher_readability_stats():
                 for key in item.keys():
                     if key.startswith('readability'):
                         parts = key.split('__')
-                        readability_statistics.setdefault(parts[1], {})[parts[2]] = item[key]
+                        readability_statistics.setdefault(parts[1], {})[parts[2]] = \
+                            float(item[key])
                 publisher.statistics['readability'] = readability_statistics
                 publisher.save()

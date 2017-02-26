@@ -1,6 +1,28 @@
 import $ from 'jquery'
 
 module.exports = {
+    register: function(username, email, password, cb) {
+        $.ajax({
+            type: 'POST',
+            url: '/api/v1/user/',
+            data: {
+                username: username,
+                email: email,
+                password: password
+            },
+            success: function(res){
+                module.exports.login(username, password, cb);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                let text = '';
+                for (let key in jqXHR.responseJSON) {
+                    text += '\u25cf ' + jqXHR.responseJSON[key] + '\n';
+                }
+                alert(text);
+            }
+        });
+    },
+
     login: function(username, pass, cb) {
         if (localStorage.token) {
             if (cb) cb(true)
@@ -16,8 +38,9 @@ module.exports = {
         })
     },        
     
-    logout: function() {
+    logout: function(cb) {
         delete localStorage.token
+        if (cb) cb(true)
     },
 
     loggedIn: function() {

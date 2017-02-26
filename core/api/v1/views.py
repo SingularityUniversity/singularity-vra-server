@@ -5,6 +5,7 @@ from datetime import datetime
 import numpy as np
 from django.conf import settings
 from rest_framework import viewsets, status, views
+from rest_framework.generics import CreateAPIView
 from core.models import *
 from core.api.v1.serializers import *
 from core.elasticsearch import get_client, ElasticException
@@ -16,8 +17,17 @@ from text.summary import get_summary_sentences
 from core.api.v1.pagination import LargeResultsLimitOffsetPagination
 from elasticsearch import TransportError, RequestError
 from django.http import HttpResponse
+from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+from rest_framework.permissions import AllowAny
 
 logger = logging.getLogger(__name__)
+
+
+class UserCreateView(CreateAPIView):
+    serializer_class = UserSerializer
+    model = get_user_model()
+    permission_classes = (AllowAny,)
 
 
 class PublisherViewSet(viewsets.ModelViewSet):

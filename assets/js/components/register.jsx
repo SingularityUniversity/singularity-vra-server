@@ -1,7 +1,5 @@
-var React = require('react')
-var auth = require('../util/auth')
-import {Link} from 'react-router'
-
+let React = require('react')
+let auth = require('../util/auth')
 
 module.exports = React.createClass({
     contextTypes: {
@@ -9,14 +7,15 @@ module.exports = React.createClass({
     },
 
     handleSubmit: function(e) {
-        e.preventDefault()
+        e.preventDefault();
 
-        var username = this.refs.username.value
-        var pass = this.refs.pass.value
+        let username = this.refs.username.value;
+        let email = this.refs.email.value;
+        let pass = this.refs.pass.value;
 
-        auth.login(username, pass, (loggedIn) => {
+        auth.register(username, email, pass, (loggedIn) => {
             if (loggedIn) {
-                this.context.router.replace('/app/')
+                this.context.router.replace('/app/');
             }
         })
     },
@@ -27,16 +26,17 @@ module.exports = React.createClass({
                 <h3>Singularity University</h3>
                 <h2>Virtual Research Assistant</h2>
                 <p>
-                    <b>Login</b>
+                    <b>Account Registration</b>
                 </p>
                 <form onSubmit={this.handleSubmit}>
                     <input type="text" placeholder="username" ref="username" /><br />
+                    <input type="text" placeholder="email" ref="email" /><br />
                     <input type="password" placeholder="password" ref="pass" /><br />
                     <input type="submit" />
                 </form>
-                <br />
-                <Link to="/app/register/">Register</Link>
             </div>
         )    
     }
 })
+
+

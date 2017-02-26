@@ -6,6 +6,7 @@ import {Router, Route, browserHistory} from 'react-router'
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import App from './app';
 import Login from './components/login'
+import Register from './components/register'
 import {loggedIn, getCSRFToken} from './util/auth'
 import $ from 'jquery';
 
@@ -17,13 +18,13 @@ injectTapEventPlugin();
 
 let state = {hello: 1};
 
-history.pushState(state, "App", "app");
+history.pushState(state, "App", "/app/");
 
 $(window).on('popstate', function (e) {
     var state = e.originalEvent.state;
     if (state == null) {
         alert("Please don't use the back button. You can see previous search results using the arrows near the search bar.");
-        history.pushState(state, "App", "app");
+        history.pushState(state, "App", "/app/");
     }
 });
 
@@ -44,16 +45,18 @@ $.ajaxSetup({
 function requireAuth(nextState, replace) {
     if (!loggedIn()) {
         replace({ 
-            pathname:'/app/login',
-            state: {nextPathname: '/app'}
+            pathname:'/app/login/',
+            state: {nextPathname: '/app/'}
         })
     }
 }
 
 render(
     <Router history={browserHistory}>
-        <Route path='/app/login' component={Login} />
-        <Route path='/app' component={App} onEnter={requireAuth} />
+        <Route path='/app/login/' component={Login} />
+        <Route path='/app/register/' component={Register} />
+        <Route path='/app/' component={App} onEnter={requireAuth} />
+        <Route path='/' component={App} onEnter={requireAuth} />
     </Router>,
     document.getElementById('app')
 )

@@ -32,6 +32,7 @@ module.exports = React.createClass({
                 <form onSubmit={this.handleSubmit}>
                     <input type="text" placeholder="username" ref="username" /><br />
                     <input type="password" placeholder="password" ref="pass" /><br />
+                    <br />
                     <input type="submit" />
                 </form>
                 <br />

@@ -25,8 +25,8 @@ docutils==0.13.1
 drf-nested-routers==0.11.1
 drfdocs==0.0.11
 elasticsearch==5.0.1
+fake-factory==0.7.4
 factory-boy==2.8.1
-fake-factory==9999.9.9
 Faker==0.7.7
 feedparser==5.2.1
 flower==0.9.1

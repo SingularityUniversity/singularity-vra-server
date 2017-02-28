@@ -5,7 +5,10 @@ import { workspaceReducer} from './workspace-reducer'
 import { articleCountReducer } from './article-count-reducer'
 import { snackbarReducer} from './snackbar-reducer'
 
-const rootReducer = combineReducers({
+import {LOGOUT} from '../actions/auth-actions'
+import { initialState }  from '../configure-store';
+
+const appReducer = combineReducers({
     clipboardVisibility: clipboardVisibilityReducer,
     articleSnippetList: clipboardReducer,
     searchData: searchReducer,
@@ -14,5 +17,12 @@ const rootReducer = combineReducers({
     articleCount: articleCountReducer,
     snackbar: snackbarReducer
 });
+
+const rootReducer = (state, action) => {
+    if (action.type == LOGOUT) {
+        state = initialState;
+    }
+    return appReducer(state, action);
+}
 
 export default rootReducer

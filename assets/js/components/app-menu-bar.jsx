@@ -8,6 +8,7 @@ import ArrowForward from 'material-ui/svg-icons/navigation/arrow-forward';
 import SearchHelpDialog from '../components/search-help-dialog';
 import SearchEntry from '../components/search-entry';
 import SearchStatsDialog from '../components/search-stats-dialog';
+import LogoutButton from '../components/logout-button';
 
 
 class AppMenuBar extends React.Component {
@@ -21,7 +22,7 @@ class AppMenuBar extends React.Component {
                 titleStyle={styles.appBar.content}
                 zDepth={0}
                 style={styles.appBar}
-                showMenuIconButton={false} >
+                showMenuIconButton={false}>
                 <ToolbarGroup>
                     <IconButton disabled={!this.props.canUndoSearch} onClick={this.props.onUndo}><ArrowBack/></IconButton>
                     <IconButton disabled={!this.props.canRedoSearch} onClick={this.props.onRedo}><ArrowForward/></IconButton>
@@ -33,6 +34,7 @@ class AppMenuBar extends React.Component {
                     />
                     <SearchStatsDialog  doSearch={this.props.doSearch}/>
                     <SearchHelpDialog/>
+                    <LogoutButton />
                 </ToolbarGroup>
             </AppBar>
 

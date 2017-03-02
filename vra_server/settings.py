@@ -133,7 +133,8 @@ CONTENT_PREPROCESSORS = [
     ('core.models.get_content_length', 'content_length', True),
     ('text.summary.get_summary_sentences', 'summary_sentences'),
     ('text.readability.get_readability_scores', 'readability'),
-    ('text.summary.get_quote_sentences', 'quote_sentences')
+    ('text.summary.get_quote_sentences', 'quote_sentences'),
+    ('text.summary.get_category_tags', 'category_tags'),
 ]
 
 

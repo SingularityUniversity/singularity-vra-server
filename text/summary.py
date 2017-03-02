@@ -56,3 +56,11 @@ def get_quote_sentences(content, num_sentences=10):
                 accumulated_sentence = sentence
                 quote_state = True
     return quote_sentences
+
+
+def get_category_tags(content, num_tags=3):
+    '''
+    Return list of tags for document.
+    '''
+    tags = []
+    return tags

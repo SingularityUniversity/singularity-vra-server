@@ -1,7 +1,7 @@
 {
-  "name": "webapp",
+  "name": "VRA",
   "version": "1.0.0",
-  "license": "ISC",
+  "license": "",
   "devDependencies": {
     "autoprefixer": "^6.6.1",
     "babel": "^6.5.2",

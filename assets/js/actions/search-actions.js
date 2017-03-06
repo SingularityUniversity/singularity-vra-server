@@ -48,7 +48,8 @@ export function keywordSearch(query, offset=0, limit=50, sort_type=SortType.RELE
             fetch(`/api/v1/search?${params.toString()}`, {
                 credentials: 'include',
                 headers: {
-                    'Accept': 'application/json'
+                    'Accept': 'application/json',
+                    'Authorization': 'Token ' + localStorage.token,
                 }
             })
             .then(checkResponseAndExtractJSON)
@@ -108,7 +109,8 @@ export function similaritySearch(contentIDs, since_timestamp) {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Token ' + localStorage.token,
             },
             body: JSON.stringify(postContent)
         })
@@ -175,8 +177,11 @@ export function showSearchResults() {
 // This is not a reducer action, so do not call it with dispatch()
 export function getSearchStats() {
        return fetch('/api/v1/search/stats', {
-       credentials: 'include',
-       headers: {'Accept': 'application/json'}
+           credentials: 'include',
+           headers: {
+               'Accept': 'application/json',
+               'Authorization': 'Token ' + localStorage.token,
+           }
        }).
        then(checkResponseAndExtractJSON);
 

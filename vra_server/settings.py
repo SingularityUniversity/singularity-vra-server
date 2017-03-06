@@ -203,9 +203,7 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
-        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
     ),
 }
 
@@ -213,10 +211,6 @@ if os.environ.get('ENVIRONMENT') == 'production':
     timeout = 60*15
 else:
     timeout = 60*60*12
-
-JWT_AUTH = {
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=timeout)
-}
 
 
 # Allow all host headers

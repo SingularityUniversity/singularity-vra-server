@@ -35,3 +35,5 @@ categories as tags.
   b. require email validation for registration
   c. support forgot password functionality
 
+10. Update the layout of the search results so that they don't overlap when 
+there is lot of content being displayed.

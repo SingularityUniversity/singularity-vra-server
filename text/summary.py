@@ -1,6 +1,8 @@
 from text.common import extract_words_from_content
 from nltk.probability import FreqDist
 from itertools import chain
+from text.categories import get_category_ngrams, get_category_keywords
+
 
 def get_summary_sentences(content, num_sentences=10):
     word_results = extract_words_from_content(content, with_sentences=True)
@@ -56,3 +58,30 @@ def get_quote_sentences(content, num_sentences=10):
                 accumulated_sentence = sentence
                 quote_state = True
     return quote_sentences
+
+
+def get_category_tags(content, num_tags=3):
+    '''
+    Return list of tags for document in order of score.
+
+    This uses a simple algorithm to determine the categories.  Categories
+    are defined by a number of keywords (see text.categories).  The text of a
+    document is broken into 1- and 2-grams and then a frequency distribution
+    is calculated.  A score for each potential tag is calculated by summing
+    the frequency count for each keyword that is matched in the document.  Only
+    tags with a score greater than 5 are considered.
+    '''
+    word_results = extract_words_from_content(content, with_bigrams=True)
+    ngram_frequency = FreqDist(word_results)
+    if word_results == []:
+        return []
+
+    tags = {}
+    category_ngrams = get_category_ngrams()
+    for key in get_category_keywords():
+        score = 0
+        for keyword in category_ngrams[key]:
+            score += ngram_frequency[keyword]
+        if score > 5:
+            tags[key] = score
+    return sorted(tags, key=lambda x: -tags[x])[:num_tags]

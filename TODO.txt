@@ -1,9 +1,37 @@
-DONE:
-*) Modify EnteredSource to have TYPE_ARCHIVED_RSS
-*) Add guid field to Content
-*) Remove publisher from EnteredSource - EnteredSource may pull from multiple publishers - publishers should only come from content
-*) Modify unique checking for Content by cehcking guid and entity.link urls before grabbing (also check *after* hitting embedly, so we don't create a new object)
-*) Modify serielizers to enforce only one EnteredSource with type=RSS -- probably also update the core.management.commands.add_rss tool to check if existing TYPE_RSS EnteredSource in place, and if so, turn that one off and create a new one with the new RSS URL? 
-
 TODO
-*) Make RSS ingestor work by firing off individual document parsing jobs -- this is actually a bit complicated since the current rss ingestor returns a list of articles skipped (already retrieved) and those successfully retrieved. If the RSS fires off jobs, those jobs may end up skipping too (they may not konw to skip until after they've gotten a canonical URL from embedly), so we won't have one list anymore. I'm not convinced we need to fire off separate jobs, so I'd skip this for now.
+====
+
+1. Make RSS ingestor work by firing off individual document parsing jobs --
+this is actually a bit complicated since the current rss ingestor returns a
+list of articles skipped (already retrieved) and those successfully retrieved.
+If the RSS fires off jobs, those jobs may end up skipping too (they may not
+konw to skip until after they've gotten a canonical URL from embedly), so we
+won't have one list anymore. I'm not convinced we need to fire off separate
+jobs, so I'd skip this for now.
+
+2. Make LDA and document reprocessing scale more effectively with large sets of
+documents.  When running the LDA processing on over 100k documents, it takes a
+couple of hours to complete the processing (doing this naively on Heroku fails
+after an hour due to the time limit on on-off dynos).  Either turn this into a
+queued job that uses an explicit worker dyno and/or break up the work so that
+it can be done in parallel across multiple dynos.
+
+3. Fix the flickering in the search scroller.
+
+4. Include the rest of the exponential technology and grand challenge
+categories as tags.
+
+5. Add additional keywords to each of the category tags.
+
+6. Explore using the information extracted from wikipedia for category tagging
+(see the jupyter notebooks in the notebooks directory).
+
+7. Update the material-ui package version to the latest.
+
+8. Redesign the UI completely for a better user experience.
+
+9. Update the authentication code to:
+  a. check for unique email
+  b. require email validation for registration
+  c. support forgot password functionality
+

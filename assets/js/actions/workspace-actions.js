@@ -37,7 +37,10 @@ export function loadWorkspace(workspaceId) {
         dispatch(showSnackbarMessage("Loading workspace"));
         return fetch('/api/v1/workspace/'+workspaceId, {
             credentials: 'include',
-            headers: {'Accept': 'application/json'}
+            headers: {
+                'Accept': 'application/json',
+                'Authorization': 'Token ' + localStorage.token,
+            }
         })
         .then(checkResponseAndExtractJSON)
         .then(json => {
@@ -72,7 +75,10 @@ export function deleteWorkspace(workspaceId) {
     return (dispatch => {
         return fetch('/api/v1/workspace/'+workspaceId, {
             credentials: 'include',
-            headers: {'Accept': 'application/json'},
+            headers: {
+                'Accept': 'application/json',
+                'Authorization': 'Token ' + localStorage.token,
+            },
             method: 'DELETE'
         })
             .then(checkResponse)
@@ -86,7 +92,10 @@ export function deleteWorkspace(workspaceId) {
 export function getWorkspaces() {
     return fetch('/api/v1/workspace?fields=id,title,description', {
         credentials: 'include',
-        headers: {'Accept': 'application/json'}
+        headers: {
+            'Accept': 'application/json',
+            'Authorization': 'Token ' + localStorage.token,
+        }
     }).
     then(checkResponseAndExtractJSON).
     then(json => {
@@ -115,7 +124,8 @@ export function updateWorkspace(workspaceData) {
             method: 'PATCH',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Token ' + localStorage.token,
             },
             body: JSON.stringify(patchWorkspaceData)
         })
@@ -148,7 +158,8 @@ export function createWorkspace(workspaceData) {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Token ' + localStorage.token,
             },
             body: JSON.stringify(postWorkspaceData)
         })

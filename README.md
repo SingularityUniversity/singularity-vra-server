@@ -25,6 +25,7 @@ used and see sample.env for configuration examples
 8. create elasticsearch indices
     - main index: `curl -XPUT <SEARCHBOX_URL>/<ELASTICSEARCH_INDEX>`
     - query index: `curl -XPUT <SEARCHBOX_URL>/<ELASTICSEARCH_SEARCH_STATS_INDEX>`
+9. set up daily process to execute `bin/daily_tasks` (this could be a crontab entry or using the Heroku Scheduler add-on)
 
 ## Environment Setup
 ### Using an Existing Installation
@@ -54,3 +55,7 @@ To access the Web UI (with hot loading of both python and javascript):
 2. Server-side (python): Set up the environment (no live server need run though 
    database and elasticsearch probably do need to be running), and run 
    `python manage.py test`
+
+##Notes
+1. When modifying content in the database, run `python manage.py recreate_index` to update the content in ElasticSearch.
+2. The CONTENT_PREPROCESSORS setting in settings.py specifies functions that are executed whenever a Content object is saved or updated.  This is used to process the content and add addition information to the Content object (such as readability scores, tags, etc.).

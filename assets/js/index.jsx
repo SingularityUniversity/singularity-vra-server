@@ -39,6 +39,9 @@ $.ajaxSetup({
         if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
             xhr.setRequestHeader("X-CSRFToken", csrftoken);
         }
+        if (localStorage.token) {
+            xhr.setRequestHeader("Authorization", "Token " + localStorage.token);
+        }
     }
 });
 

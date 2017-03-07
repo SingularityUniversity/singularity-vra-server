@@ -16,6 +16,7 @@ import nltk
 
 from bs4 import BeautifulSoup
 from nltk.stem import PorterStemmer
+from nltk.util import ngrams
 from gensim import corpora, models, similarities
 from text.stopwords import stopwords
 from contexttimer import timer
@@ -50,11 +51,12 @@ def tokenize_text_block(block):
     '''
     text = nltk.word_tokenize(block)
     tokenized_text = []
+    # XXX: very similar to code in text.categories.tokenize_word_list
+    #      Refactor?
+
     # turn compound words into individual words
     for word in text:
-        # print('{} {}'.format(word, re.split('W+', word)))
         tokenized_text.extend(re.split('\W+', word))
-    # print(len(tokenized_text))
     # lowercase and get rid of stopwords
     tokenized_text = [word.lower() for word in tokenized_text if
                       word != '' and
@@ -71,7 +73,8 @@ def tokenize_text_block(block):
 
 
 # XXX: Refactor me, kinda ugly to have different result types depending on parameters
-def extract_words_from_content(content, with_sentences=False, with_sentences_only=False):
+def extract_words_from_content(content, with_sentences=False, with_sentences_only=False,
+                               with_bigrams=False):
     raw_html = content.extract['content']
 
     if (raw_html is not None):
@@ -88,6 +91,9 @@ def extract_words_from_content(content, with_sentences=False, with_sentences_onl
             result = (sentences, [tokenize_text_block(sentence) for sentence in sentences])
         else:
             result = tokenize_text_block(text)
+
+        if with_bigrams:
+            result.extend(list(ngrams(result, 2)))
         assert result is not None, "Got None from {}".format(result)
         return result
     else:

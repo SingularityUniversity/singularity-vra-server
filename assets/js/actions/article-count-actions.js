@@ -10,7 +10,10 @@ export function receiveArticleCount(count) {
 export function getArticleCount() {
     return function(dispatch) {
         fetch('/api/v1/content/count', {
-            credentials: 'include'
+            credentials: 'include',
+            headers: {
+                'Authorization': 'Token ' + localStorage.token,
+            }
         })
         .then(response => {
             if (response.status <= 299) {

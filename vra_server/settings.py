@@ -133,7 +133,8 @@ CONTENT_PREPROCESSORS = [
     ('core.models.get_content_length', 'content_length', True),
     ('text.summary.get_summary_sentences', 'summary_sentences'),
     ('text.readability.get_readability_scores', 'readability'),
-    ('text.summary.get_quote_sentences', 'quote_sentences')
+    ('text.summary.get_quote_sentences', 'quote_sentences'),
+    ('text.summary.get_category_tags', 'category_tags'),
 ]
 
 
@@ -202,8 +203,6 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ),
 }
@@ -212,10 +211,6 @@ if os.environ.get('ENVIRONMENT') == 'production':
     timeout = 60*15
 else:
     timeout = 60*60*12
-
-JWT_AUTH = {
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=timeout)
-}
 
 
 # Allow all host headers
@@ -253,3 +248,10 @@ LOGGING = {
         },
     },
 }
+
+# SSL settings
+if ENVIRONMENT == 'production':
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True

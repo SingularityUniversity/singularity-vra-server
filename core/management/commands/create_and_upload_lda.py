@@ -11,7 +11,7 @@ boto3.set_stream_logger(level=logging.INFO)
 
 
 class Command(BaseCommand):
-    help = ('Cretea and upload LDA dict/model/index files to s3')
+    help = ('Create and upload LDA dict/model/index files to s3')
 
     def handle(self, *args, **options):
         try:

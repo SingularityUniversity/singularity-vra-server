@@ -224,9 +224,18 @@ class SearchResults extends React.Component {
         if (content.score) {
             scoreblock = (<span>Score: {content.score.toFixed(3)} &nbsp;&nbsp;&nbsp;</span>);
         };  
+        let tags = "";
+        if (content.fields.pre_processed['category_tags'] && content.fields.pre_processed['category_tags'].length > 0) {
+            let i=0;
+            for (i=0; i<content.fields.pre_processed['category_tags'].length-1; i++) {
+                tags += content.fields.pre_processed['category_tags'][i] + ', ';
+            }
+            tags += content.fields.pre_processed['category_tags'][i];
+        }
+
         const title = (<span><span style={{fontSize: 14, lineHeight: "1em", display: "inline-block", width:this.props.width-32-48-24, textOverflow: "ellipsis", maxHeight: "4em", overflow:"hidden"}}>{titleText}</span>{addIcon}</span>); // 32 from padding from cardtitle, 48 for button, 24 for collapse/open icon button
 const subtitle = (<span><div className="search-summary">{summary}</div><div style={{fontSize: 12}}>{author}</div>
-    <div style={{fontSize: 12}}>{scoreblock}Length: {wordCountToTag(readabilityLength)} &nbsp;&nbsp;&nbsp; ARI: {round(readabilityARI, 2)} ({ariToGradeLevel(readabilityARI)})</div> {published} <a href="#">{publisher}</a></span>);
+    <div style={{fontSize: 12}}>{scoreblock}Length: {wordCountToTag(readabilityLength)} &nbsp;&nbsp;&nbsp; ARI: {round(readabilityARI, 2)} ({ariToGradeLevel(readabilityARI)})</div> {published} <a href="#">{publisher}</a><div>Tags: {tags}</div></span>);
 
 
         return (

@@ -59,3 +59,4 @@ To access the Web UI (with hot loading of both python and javascript):
 ##Notes
 1. When modifying content in the database, run `python manage.py recreate_index` to update the content in ElasticSearch.
 2. The CONTENT_PREPROCESSORS setting in settings.py specifies functions that are executed whenever a Content object is saved or updated.  This is used to process the content and add addition information to the Content object (such as readability scores, tags, etc.).
+3. `npm run build-prod` to build the bundle for the web app.

@@ -111,6 +111,7 @@ class ContentDetail extends React.Component {
             let summarySentences = preProcessed ? preProcessed['summary_sentences'] : null;
             let quoteSentences = preProcessed ? preProcessed['quote_sentences'] : null;
             const readability = preProcessed ? preProcessed['readability'] : null;
+            let categoryTags = preProcessed ? preProcessed['category_tags'] : null;
             let readabilityLength = null;
             let readabilityARI = null;
             if (readability && readability['sentence_info']) {
@@ -129,7 +130,15 @@ class ContentDetail extends React.Component {
                     format('YYYY-MM-DD');
             }
             let addedDate = (content['date_added']) ? 
-                    Moment(content['date_added']).format('YYYY-MM-DD') : '';
+                Moment(content['date_added']).format('YYYY-MM-DD') : '';
+            let tags = '';
+            if (categoryTags && categoryTags.length > 0) {
+                let i = 0;
+                for (i=0; i<categoryTags.length-1; i++){
+                    tags += categoryTags[i] + ', ';
+                }
+                tags += categoryTags[i];
+            }
             var lda_stuff = null;
             if (content.lda_similarity_topics) {
                 lda_stuff = (
@@ -219,7 +228,7 @@ class ContentDetail extends React.Component {
                     </IconButton>
                     <CardText style={{padding: 0}} expandable={true}>
                         <List>
-                            <ListItem><div>Publisher: {extract.provider_name} &nbsp;&nbsp;&nbsp; Published on:  {`${publishedDate}`}</div><div>Article Length: {wordCountToTag(readabilityLength)} &nbsp;&nbsp;&nbsp; ARI: {round(readabilityARI, 2)} ({ariToGradeLevel(readabilityARI)})</div><div>Added on: {addedDate}</div></ListItem>
+                            <ListItem><div>Publisher: {extract.provider_name} &nbsp;&nbsp;&nbsp; Published on:  {`${publishedDate}`}</div><div>Article Length: {wordCountToTag(readabilityLength)} &nbsp;&nbsp;&nbsp; ARI: {round(readabilityARI, 2)} ({ariToGradeLevel(readabilityARI)})</div><div>Added on: {addedDate}</div><div>Tags: {tags}</div></ListItem>
                             <ListItem>URL: <a target="vra_preview" href={extract.url}>{extract.url}</a></ListItem>
                             <ListItem>
                                 <Card style={itemComponentsStyles.style} containerStyle={itemComponentsStyles.containerStyle}>
